@@ -2,9 +2,15 @@
 
 var canvas = global.canvas;
 
-require('../lib/jquery.ui.position.min.js');
-require('../lib/jquery.contextMenu.min.js');
-require('../lib/jquery.tooltipster.min.js');
+// DQD
+//require('../lib/jquery.ui.position.min.js');
+//require('../lib/jquery.contextMenu.min.js');
+//require('../lib/jquery.tooltipster.min.js');
+require('jquery');
+require('jquery-ui');
+require('jquery-contextmenu');
+require('spectrum-colorpicker');
+
 
 var config = require('./config.js');
 var utils = new (require('./fabricUtils.js'))();
@@ -15,7 +21,9 @@ var fetchApi = new (require('./fetchApi.js'))();
 var importExport = new (require('./importExport.js'))();
 var isAppLoading = true;
 
-// Initialize state
+/**
+ * Initialize the editor state cache
+ */
 var state = new (require('./state.js'))(
   function() {
     // get state
@@ -29,6 +37,9 @@ var state = new (require('./state.js'))(
   }
 );
 
+/**
+ * Handler for the delete and backspace keys
+ */
 function deleteHandler() {
   // Handler for the delete and backspace keys
   $(document).keyup(function(e) {
@@ -45,6 +56,9 @@ function deleteHandler() {
   });
 }
 
+/**
+ * Initialize the right click context menu and event handlers
+ */
 function rightClick() {
   // Setup right-click context menu
   $.contextMenu({
@@ -89,6 +103,11 @@ function rightClick() {
   });
 }
 
+/**
+ * TODO: Not yet sure what this does
+ * 
+ * @param {*} button 
+ */
 function toggle(button) {
   var open = $("div.sidebar-item-selected");
 
@@ -107,15 +126,21 @@ function toggle(button) {
   }
 }
 
-function hideActiveTools() {
-  $("#active-tools").addClass("noshow");
-}
-
+/**
+ * Return a camelcase the given string
+ * 
+ * @param {*} str 
+ */
 function toTitleCase(str)
 {
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  return str.replace(/\w\S*/g, function(txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
 }
 
+/**
+ * Display the active font in the toolbar tool
+ */
 function showCurrentFont() {
   var font = toTitleCase(utils.getFont());
   if (font.length > 9) {
@@ -124,6 +149,74 @@ function showCurrentFont() {
   $("#current-font").text(font);
 }
 
+/**
+ * Display the current font size in the toolbar
+ */
+function showCurrentFontSize() {
+  var fontSize = utils.getFontSize();
+  $("#current-font-size").text(fontSize);
+}
+
+/**
+ * Indicate the active outline (border) width in the tool submenu
+ */
+function showCurrentOutlineWidth() {
+  var width = utils.getOutlineWidth();
+
+  var element = $("#toolbar-outline-width-submenu > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+
+  element = $("#outline-width-" + width);
+  element.addClass("submenu-item-selected");
+}
+
+/**
+ * Indicate the active outline (border) style in the tool submenu
+ */
+function showCurrentOutlineStyle() {
+  var style = utils.getOutlineStyle();
+
+  var element = $("#toolbar-outline-style-submenu > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+}
+
+/**
+ * Incicate the active text alignment in the tool submenu
+ */
+function showCurrentTextAlign() {
+  var mode = utils.getTextAlign();
+  var element = $("#toolbar-text-align-submenu > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+
+  element = $("#text-align-" + mode);
+  element.addClass("submenu-item-selected");
+}
+
+/**
+ * Undisplay the currently active contextual tools
+ */
+function hideActiveTools() {
+  $("#active-tools").addClass("noshow");
+  var active = $("#active-tools > .toolbar-item-active");
+  if (active.length > 0) {
+    active.removeClass("toolbar-item-active");
+  }
+
+  var submenus = $("#active-tools > .toolbar-submenu");
+  if (submenus.length > 0) {
+    submenus.addClass("noshow");
+  }
+}
+
+/**
+ * Display the appropriate contextual tools for the selected object or group
+ */
 function showActiveTools() {
   if (isAppLoading === true) {
     return;
@@ -131,8 +224,12 @@ function showActiveTools() {
 
   var tools = $("#active-tools");
   var obj = canvas.getActiveObject();
+  var group = canvas.getActiveGroup();
 
-  if (canvas.getActiveGroup() !== null && canvas.getActiveGroup() !== undefined) {
+  // DQD
+  // Figure out the intended logic. This seems
+  // overly complicated.
+  if (group !== null && group !== undefined) {
     $("#active-tools > div").addClass("noshow");
     tools.removeClass("noshow");
     $("div.group", tools).removeClass("noshow");
@@ -141,6 +238,7 @@ function showActiveTools() {
     tools.removeClass("noshow");
 
     var type = canvas.getActiveObject().type;
+
     if (type === "i-text") {
       $("div.text", tools).removeClass("noshow");
 
@@ -162,15 +260,8 @@ function showActiveTools() {
         $("#toolbar-underline").removeClass("toolbar-item-active");
       }
 
-      /*
-      $("#font-size").val(utils.getFontSize());
-      $("#font-size").change(function(value) {
-        utils.setFontSize($("#font-size").val());
-      });
-      */
-
+      showCurrentFontSize();
       showCurrentFont();
-
     } else if (type === "svg") {
       $("div.svg", tools).removeClass("noshow");
     } else {
@@ -191,6 +282,9 @@ function showActiveTools() {
       $("#toolbar-outline-color").spectrum("set", outlineColor);
     }
 
+    // Init outline width
+    showCurrentOutlineWidth();
+
     // Shadow and glow
     setCurrentShadowValues();
     page.glowColorPicker();
@@ -201,12 +295,19 @@ function showActiveTools() {
   }
 }
 
+/**
+ * TODO: What does this do?
+ */
 function fitSearchResults() {
   var results = $("#slideout-artwork > .slideout-body > .search-results");
   var padding = $("#top").height() + 175;
   results.css("height", window.innerHeight - padding);
 }
 
+/**
+ * TODO: What does this do?
+ * @param {*} e 
+ */
 function resetFormElement(e) {
   e.wrap('<form>').closest('form').get(0).reset();
   e.unwrap();
@@ -216,16 +317,18 @@ function resetFormElement(e) {
   e.preventDefault();
 }
 
-function listeners() {
-  // font selection
-  var fontClickHandler = function() {
+/**
+ * Initialize the font family submenu and it's event handler
+ */
+function initFontFamily() {
+  var fontClickHandler = function () {
     var fontName = $(this).text();
     utils.setFont(fontName);
     showCurrentFont();
     text.returnFocus();
   };
 
-  $(window).on("fontLoadedEvent", function(event, family) {
+  $(window).on("fontLoadedEvent", function (event, family) {
     var familyId = "font-family-" + family.replace(/\s+/g, '');
 
     var str = '';
@@ -241,7 +344,7 @@ function listeners() {
     element.click(fontClickHandler);
   });
 
-  $(window).on("allFontsLoadedEvent", function(event, family) {
+  $(window).on("allFontsLoadedEvent", function (event, family) {
     // Is the menu being used?
     if ($("#toolbar-font-family").hasClass("toolbar-item-active") === true) {
       return;
@@ -259,45 +362,112 @@ function listeners() {
     $("#toolbar-font-family .submenu-item").click(fontClickHandler);
   });
 
-  $("#font-arial").click(function() {
+  $("#font-arial").click(function () {
     utils.setFont("Arial");
     showCurrentFont();
     text.returnFocus();
   });
+}
 
-  // Set event listeners
+/**
+ * Initialize the font size submenu and it's event handler
+ */
+function initFontSize() {
+  var fontSizeClickHandler = function () {
+    var fontSize = $(this).text();
+    utils.setFontSize(fontSize);
+    showCurrentFontSize();
+    text.returnFocus();
+  };
+
+  var fontSizes = [6, 7, 8, 9, 10, 11, 12, 14, 18, 24, 30, 36];
+  for (var i = 0; i < fontSizes.length; i++) {
+    var size = fontSizes[i].toString();
+    var str = '<div class="submenu-item" id="font-size-' + size +
+      '" data-font-size="' + size + '">' + size + '</div>';
+    $("#toolbar-font-size > .toolbar-submenu").append(str);
+    var element = $("#font-size-" + size);
+    element.click(fontSizeClickHandler);
+  }
+}
+
+/**
+ * Initialize the outline (border) width submenu and event handler
+ */
+function initOutlineWidth() {
+  var outlineWidthClickHandler = function () {
+    var outlineWidth = $(this).text();
+    utils.setOutlineWidth(outlineWidth);
+    showCurrentOutlineWidth();
+  };
+
+  var outlineWidths = [1, 2, 3, 4, 5, 8, 12, 16, 24];
+  for (var i = 0; i < outlineWidths.length; i++) {
+    var width = outlineWidths[i].toString();
+    var str = '<div class="submenu-item" id="outline-width-' + width +
+      '" data-outline-width="' + width + '">' + width + 'px</div>';
+    $("#toolbar-outline-width-submenu").append(str);
+    var element = $("#outline-width-" + width);
+    element.click(outlineWidthClickHandler);
+  }
+}
+
+/**
+ * Initialize the outline (border) style submenu and event handler
+ */
+function initOutlineStyle() {
+  var outlineStyleClickHandler = function () {
+    var outlineStyle = $(this).text();
+    utils.setOutlineStyle(outlineStyle);
+    showCurrentOutlineStyle();
+  };
+
+  var outlineStyles = ["solid", "dotted", "dashed"];
+  for (var i = 0; i < outlineStyles.length; i++) {
+    var style = outlineStyles[i];
+    var str = '<div class="submenu-item" id="outline-style-' + style +
+      '" data-outline-style="' + style + '">' + style + '</div>';
+    $("#toolbar-outline-style-submenu").append(str);
+    var element = $("#outline-style-" + style);
+    element.click(outlineStyleClickHandler);
+  }
+}
+
+/**
+ * Initialize the canvas event handlers
+ */
+function initCanvas() {
   canvas.on({
-    "object:selected": function() {
+    "object:selected": function () {
       showActiveTools();
     },
-    "selection:cleared": function() {
+    "selection:cleared": function () {
       showActiveTools();
     }
   });
 
   window.addEventListener('resize', fitSearchResults, false);
   fitSearchResults();
+}
 
-  $(".sidebar-item").click(function() {
-    toggle($(this));
-    return false;
-  }).hover(function() {
-    if (!$(this).hasClass("sidebar-item-active")) {
-      $(this).addClass("sidebar-item-hover");
-    }
-  }, function() {
-    $(this).removeClass("sidebar-item-hover");
-  });
-
-  $("#toolbar-undo").click(function() {
+/**
+ * Initialize the undo and redo event handlers
+ */
+function initUndo() {
+  $("#toolbar-undo").click(function () {
     state.undo();
   });
 
-  $("#toolbar-redo").click(function() {
+  $("#toolbar-redo").click(function () {
     state.redo();
   });
+}
 
-  $("#toolbar-text").click(function() {
+/**
+ * Initialize the text tool event handler
+ */
+function initText() {
+  $("#toolbar-text").click(function () {
     $(document).trigger("click.submenu"); // Make sure all submenus are closed
     if ($("#toolbar-text").hasClass("toolbar-item-active")) {
       $("#toolbar-text").removeClass("toolbar-item-active");
@@ -307,10 +477,14 @@ function listeners() {
       text.insertText();
     }
   });
+}
 
-  // toolbar submenus
-  $('.toolbar-dropdown').each(function(i, obj) {
-    $(obj).click(function(event) {
+/**
+ * Initialize the submenu event handlers
+ */
+function initSubmenus() {
+  $('.toolbar-dropdown').each(function (i, obj) {
+    $(obj).click(function (event) {
       var button = $(this);
       var popup = $(".toolbar-submenu", button);
       var visible = popup.is(":visible");
@@ -321,6 +495,10 @@ function listeners() {
         var noAutoClose = $(".toolbar-submenu", button).hasClass("no-auto-close");
         if (!clickedButton && noAutoClose) {
           return;
+        }
+
+        if (button.hasClass("toolbar-item-active")) {
+          button.removeClass("toolbar-item-active");
         }
 
         page.closeSubmenu(button);
@@ -334,17 +512,21 @@ function listeners() {
 
         var x = button.offset().top + 27;
         var y = button.offset().left;
-        popup.css({top: x, left: y});
+        popup.css({ top: x, left: y });
         popup.removeClass("noshow");
 
-        $(document).bind("click.submenu", function(event, noTooltips) {
-          if (event.target.id === button.attr('id')) {
-            return;
-          }
+        // DQD - This block was causing the font family submen to be hidden when 
+        // the user clicked some place other than the current font name. Not sure
+        // what the intent of the code was.
+        //
+        // $(document).bind("click.submenu", function(event, noTooltips) {
+        //   if (event.target.id === button.attr('id')) {
+        //     return;
+        //   }
 
-          page.closeSubmenu(button, noTooltips);
-          $(document).unbind("click.submenu");
-        });
+        //   page.closeSubmenu(button, noTooltips);
+        //   $(document).unbind("click.submenu");
+        // });
 
         // Hack to get spectrum color pickers to redraw
         if (popup[0] && popup[0].id === "shadow-submenu") {
@@ -358,49 +540,46 @@ function listeners() {
       }
     });
   });
+}
 
-  $("#shapes-line").click(function() {
+/**
+ * Initialize the shape tool event handlers
+ */
+function initShapes() {
+  $("#shapes-line").click(function () {
     canvas.deactivateAllWithDispatch();
     canvas.renderAll();
     drawing.drawObj("line");
     canvas.defaultCursor = 'crosshair';
   });
 
-  $("#shapes-circle").click(function() {
+  $("#shapes-circle").click(function () {
     canvas.deactivateAllWithDispatch();
     canvas.renderAll();
     drawing.drawObj("circle");
     canvas.defaultCursor = 'crosshair';
   });
 
-  $("#shapes-rectangle").click(function() {
+  $("#shapes-rectangle").click(function () {
     canvas.deactivateAllWithDispatch();
     canvas.renderAll();
     drawing.drawObj("square");
     canvas.defaultCursor = 'crosshair';
   });
 
-  $("#shapes-rounded").click(function() {
+  $("#shapes-rounded").click(function () {
     canvas.deactivateAllWithDispatch();
     canvas.renderAll();
     drawing.drawObj("rounded-rect");
     canvas.defaultCursor = 'crosshair';
   });
+}
 
-  $("#download-button").click(function() {
-    toggle($("#sidebar-export"));
-    return false;
-  });
-
-  $("#preview-button").click(function() {
-    page.showPreview();
-    hideActiveTools();
-    return false;
-  });
-
-  // Export panel
-
-  $("#download-image-button").click(function() {
+/**
+ * Initialize the import and export event handlers
+ */
+function initImportExport() {
+  $("#download-image-button").click(function () {
     var type = $("input[name=file-type]:checked").val();
     var background = $("input[name=background-color]:checked").val();
 
@@ -437,10 +616,10 @@ function listeners() {
     }
   });
 
-  $("#export-file-button").click(function() {
+  $("#export-file-button").click(function () {
     // Broken in Safari
     var isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
-                 navigator.userAgent && !navigator.userAgent.match('CriOS');
+      navigator.userAgent && !navigator.userAgent.match('CriOS');
     if (isSafari === true) {
       window.alert("Sorry, Safari does not support exporting your work. You can still use the sharing tool instead!");
       return;
@@ -450,17 +629,17 @@ function listeners() {
     importExport.exportFile(data, 'design.logo');
   });
 
-  $("#import-file-button").on("change", function(e) {
+  $("#import-file-button").on("change", function (e) {
     $("#loading-spinner").removeClass("noshow");
     page.closePanel(null, true);
 
     var files = e.target.files;
     var reader = new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       try {
         var data = reader.result;
-        importExport.importFile(data, function(data) {
+        importExport.importFile(data, function (data) {
           canvas.clear();
           canvas.loadFromJSON(data);
           utils.centerContent();
@@ -476,10 +655,13 @@ function listeners() {
 
     reader.readAsArrayBuffer(files[0]);
   });
+}
 
-  // Search panel
-
-  $("#artwork-search-form").submit(function(e) {
+/**
+ * Initialize the search for art event handlers
+ */
+function initSearchArt() {
+  $("#artwork-search-form").submit(function (e) {
     // Prevent form submission
     e.preventDefault();
 
@@ -492,59 +674,87 @@ function listeners() {
       page.toggleArtworkSearchSpinner,
       page.toggleArtworkNoResults,
       resultsDiv,
-      function(url) {
+      function (url) {
         utils.insertSvg(url, $("#loading-spinner"));
         page.closePanel(null, true);
       },
       isClipart);
   });
 
-  $("#search-submit").click(function(){
+  $("#search-submit").click(function () {
     $('form[name=artwork-search-form]').submit();
   });
 
   // Search again if user changes search type
-  $('input[type=radio][name=search-type]').change(function() {
+  $('input[type=radio][name=search-type]').change(function () {
     if ($("#artwork-search").val() !== "") {
       $('form[name=artwork-search-form]').submit();
     }
   });
+}
 
-  /* ----- Active Selection Tools ------- */
-
-  $("#toolbar-bold").click(function() {
+/**
+ * Initialize the basic text tool event handlers
+ */
+function initTextTools() {
+  $("#toolbar-bold").click(function () {
     text.toggleBold();
     text.returnFocus();
   });
 
-  $("#toolbar-italics").click(function() {
+  $("#toolbar-italics").click(function () {
     text.toggleItalics();
     text.returnFocus();
   });
 
-  $("#toolbar-underline").click(function() {
+  $("#toolbar-underline").click(function () {
     text.toggleUnderline();
     text.returnFocus();
   });
+}
 
-  $("#toolbar-send-back").click(function() {
+/**
+ * Initialize the text alignment tool event handler
+ */
+function initTextAlign() {
+  var textAlignHandler = function () {
+    var mode = $(this).text();
+    utils.setTextAlign(mode);
+    showCurrentTextAlign();
+  };
+
+  $("#text-align-left").click(textAlignHandler);
+  $("#text-align-center").click(textAlignHandler);
+  $("#text-align-right").click(textAlignHandler);
+}
+
+/**
+ * Initialize the arrange tool event handlers
+ */
+function initArrangeTools() {
+  $("#toolbar-send-back").click(function () {
     utils.sendToBack();
   });
 
-  $("#toolbar-send-backward").click(function() {
+  $("#toolbar-send-backward").click(function () {
     utils.sendBackward();
   });
 
-  $("#toolbar-bring-forward").click(function() {
+  $("#toolbar-bring-forward").click(function () {
     utils.sendForward();
   });
 
-  $("#toolbar-bring-front").click(function() {
+  $("#toolbar-bring-front").click(function () {
     utils.sendToFront();
   });
+}
 
-  $("#shadow-switch").change(function() {
-    if($(this).is(":checked")) {
+/**
+ * Initialize the effects tools event handlers
+ */
+function initEffectsTools() {
+  $("#shadow-switch").change(function () {
+    if ($(this).is(":checked")) {
       $("#glow-switch-label")[0].MaterialSwitch.off();
       $("#shadow-options").slideToggle(200);
 
@@ -563,8 +773,8 @@ function listeners() {
     }
   });
 
-  $("#glow-switch").change(function() {
-    if($(this).is(":checked")) {
+  $("#glow-switch").change(function () {
+    if ($(this).is(":checked")) {
       $("#shadow-switch-label")[0].MaterialSwitch.off();
       $("#glow-options").slideToggle(200);
 
@@ -583,19 +793,77 @@ function listeners() {
     }
   });
 
-  $("#shadow-blur-slider").change(function() {
+  $("#shadow-blur-slider").change(function () {
     setShadow();
   });
 
-  $("#shadow-offset-slider").change(function() {
+  $("#shadow-offset-slider").change(function () {
     setShadow();
   });
 
-  $("#glow-size-slider").change(function() {
+  $("#glow-size-slider").change(function () {
     setShadow();
   });
 }
 
+/**
+ * Initialize the sidebar event handlers
+ */
+function initSidebar() {
+  $(".sidebar-item").click(function () {
+    toggle($(this));
+    return false;
+  }).hover(function () {
+    if (!$(this).hasClass("sidebar-item-active")) {
+      $(this).addClass("sidebar-item-hover");
+    }
+  }, function () {
+    $(this).removeClass("sidebar-item-hover");
+  });
+}
+
+/**
+ * Initialize the button event handlers
+ */
+function initButtons() {
+  $("#download-button").click(function () {
+    toggle($("#sidebar-export"));
+    return false;
+  });
+
+  $("#preview-button").click(function () {
+    page.showPreview();
+    hideActiveTools();
+    return false;
+  });
+}
+
+/**
+ * Initialize all the editor user interface event handlers
+ */
+function listeners() {
+  initFontFamily();
+  initFontSize();
+  initOutlineWidth();
+  initOutlineStyle();
+  initCanvas();
+  initUndo();
+  initSidebar();
+  initText();
+  initSubmenus();
+  initShapes();
+  initButtons();
+  initImportExport();
+  initSearchArt();
+  initTextTools();
+  initTextAlign();
+  initArrangeTools();
+  initEffectsTools();
+}
+
+/**
+ * TODO: What does this do?
+ */
 function setCurrentShadowValues() {
   var shadowColor;
   if (utils.isShadow()) {
@@ -631,6 +899,9 @@ function setCurrentShadowValues() {
   }
 }
 
+/**
+ * TODO: What does this do?
+ */
 function setShadow() {
   var blur, color, offset;
 
@@ -648,6 +919,9 @@ function setShadow() {
   }
 }
 
+/**
+ * Event handler for canvas resize events
+ */
 function resizeHandler() {
   // Resize the canvas size
   var width = $("#content").width() - 100;
@@ -659,6 +933,10 @@ function resizeHandler() {
   page.fitArtworkResultsHeight();
 }
 
+/**
+ * TODO: What does this do?
+ * @param {*} sParam 
+ */
 var getUrlParameter = function getUrlParameter(sParam) {
   var sPageURL = decodeURIComponent(window.location.search.substring(1)),
     sURLVariables = sPageURL.split('&'),
@@ -674,6 +952,14 @@ var getUrlParameter = function getUrlParameter(sParam) {
   }
 };
 
+/**
+ * TODO: What does this do?
+ * 
+ * @param {*} url 
+ * @param {*} title 
+ * @param {*} w 
+ * @param {*} h 
+ */
 function popupCenter(url, title, w, h) {
 	// Fixes dual-screen position                         Most browsers      Firefox
 	var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
@@ -693,8 +979,9 @@ function popupCenter(url, title, w, h) {
 	}
 }
 
-/* ----- exports ----- */
-
+/**
+ * Initialize the module
+ */
 function HandlersModule() {
   if (!(this instanceof HandlersModule)) return new HandlersModule();
 
@@ -774,7 +1061,6 @@ function HandlersModule() {
       $("#sidebar-artwork > .inactive > img").tooltipster('show');
     }, 400);
     */
-
   }
 
   // Undo redo
@@ -793,4 +1079,7 @@ function HandlersModule() {
   isAppLoading = false;
 }
 
+/**
+ * Module exports
+ */
 module.exports = HandlersModule;

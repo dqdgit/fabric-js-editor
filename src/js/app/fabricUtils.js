@@ -7,7 +7,9 @@ Good references:
 ----------------- */
 
 var canvas = global.canvas;
-var filesaver = require('../lib/filesaver.min.js');
+// DQD
+//var filesaver = require('../lib/filesaver.min.js');
+var filesaver = require('filesaver.js');
 
 function selectAll(objs) {
   canvas.deactivateAll();
@@ -451,12 +453,107 @@ function setOutlineColor(hex) {
   }
 }
 
+function getOutlineWidth() {
+  var object = canvas.getActiveObject();
+  return object.getStrokeWidth();
+}
+
+function setOutlineWidth(value) {
+  var object = canvas.getActiveObject();
+  object.setStrokeWidth(parseInt(value));
+  canvas.renderAll();
+}
+
+function getOutlineStyle() {
+  var object = canvas.getActiveObject();
+
+  var value = object.customOutlineStyle;
+  if (value == undefined) {
+    return "solid";
+  } else {
+    return value;
+  }
+}
+
+function setOutlineStyle(value) {
+  var object = canvas.getActiveObject();
+
+  if (object.getStroke() == null) {
+    object.setStroke(object.getFill());
+  }
+
+  var dashArray = [];
+  switch (value) {
+    case "dotted":
+      dashArray = [3, 3];
+      break;
+    case "dashed":
+      dashArray = [10, 10];
+      break;
+    case "solid":
+      break;
+    default:
+      value = "solid";
+      break;
+  }
+
+  object.setStrokeDashArray(dashArray);
+  object.customeOutlineStyle = value;
+  canvas.renderAll();
+}
+
+/* ----- Text ----- */
+
+function getTextAlign() {
+  var object = canvas.getActiveObject();
+  // textAlign: left, center, right, justify
+  if (object.type === 'i-text' || object.type === 'text') {
+    return object.getTextAlign();
+  } else {
+    return "none";
+  }
+}
+
+function setTextAlign(value) {
+  var object = canvas.getActiveObject();
+
+  if (object.type === 'i-text' || object.type === 'text') {
+    value = value.toLowerCase();
+    object.setTextAlign(value);
+    canvas.renderAll();
+  }
+}
+
+/* ----- Centering ----- */
+
+function hCenterSelection() {
+  var objects = canvas.getActiveGroup();
+
+  for (var i = 0; i < objects.length; i++) {
+    canvas.centerObjectH(objects[i]);
+  }
+  canvas.renderAll();
+}
+
+function vCenterSelection() {
+  var objects = canvas.getActiveGroup();
+
+  for (var i = 0; i < objects.length; i++) {
+    canvas.centerObjectV(objects[i]);
+  }
+  canvas.renderAll();
+}
+
+/* ----- Fonts ----- */
+
 function getFontSize() {
-  return getActiveStyle('fontSize');
+  var px = getActiveStyle('fontSize');
+  return Math.round(px * (72/96));
 }
 
 function setFontSize(value) {
-  setActiveStyle('fontSize', parseInt(value, 10));
+  var px = Math.round(parseInt(value, 10) * (96/72));
+  setActiveStyle('fontSize', px);
   canvas.renderAll();
 }
 
@@ -469,7 +566,6 @@ function setFont(font) {
   canvas.getActiveObject().fontFamily = font.toLowerCase();
   canvas.renderAll();
 }
-
 
 /* ----- shadow and glow ----- */
 
@@ -601,6 +697,14 @@ UtilsModule.prototype.getFillColor = getFillColor;
 UtilsModule.prototype.setFillColor = setFillColor;
 UtilsModule.prototype.getOutlineColor = getOutlineColor;
 UtilsModule.prototype.setOutlineColor = setOutlineColor;
+UtilsModule.prototype.getOutlineWidth = getOutlineWidth;
+UtilsModule.prototype.setOutlineWidth = setOutlineWidth;
+UtilsModule.prototype.getOutlineStyle = getOutlineStyle;
+UtilsModule.prototype.setOutlineStyle = setOutlineStyle;
+UtilsModule.prototype.hCenterSelection = hCenterSelection;
+UtilsModule.prototype.vCenterSelection = vCenterSelection;
+UtilsModule.prototype.getTextAlign = getTextAlign;
+UtilsModule.prototype.setTextAlign = setTextAlign;
 UtilsModule.prototype.getFontSize = getFontSize;
 UtilsModule.prototype.setFontSize = setFontSize;
 UtilsModule.prototype.getFont = getFont;

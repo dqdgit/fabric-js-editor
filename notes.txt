@@ -1,0 +1,147 @@
+##-----------------------------------------------------------------------------------------------
+##
+## Version starting with the gulpfile from 3-fabric-js-editor.
+##
+## Convert index.html stylesheets and scripts to CDN
+##
+##
+##
+## Copied from master-fabric-js-editor
+##
+cp -r 3-fabric-js-editor 4-fabric-js-edtior
+cd 4-fabric-js-editor
+rm -rf node-modules
+
+##
+## Git 
+##
+## Original: https://github.com/danielktaylor/fabric-js-editor.git
+## My fork:  https://github.com/dqdgit/tile-editor.git
+##
+git remote -v 
+git remote rm origin
+git remote add origin https://github.com/dqdgit/tile-editor.git
+git remote -v
+
+##-----------------------------------------------------------------------------------------------
+##
+## 3-fabric-js-editor package.json
+##
+{
+  "name": "fabric-js-editor",
+  "version": "0.0.2",
+  "description": "> npm install gulp > gulp",
+  "private": true,
+  "main": "gulpfile.js",
+  "dependencies": {
+    "fabric": "^2.0.0-beta.3",             # Not using. Pull from CDN in index.html
+    "filesaver.js": "^0.2.0",              # https://github.com/eligrey/FileSaver.js
+    "jquery": "^2.2.4",                    # https://github.com/jquery/jquery
+    "jquery-contextmenu": "^2.5.0",        # http://swisnl.github.io/jQuery-contextMenu/
+    "jquery-tooltipster": "^3.3.0",        # https://github.com/iamceege/tooltipster
+    "jquery-ui": "^1.12.1",                # https://github.com/jquery/jquery-ui
+    "jszip": "^2.6.1",                     # https://github.com/Stuk/jszip
+    "jszip-utils": "0.0.2",                # https://github.com/Stuk/jszip-utils
+    "material-design-lite": "^1.3.0",      # https://github.com/google/material-design-lite
+    "normalize.css": "^7.0.0",             # https://github.com/necolas/normalize.css
+    "spectrum-colorpicker": "^1.8.0"       # http://bgrins.github.io/spectrum/
+  },
+  "devDependencies": {
+    "browserify": "^12.0.2",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-if": "^2.0.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.1.1",
+    "gulp-task-listing": "^1.0.1",
+    "gulp-uglify": "^1.5.4",
+    "gulp-uglifycss": "^1.0.5",
+    "gulp-useref": "^3.1.2",
+    "gulp-webserver": "^0.9.1",
+    "jshint": "^2.9.1-rc1",
+    "jshint-stylish": "^2.1.0",
+    "merge-stream": "^1.0.0",
+    "run-sequence": "^1.1.5",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
+
+##-----------------------------------------------------------------------------------------------
+##
+## Modify package.json
+##
+Remove:     "fabric": "^2.0.0-beta.3",             # Not using. Pull from CDN in index.html
+Remove:     "jquery-tooltipster": "^3.3.0",        # https://github.com/iamceege/tooltipster
+Remove:     "material-design-lite": "^1.3.0",      # https://github.com/google/material-design-lite
+Remove:     "normalize.css": "^7.0.0",             # https://github.com/necolas/normalize.css
+
+Remove:     "gulp-useref": "^3.1.2",
+
+##-----------------------------------------------------------------------------------------------
+##
+## Modify index.html
+##
+Replace all vendor css packages with CDN links
+Replace all vendor scipt packages with CDN links
+
+
+##-----------------------------------------------------------------------------------------------
+##
+## Install
+##
+npm install
+
+##-----------------------------------------------------------------------------------------------
+##
+## Jquery UI build dist
+##
+## Oddly the npm installation of jquery-ui does not include the dist folder. It has to be built.
+##
+cd node_modules/jquery-ui
+npm install
+grunt                                  # To build just the non-minified module
+grunt sizer_all                        # To build all the module versions
+
+
+##-----------------------------------------------------------------------------------------------
+##
+## Modify gulpfile.js
+##
+Remove useref
+Add x-images task
+Revise x-html task
+Remove x-copy task
+Revise orgainization of build directory
+
+
+##-----------------------------------------------------------------------------------------------
+##
+## Toolbar icons
+##
+MaterialDesign-Webfont 
+  - https://cdnjs.com/libraries/MaterialDesign-Webfont
+  - https://materialdesignicons.com/
+
+
+##-----------------------------------------------------------------------------------------------
+##
+## Run
+##
+gulp dev
+
+
+##-----------------------------------------------------------------------------------------------
+##
+## Research
+##
+Material Components for the Web 
+  - https://github.com/material-components/material-components-web
