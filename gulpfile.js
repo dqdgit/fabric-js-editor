@@ -62,18 +62,19 @@ gulp.task('x-watch', function() {
   gulp.watch('src/js/config/*.js', ['x-js-config']);
   gulp.watch('src/images/**/*', ['x-images']);
   gulp.watch('src/html/*', ['x-html']);
+  gulp.watch('dev/index.html', ['x-dev']);
   //gulp.watch(['src/images/**/*', 'src/html/*'], ['x-copy']);
 });
 
 // compile JS
 gulp.task('x-browserify', function() {
   return browserify({
-      entries: 'src/js/editor.js',
+      entries: 'src/js/svg-editor.js',
       debug: isDebug
     })
     .bundle()
     .on("error", errorHandler)
-    .pipe(source('editor.js'))
+    .pipe(source('svg-editor.js'))
     .pipe(buffer())
     .pipe(gulpif(!isDebug, uglify()))
     .pipe(gulp.dest('build'));
@@ -89,7 +90,7 @@ gulp.task('x-sass', function() {
 
 // compile HTML
 gulp.task('x-html', function() {
-  return gulp.src('./src/html/index.html')
+  return gulp.src('./src/html/svg-editor.html')
     .pipe(gulp.dest('build'));
 });
 
@@ -101,21 +102,8 @@ gulp.task('x-images', function() {
 
 // copy supporting files
 gulp.task('x-copy', function() {
-
-  var images = gulp.src(['src/images/**/*'])
+  return gulp.src(['src/images/**/*'])
     .pipe(gulp.dest('build/images'));
-
-//  var css = gulp.src(['src/css/lib/*.css'])
-//    .pipe(gulp.dest('build/css/lib'));
-
-//  var js = gulp.src(['src/js/lib/*.js'])
-//    .pipe(gulp.dest('build/js/lib'));
-
-//  var html = gulp.src(['src/html/*'])
-//    .pipe(gulp.dest('build'));
-
-//  return merge(images, css, js, html);
-  return images;
 });
 
 // minify assets
@@ -127,6 +115,11 @@ gulp.task('x-minify', function() {
     .pipe(gulp.dest('build'));
 });
 
+// dev wrapper
+gulp.task('x-dev', function() {
+  return gulp.src('dev/index.html')
+    .pipe(gulp.dest('build'));
+});
 
 /* ----- user tasks ----- */
 
@@ -158,17 +151,12 @@ gulp.task('prod', function(done) {
 // start dev server
 gulp.task('dev', [], function(done) {
   isDebug = true;
-  // return runSequence('clean',
-  //                    'x-js-config',
-  //                    ['x-sass', 'x-browserify'],
-  //                    'x-copy',
-  //                    ['lint', 'x-webserver', 'x-watch'],
-  //                    done);
   return runSequence('clean',
                      'x-js-config',
                      'x-sass',
                      'x-browserify',
                      'x-images',
+                     'x-dev',
                      'x-html',
                      ['lint', 'x-webserver', 'x-watch'],
                      done);

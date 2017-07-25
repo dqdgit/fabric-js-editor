@@ -29,6 +29,53 @@ function selectAll(objs) {
   canvas.setActiveGroup(group.setCoords());
 }
 
+function clone() {
+  var object = null;
+  if (canvas.getActiveGroup() !== null) {
+    var objects = canvas.getActiveGroup().objects;
+
+    // Fabric.js bug getting an object's coordinates when a group is selected
+    canvas.deactivateAll();
+
+    var cloned = [];
+    for (var i = 0; i < objects.length; i++) {
+      object = objects[i].clone();
+      object.set("top", object.top + 20);
+      object.set("left", object.left + 20);
+      canvas.add(object);
+      cloned.push(object);
+    }
+
+    selectAll(cloned);
+  } else if (canvas.getActiveObject() !== null) {
+    object = canvas.getActiveObject().clone();
+    object.set("top", object.top + 20);
+    object.set("left", object.left + 20);
+    canvas.add(object);
+
+    // select new object
+    canvas.deactivateAll();
+    canvas.setActiveObject(object);
+  }
+
+  canvas.renderAll();
+
+  // Push the canvas state to history
+  canvas.trigger("object:statechange");
+}
+
+function deleteSelected() {
+  // Delete the current object(s)
+  if (canvas.getActiveGroup() !== null && canvas.getActiveGroup() !== undefined) {
+    canvas.getActiveGroup().forEachObject(function (o) { canvas.remove(o); });
+    canvas.discardActiveGroup().renderAll();
+  } else if (canvas.getActiveObject() !== null && canvas.getActiveObject() !== undefined) {
+    canvas.remove(canvas.getActiveObject());
+  }
+}
+
+/* ----- Layers ----- */
+
 function sendForward() {
   if (canvas.getActiveGroup() !== null) {
     sendGroupForward(canvas.getActiveGroup(), false);
@@ -65,41 +112,6 @@ function sendToBack() {
   } else if (canvas.getActiveObject() !== null) {
     canvas.sendToBack(canvas.getActiveObject());
   }
-  // Push the canvas state to history
-  canvas.trigger("object:statechange");
-}
-
-function clone() {
-  var object = null;
-  if (canvas.getActiveGroup() !== null) {
-    var objects = canvas.getActiveGroup().objects;
-
-    // Fabric.js bug getting an object's coordinates when a group is selected
-    canvas.deactivateAll();
-
-    var cloned = [];
-    for (var i = 0; i < objects.length; i++) {
-      object = objects[i].clone();
-      object.set("top", object.top + 20);
-      object.set("left", object.left + 20);
-      canvas.add(object);
-      cloned.push(object);
-    }
-
-    selectAll(cloned);
-  } else if (canvas.getActiveObject() !== null) {
-    object = canvas.getActiveObject().clone();
-    object.set("top", object.top + 20);
-    object.set("left", object.left + 20);
-    canvas.add(object);
-
-    // select new object
-    canvas.deactivateAll();
-    canvas.setActiveObject(object);
-  }
-
-  canvas.renderAll();
-
   // Push the canvas state to history
   canvas.trigger("object:statechange");
 }
@@ -280,6 +292,8 @@ function getObjBounds(obj) {
   return bounds;
 }
 
+/* ----- Export ----- */
+
 // fileType should be "png", "jpeg", or "svg"
 function exportFile(fileType) {
   // Get bounds of image
@@ -319,15 +333,7 @@ function exportFile(fileType) {
   filesaver.saveAs(blob, "design." + fileType);
 }
 
-function deleteSelected() {
-  // Delete the current object(s)
-  if(canvas.getActiveGroup() !== null && canvas.getActiveGroup() !== undefined){
-    canvas.getActiveGroup().forEachObject(function(o){ canvas.remove(o); });
-    canvas.discardActiveGroup().renderAll();
-  } else if (canvas.getActiveObject() !== null && canvas.getActiveObject() !== undefined) {
-    canvas.remove(canvas.getActiveObject());
-  }
-}
+/* ----- Import ----- */
 
 function insertSvg(url, loader) {
   loader.removeClass("noshow");
@@ -362,23 +368,116 @@ function insertSvg(url, loader) {
   });
 }
 
-function getActiveStyle(styleName, object) {
-  object = object || canvas.getActiveObject();
+/**
+ * 
+ * @param {*} data 
+ * @param {*} loader 
+ */
+function insertImageFromData(data, loader) {
+  loader.removeClass("noshow");
+  
+  var imgObj = new Image();
+  imgObj.src = data;
 
-  if (typeof object !== 'object' || object === null) {
-    return '';
-  }
+  imgObj.onload = function () {
+    var obj = new fabric.Image(imgObj);
+
+    var scaleFactor = 1;
+    if (obj.width > obj.height) {
+      scaleFactor = (canvas.width / 3) / obj.width;
+    } else {
+      scaleFactor = (canvas.height / 3) / obj.height;
+    }
+
+    obj.set({
+      top: Math.floor(canvas.height / 5),
+      left: Math.floor(canvas.width / 5),
+      scaleY: scaleFactor,
+      scaleX: scaleFactor
+    });
+
+    canvas.add(obj);
+    obj.perPixelTargetFind = true;
+    obj.targetFindTolerance = 4;
+
+    canvas.deactivateAll();
+    canvas.setActiveObject(obj);
+    canvas.renderAll();
+
+    // Push the canvas state to history
+    canvas.trigger("object:statechange");
+
+    loader.addClass("noshow");
+  };
+}
+
+/**
+ * 
+ * @param {string} string 
+ * @param {element} loader 
+ */
+function insertSvgFromString(string, loader) {
+  loader.removeClass("noshow");
+
+  fabric.loadSVGFromString(string, function (objects, options) {
+    var obj = fabric.util.groupSVGElements(objects, options);
+
+    var scaleFactor = 1;
+    if (obj.width > obj.height) {
+      scaleFactor = (canvas.width / 3) / obj.width;
+    } else {
+      scaleFactor = (canvas.height / 3) / obj.height;
+    }
+
+    obj.set({
+      top: Math.floor(canvas.height / 5),
+      left: Math.floor(canvas.width / 5),
+      scaleY: scaleFactor,
+      scaleX: scaleFactor
+    });
+
+    canvas.add(obj);
+    obj.perPixelTargetFind = true;
+    obj.targetFindTolerance = 4;
+    canvas.deactivateAll();
+    canvas.setActiveObject(obj);
+    canvas.renderAll();
+
+    // Push the canvas state to history
+    canvas.trigger("object:statechange");
+
+    loader.addClass("noshow");
+  });
+}
+
+/* ----- Styles ----- */
+
+function getActiveStyle(styleName, object) {
+  // Precedence:
+  //   - parambeter object
+  //   - active object
+  //   - canvas property
+  object = object || canvas.getActiveObject();
+  object = (object !== undefined) ? object : canvas;
+  // Bracket notation is equivalent to .get
+  return (object[styleName] || '');
 
   // Don't change part of text
   /*
   return (object.getSelectionStyles && object.isEditing) ? (object.getSelectionStyles()[styleName] || '') : (object[styleName] || '');
   */
 
-  return (object[styleName] || '');
 }
 
 function setActiveStyle(styleName, value, object) {
+  // Precedence:
+  //   - parambeter object
+  //   - active object
+  //   - canvas property
   object = object || canvas.getActiveObject();
+  object = (object !== undefined) ? object : canvas;
+  // Bracket notation is equivalent to .set
+  object[styleName] = value;
 
   // Don't change part of text
   /*
@@ -390,77 +489,117 @@ function setActiveStyle(styleName, value, object) {
     object[styleName] = value;
   }
   */
-  object[styleName] = value;
 }
 
 function getFillColor() {
+  // var object = canvas.getActiveObject();
+  // if (object.customFillColor !== undefined) {
+  //   return object.customFillColor;
+  // } else if (object.type === 'line') {
+  //   return getActiveStyle("stroke");
+  // } else {
+  //   return getActiveStyle("fill");
+  // }
+
+  //return getActiveStyle("fill");
   var object = canvas.getActiveObject();
-  if (object.customFillColor !== undefined) {
-    return object.customFillColor;
-  } else if (object.type === 'line') {
-    return getActiveStyle("stroke");
+
+  if (object && object !== undefined) {
+    return object.getFill();
   } else {
-    return getActiveStyle("fill");
+    return getActiveStyle("fill", canvas);
   }
 }
 
 function setFillColor(hex) {
-  var object = canvas.getActiveObject();
-  if (object) {
-    if (object.type === 'i-text') {
-      setActiveStyle('fill', hex);
-    } else if (object.type === 'line') {
-      setActiveStyle('stroke', hex);
-    } else {
-      if (!object.paths) {
-        object.setFill(hex);
-      } else if (object.paths) {
-        for (var i = 0; i < object.paths.length; i++) {
-          object.paths[i].setFill(hex);
-        }
-      }
-    }
+  // var object = canvas.getActiveObject();
+  // if (object) {
+  //   if (object.type === 'i-text') {
+  //     setActiveStyle('fill', hex);
+  //   } else if (object.type === 'line') {
+  //     setActiveStyle('stroke', hex);
+  //   } else {
+  //     if (!object.paths) {
+  //       object.setFill(hex);
+  //     } else if (object.paths) {
+  //       for (var i = 0; i < object.paths.length; i++) {
+  //         object.paths[i].setFill(hex);
+  //       }
+  //     }
+  //   }
 
-    object.customFillColor = hex;
+  //   object.customFillColor = hex;
+  // }
+
+  // object["fill"] = hex seems to be broken. Need to use
+  // object.setFill(hex) instead
+  //setActiveStyle("fill", hex);
+  var object = canvas.getActiveObject();
+
+  if (object && object !== undefined) {
+    object.setFill(hex);
+  } else {
+    setActiveStyle("fill", hex, canvas);
   }
 }
 
 function getOutlineColor() {
-  var object = canvas.getActiveObject();
-  if (object.customOutlineColor !== undefined) {
-    return object.customOutlineColor;
-  }
+  // var object = canvas.getActiveObject();
+  // if (object.customOutlineColor !== undefined) {
+  //   return object.customOutlineColor;
+  // }
 
   return getActiveStyle("stroke");
 }
 
 function setOutlineColor(hex) {
-  var object = canvas.getActiveObject();
-  if (object) {
-    if (object.type === 'i-text' || object.type === 'line') {
-      setActiveStyle('stroke', hex);
-    } else {
-      if (!object.paths) {
-        object.setStroke(hex);
-      } else if (object.paths) {
-        for (var i = 0; i < object.paths.length; i++) {
-          object.paths[i].setStroke(hex);
-        }
-      }
-    }
+  // var object = canvas.getActiveObject();
+  // if (object) {
+  //   if (object.type === 'i-text' || object.type === 'line') {
+  //     setActiveStyle('stroke', hex);
+  //   } else {
+  //     if (!object.paths) {
+  //       object.setStroke(hex);
+  //     } else if (object.paths) {
+  //       for (var i = 0; i < object.paths.length; i++) {
+  //         object.paths[i].setStroke(hex);
+  //       }
+  //     }
+  //   }
 
-    object.customOutlineColor = hex;
-  }
+  //   object.customOutlineColor = hex;
+  // }
+
+  setActiveStyle("stroke", hex);
 }
 
 function getOutlineWidth() {
+  // var object = canvas.getActiveObject();
+  // return object.getStrokeWidth();
+  
+  //return getActiveStyle("strokeWidth");
   var object = canvas.getActiveObject();
-  return object.getStrokeWidth();
+
+  if (object && object !== undefined) {
+    return object.getStrokeWidth();
+  } else {
+    return getActiveStyle("strokeWidth", canvas);
+  }
 }
 
 function setOutlineWidth(value) {
+  // var object = canvas.getActiveObject();
+  // object.setStrokeWidth(parseInt(value));
+
+  //setActiveStyle("strokeWidth", value);
   var object = canvas.getActiveObject();
-  object.setStrokeWidth(parseInt(value));
+
+  if (object && object !== undefined) {
+    object.setStrokeWidth(value);
+  } else {
+    setActiveStyle("strokeWidth", value, canvas);
+  }
+
   canvas.renderAll();
 }
 
@@ -498,11 +637,11 @@ function setOutlineStyle(value) {
   }
 
   object.setStrokeDashArray(dashArray);
-  object.customeOutlineStyle = value;
+  object.customOutlineStyle = value;
   canvas.renderAll();
 }
 
-/* ----- Text ----- */
+/* ----- Align Text ----- */
 
 function getTextAlign() {
   var object = canvas.getActiveObject();
@@ -524,47 +663,124 @@ function setTextAlign(value) {
   }
 }
 
-/* ----- Centering ----- */
+/* ----- Center objects and groups ----- */
 
+/*
+ * By default the coordinates of an object in a group are relative
+ * to the group, but in an odd way. By default the origin x of the 
+ * object is the left edge and the origin y is to the top edge. However
+ * these values are relative to the center of the containing group. So
+ * an object.left value of 1 means the left edge of the object is 1 unit
+ * to the right of the center of the group. An object.left value of -1
+ * means the left edge of the object is 1 unit to the left of the 
+ * group center line. Very odd.
+ * 
+ * These relationships can be changed by changing the values of the 
+ * group and object origin.
+ * 
+ */
+
+ /**
+  * Horizontally center the currently active group or object within the canvas
+  */
 function hCenterSelection() {
-  var objects = canvas.getActiveGroup();
+  var group = canvas.getActiveGroup();
 
-  for (var i = 0; i < objects.length; i++) {
-    canvas.centerObjectH(objects[i]);
+  // Prioritize centering groups
+  if (group && group !== undefined) {
+    // Center the objects within the group
+    var objects = group.getObjects();
+    for (var i = 0; i < objects.length; i++) {
+      objects[i].left = -(objects[i].width / 2.0);
+    }
+
+    // Center the group within the canvas
+    canvas.centerObjectH(group);
+    canvas.renderAll();
+    return;
   }
+
+  // Otherwise center active object within the canvas
+  var object = canvas.getActiveObject();
+  canvas.centerObjectH(object);
   canvas.renderAll();
 }
 
+/**
+ * Vertically center the currently active group of object within the canvas
+ */
 function vCenterSelection() {
-  var objects = canvas.getActiveGroup();
+  var group = canvas.getActiveGroup();
 
-  for (var i = 0; i < objects.length; i++) {
-    canvas.centerObjectV(objects[i]);
+  // Prioritize centering groups
+  if (group && group !== undefined) {
+    // Center the objects withing the group
+    var objects = group.getObjects();
+    for (var i = 0; i < objects.length; i++) {
+      objects[i].top = -(objects[i].height / 2.0);
+    }
+
+    // Center the group within the canvas
+    canvas.centerObjectV(group);
+    canvas.renderAll();
+    return;
   }
+
+  // Otherwise center active object within the canvas
+  var object = canvas.getActiveObject();
+  canvas.centerObjectV(object);
   canvas.renderAll();
 }
 
 /* ----- Fonts ----- */
 
 function getFontSize() {
-  var px = getActiveStyle('fontSize');
+  var px;
+  var obj = canvas.getActiveObject();
+
+  if (obj && obj != undefined) {
+    px = getActiveStyle('fontSize');
+  } else {
+    px = getActiveStyle("fontSize", canvas);
+  }
+
   return Math.round(px * (72/96));
 }
 
 function setFontSize(value) {
-  var px = Math.round(parseInt(value, 10) * (96/72));
-  setActiveStyle('fontSize', px);
-  canvas.renderAll();
+  var px = Math.round(value * (96/72));
+  var obj = canvas.getActiveObject();
+
+  if (obj && obj != undefined) {
+    setActiveStyle('fontSize', px);
+    canvas.renderAll();
+  } else {
+    setActiveStyle('fontSize', px, canvas);
+  }
 }
 
 function getFont() {
-  var fontFamily = canvas.getActiveObject().fontFamily;
-  return fontFamily ? fontFamily.toLowerCase() : '';
+  var fontFamily;
+  var obj = canvas.getActiveObject();
+
+  if (obj && obj != undefined) {
+    fontFamily = obj.fontFamily;
+    return fontFamily ? fontFamily.toLowerCase() : '';
+  } else {
+    fontFamily = getActiveStyle("fontFamily", canvas);
+    return fontFamily ? fontFamily.toLowerCase() : '';
+  }
 }
 
 function setFont(font) {
-  canvas.getActiveObject().fontFamily = font.toLowerCase();
-  canvas.renderAll();
+  var obj = canvas.getActiveObject();
+
+  if (obj && obj != undefined) {
+    obj.fontFamily = font.toLowerCase();
+    canvas.renderAll();
+  } else {
+    setActiveStyle("fontFamily", font.toLowerCase(), canvas);
+  }
 }
 
 /* ----- shadow and glow ----- */
@@ -673,7 +889,6 @@ function centerContent() {
   canvas.renderAll();
 }
 
-
 /* ----- exports ----- */
 
 function UtilsModule() {
@@ -688,6 +903,8 @@ UtilsModule.prototype.exportFile = exportFile;
 UtilsModule.prototype.getImageBounds = getImageBounds;
 UtilsModule.prototype.deleteSelected = deleteSelected;
 UtilsModule.prototype.insertSvg = insertSvg;
+UtilsModule.prototype.insertSvgFromString = insertSvgFromString;
+UtilsModule.prototype.insertImageFromData = insertImageFromData;
 UtilsModule.prototype.sendToFront = sendToFront;
 UtilsModule.prototype.sendToBack = sendToBack;
 UtilsModule.prototype.sendBackward = sendBackward;

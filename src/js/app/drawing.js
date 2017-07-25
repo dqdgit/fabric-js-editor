@@ -5,6 +5,9 @@ var utils = new (require('./fabricUtils.js'))();
 
 var drawnObj, isMouseDown;
 
+/**
+ * 
+ */
 function disableDraw() {
   canvas.off('mouse:down');
   canvas.off('mouse:move');
@@ -16,6 +19,10 @@ function disableDraw() {
   });
 }
 
+/**
+ * 
+ * @param {string} objType - kind of object to draw
+ */
 function drawObj(objType) {
   // Esc key handler
   $(document).keyup(escHandler);
@@ -25,6 +32,7 @@ function drawObj(objType) {
     o.selectable = false;
   });
 
+  // Event handler to begin drawing an object
   canvas.on('mouse:down', function(o){
     // Unregister escape key handler
     $(document).unbind("keyup", escHandler);
@@ -35,11 +43,14 @@ function drawObj(objType) {
     if (objType === 'line') {
       var points = [ pointer.x, pointer.y, pointer.x, pointer.y ];
       drawnObj = new fabric.Line(points, {
-        strokeWidth: 5,
-        fill: 'blue',
-        stroke: 'blue',
+        //strokeWidth: 5,
+        //fill: 'blue',
+        //stroke: 'blue',
         originX: 'center',
-        originY: 'center'
+        originY: 'center',
+        fill: utils.getFillColor(),
+        stroke: utils.getOutlineColor(),
+        strokeWidth: utils.getOutlineWidth()
       });
     } else if (objType === 'square') {
       drawnObj = new fabric.Rect({
@@ -47,7 +58,10 @@ function drawObj(objType) {
         height: 0,
         top: pointer.y,
         left: pointer.x,
-        fill: 'green'
+        //fill: 'green',
+        fill: utils.getFillColor(),
+        stroke: utils.getOutlineColor(),
+        strokeWidth: utils.getOutlineWidth()
       });
     } else if (objType === 'rounded-rect') {
       drawnObj = new fabric.Rect({
@@ -57,20 +71,27 @@ function drawObj(objType) {
         left: pointer.x,
         rx: 10,
         ry: 10,
-        fill: 'red'
+        //fill: 'red'
+        fill: utils.getFillColor(),
+        stroke: utils.getOutlineColor(),
+        strokeWidth: utils.getOutlineWidth()
       });
     } else if (objType === 'circle') {
       drawnObj = new fabric.Circle({
         radius: 0,
         top: pointer.y,
         left: pointer.x,
-        fill: 'yellow'
+        //fill: 'yellow'
+        fill: utils.getFillColor(),
+        stroke: utils.getOutlineColor(),
+        strokeWidth: utils.getOutlineWidth()
       });
     }
 
     canvas.add(drawnObj);
   });
 
+  // Mouse move event handler for drawing an object
   canvas.on('mouse:move', function(o){
     if (!isMouseDown) return;
     var shift = o.e.shiftKey;
@@ -97,6 +118,7 @@ function drawObj(objType) {
     canvas.renderAll();
   });
 
+  // Event handler for end drawing of an object
   canvas.on('mouse:up', function(o){
     isMouseDown = false;
 

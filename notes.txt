@@ -138,6 +138,45 @@ MaterialDesign-Webfont
 ##
 gulp dev
 
+##-----------------------------------------------------------------------------------------------
+## Fonts
+##
+## WebFontLoader: https://github.com/typekit/webfontloader
+## Typekit: https://typekit.com/
+## Goal Troll Kit: https://typekit.com/kit_editor/kits/qiu7asr
+## 
+## Typekit id: qiu7asr
+##
+<script src="https://use.typekit.net/qiu7asr.js"></script>
+<script>try{Typekit.load({ async: true });}catch(e){}</script>
+##
+<script>
+  (function(d) {
+    var config = {
+      kitId: 'qiu7asr',
+      scriptTimeout: 3000,
+      async: true
+    },
+    h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+  })(document);
+</script>
+
+font-family: "liberation-sans",sans-serif;
+font-style: normal;
+font-weight: 400;
+
+font-family: "liberation-sans",sans-serif;
+font-style: italic;
+font-weight: 400;
+
+font-family: "liberation-sans",sans-serif;
+font-style: normal;
+font-weight: 700;
+
+font-family: "liberation-sans",sans-serif;
+font-style: italic;
+font-weight: 700;
+
 
 ##-----------------------------------------------------------------------------------------------
 ##

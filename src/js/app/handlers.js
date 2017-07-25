@@ -10,6 +10,8 @@ require('jquery');
 require('jquery-ui');
 require('jquery-contextmenu');
 require('spectrum-colorpicker');
+require('material-design-lite');
+require('dialog-polyfill');
 
 
 var config = require('./config.js');
@@ -127,9 +129,10 @@ function toggle(button) {
 }
 
 /**
- * Return a camelcase the given string
+ * Return a string with the frist character or each
+ * word captialized
  * 
- * @param {*} str 
+ * @param {string} str 
  */
 function toTitleCase(str)
 {
@@ -154,7 +157,7 @@ function showCurrentFont() {
  */
 function showCurrentFontSize() {
   var fontSize = utils.getFontSize();
-  $("#current-font-size").text(fontSize);
+  $("#current-font-size").text(fontSize.toString());
 }
 
 /**
@@ -168,7 +171,7 @@ function showCurrentOutlineWidth() {
     element.removeClass("submenu-item-selected");
   }
 
-  element = $("#outline-width-" + width);
+  element = $("#outline-width-" + width.toString());
   element.addClass("submenu-item-selected");
 }
 
@@ -328,45 +331,64 @@ function initFontFamily() {
     text.returnFocus();
   };
 
-  $(window).on("fontLoadedEvent", function (event, family) {
+  $(window).on("fontLoadedEvent", function (event, family, fvd) {
+    var displayName;
+
+    // This is need to process TypeKit family names which
+    // have names like liberation-sans. Google fonts have 
+    // names like Actor.
+    if (family === family.toLowerCase()) {
+      displayName = toTitleCase(family.replace("-", " "));
+    } else {
+      displayName = family;
+    }
+
     var familyId = "font-family-" + family.replace(/\s+/g, '');
 
+    // Build the submenu item string for the font
     var str = '';
-    str += '<div class="submenu-item" id="' + familyId;
-    str += '"><span style="font-family: ';
+    str += '<div class="submenu-item"';
+    str += ' id="' + familyId + '"';
+    str += ' data-font-family="' + family + '"';
+    str += ' data-display-name="' + displayName + '">';
+    str += '<span style="font-family: ';
     str += "'" + family + "'";
-    str += '">' + family;
+    str += '">' + displayName;
     str += "</span></div>";
 
-    $("#toolbar-font-family > .toolbar-submenu").append(str);
+    $("#toolbar-font-family-submenu").append(str);
 
     var element = $("#" + familyId);
     element.click(fontClickHandler);
   });
 
-  $(window).on("allFontsLoadedEvent", function (event, family) {
+  $(window).on("allFontsLoadedEvent", function (event) {
     // Is the menu being used?
     if ($("#toolbar-font-family").hasClass("toolbar-item-active") === true) {
       return;
     }
 
-    // Sort the fonts
+    // Sort the fonts, use the display name as the key
     var sorted = $("#toolbar-font-family .submenu-item").sort(function (a, b) {
-      var contentA = $(a)[0].id;
-      var contentB = $(b)[0].id;
+      var contentA = $(a).attr('data-display-name');
+      var contentB = $(b).attr('data-display-name');
       return (contentA < contentB) ? -1 : (contentA > contentB) ? 1 : 0;
     });
-    $("#toolbar-font-family .toolbar-submenu").html(sorted);
 
-    // Set new event listeners
+    //$("#toolbar-font-family .toolbar-submenu").html(sorted);
+    $("#toolbar-font-family-submenu").html(sorted);
+
+    // Set new event listeners for all the submen-items
     $("#toolbar-font-family .submenu-item").click(fontClickHandler);
   });
 
-  $("#font-arial").click(function () {
-    utils.setFont("Arial");
-    showCurrentFont();
-    text.returnFocus();
-  });
+  // $("#font-arial").click(function () {
+  //   utils.setFont("Arial");
+  //   showCurrentFont();
+  //   text.returnFocus();
+  // });
+  showCurrentFont();
+  text.returnFocus();
 }
 
 /**
@@ -374,8 +396,9 @@ function initFontFamily() {
  */
 function initFontSize() {
   var fontSizeClickHandler = function () {
-    var fontSize = $(this).text();
-    utils.setFontSize(fontSize);
+    //var fontSize = $(this).text();
+    //var fontSize = utils.getFontSize();
+    //utils.setFontSize(parseInt(fontSize));
     showCurrentFontSize();
     text.returnFocus();
   };
@@ -389,6 +412,9 @@ function initFontSize() {
     var element = $("#font-size-" + size);
     element.click(fontSizeClickHandler);
   }
+
+  showCurrentFontSize();
+  text.returnFocus();
 }
 
 /**
@@ -397,7 +423,7 @@ function initFontSize() {
 function initOutlineWidth() {
   var outlineWidthClickHandler = function () {
     var outlineWidth = $(this).text();
-    utils.setOutlineWidth(outlineWidth);
+    utils.setOutlineWidth(parseInt(outlineWidth));
     showCurrentOutlineWidth();
   };
 
@@ -418,7 +444,7 @@ function initOutlineWidth() {
 function initOutlineStyle() {
   var outlineStyleClickHandler = function () {
     var outlineStyle = $(this).text();
-    utils.setOutlineStyle(outlineStyle);
+    utils.setOutlineStyle(parseInt(outlineStyle));
     showCurrentOutlineStyle();
   };
 
@@ -515,7 +541,7 @@ function initSubmenus() {
         popup.css({ top: x, left: y });
         popup.removeClass("noshow");
 
-        // DQD - This block was causing the font family submen to be hidden when 
+        // DQD - This block was causing the font family submeny to be hidden when 
         // the user clicked some place other than the current font name. Not sure
         // what the intent of the code was.
         //
@@ -579,6 +605,7 @@ function initShapes() {
  * Initialize the import and export event handlers
  */
 function initImportExport() {
+  // Download jpeg, png or svg
   $("#download-image-button").click(function () {
     var type = $("input[name=file-type]:checked").val();
     var background = $("input[name=background-color]:checked").val();
@@ -616,6 +643,7 @@ function initImportExport() {
     }
   });
 
+  // Export JSON
   $("#export-file-button").click(function () {
     // Broken in Safari
     var isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
@@ -629,6 +657,7 @@ function initImportExport() {
     importExport.exportFile(data, 'design.logo');
   });
 
+  // Import JSON
   $("#import-file-button").on("change", function (e) {
     $("#loading-spinner").removeClass("noshow");
     page.closePanel(null, true);
@@ -750,6 +779,19 @@ function initArrangeTools() {
 }
 
 /**
+ * Initialize the center selection on page event handlers
+ */
+function initCentering() {
+  $("#toolbar-horizontal-center").click(function () {
+    utils.hCenterSelection();
+  });
+
+  $("#toolbar-vertical-center").click(function () {
+    utils.vCenterSelection();
+  });
+}
+
+/**
  * Initialize the effects tools event handlers
  */
 function initEffectsTools() {
@@ -823,18 +865,176 @@ function initSidebar() {
 }
 
 /**
- * Initialize the button event handlers
+ * Initialize the event handler for the select tool
  */
-function initButtons() {
-  $("#download-button").click(function () {
-    toggle($("#sidebar-export"));
-    return false;
+function initSelectTool() {
+  $("#toolbar-select").click(function () {
+    canvas.defaultCursor = 'auto';
+    canvas.deactivateAllWithDispatch();
+    canvas.renderAll();
+    hideActiveTools();
+  });
+}
+
+/**
+ * Download the canvas content as the specified file type
+ * 
+ * @param {*} type 
+ */
+function downloadImage(type) {
+  var rect;
+  if (type === 'png' || type === 'jpeg') {
+    canvas.setBackgroundColor("#FFFFFF");
+    canvas.renderAll();
+  } else {
+    rect = new fabric.Rect({
+      left: 0,
+      top: 0,
+      fill: 'white',
+      width: canvas.width,
+      height: canvas.height
+    });
+    canvas.add(rect);
+    canvas.sendToBack(rect);
+    canvas.renderAll();
+  }
+
+  utils.exportFile(type);
+  hideActiveTools();
+
+  // Cleanup background
+  if (type === 'png' || type === 'jpeg') {
+    canvas.setBackgroundColor("");
+  } else {
+    canvas.remove(rect);
+  }
+  canvas.renderAll();
+}
+
+/**
+ * Read the contents of the given file and insert it as a string
+ * 
+ * @param {File} file - Web API File object to insert
+ */
+function readFromString(file) {
+  var reader = new FileReader();
+
+  reader.onload = function (ev) {
+    utils.insertSvgFromString(ev.target.result, $("#loading-spinner"));
+  };
+
+  reader.readAsText(file);
+}
+
+function readFromData(file) {
+  var reader = new FileReader();
+
+  reader.onload = function (ev) {
+    utils.insertImageFromData(ev.target.result, $("#loading-spinner"));
+  };
+
+  reader.readAsDataURL(file);
+}
+
+/**
+ * Display the import from dialog and handle it's events
+ * 
+ * @param {string} type - the type of file "svg" or "png"
+ */
+function openImportDialog(type) {
+  var dialog = $("#import-file-dialog").get(0);
+
+  // For browsers that don't have the dialog element
+  // if (!dialog.showModal) {
+  //   dialogPolyfill.registerDialog(dialog);
+  // }
+
+  var mimeType = (type === "png") ? "image/png" : "image/svg+xml";
+  var fileList = [];
+
+  // Import button click handler. Process the list of files
+  // that were dropped and insert the ones that have the 
+  // specified mime type.
+  $("#import-file-dialog-ok").click(function () {
+    dialog.close();
+    for (var i = 0; i < fileList.length; i++) {
+      if (fileList[i].type === mimeType) {
+        switch (type) {
+          case "svg":
+            readFromString(fileList[i]);
+            break;
+          case "png":
+            readFromData(fileList[i]);
+            break;
+          default:
+            // TODO: Error, unknown type
+            break;
+        }
+      }
+    }
   });
 
-  $("#preview-button").click(function () {
-    page.showPreview();
-    hideActiveTools();
-    return false;
+  // Cancel button click hander. 
+  $("#import-file-dialog-cancel").click(function () {
+    dialog.close();
+  });
+
+  // Drag over event handler. May not need this.
+  $("#import-file-dialog-dropzone").on("dragover", function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+  });
+
+  // Drag enter event handler. May not need this.
+  $("#import-file-dialog-dropzone").on("dragenter",function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+  });
+
+  // Drop event handler. Store the Web API File objects dropped 
+  // on the drop zone for later processing.
+  $("#import-file-dialog-dropzone").on("drop", function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    var files = ev.originalEvent.dataTransfer.files;
+    for (var i = 0; i < files.length; i++) {
+      fileList.push(files[i]);
+    }
+ });
+
+  // Display the Import from file dialog
+  dialog.showModal();
+}
+
+/**
+ * Initialize the file tool
+ */
+function initFileTool() {
+  // Import template
+  $("#file-import-template").click(function () {
+    // TODO: Inserting a template may need special treatment
+    openImportDialog("svg");
+  });
+
+  // Import SVG
+  $("#file-import-svg").click(function () {
+    openImportDialog("svg");
+  });  
+
+  // Import image
+  $("#file-import-image").click(function () {
+    openImportDialog("png");
+  });
+
+  // Export SVG
+  $("#file-export-svg").click(function () {
+    downloadImage("svg");
+  });
+
+  // Export image
+  $("#file-export-image").click(function () {
+    downloadImage("png");
   });
 }
 
@@ -852,13 +1052,16 @@ function listeners() {
   initText();
   initSubmenus();
   initShapes();
-  initButtons();
-  initImportExport();
-  initSearchArt();
+  //initButtons();
+  //initImportExport();
+  //initSearchArt();
   initTextTools();
   initTextAlign();
   initArrangeTools();
+  initCentering();
   initEffectsTools();
+  initSelectTool();
+  initFileTool();
 }
 
 /**
@@ -924,13 +1127,25 @@ function setShadow() {
  */
 function resizeHandler() {
   // Resize the canvas size
-  var width = $("#content").width() - 100;
+  //var width = $("#content").width() - 100;
+  //var width = $("#content").width() - 40;
+  var width = $("body").width() - 10;
+  //var height = 600;
+  var height = $("body").height() - 10;
+  var toolbarHeight = $("#toolbar").height() + 4;
   canvas.setWidth(width);
-  $("#canvas-container").css({left: "50px", top: "40px", width: width});
-  canvas.setHeight(window.innerHeight - $("#toolbar").height() - 150);
+  canvas.setHeight(height - toolbarHeight);
+  //$("#canvas-container").css({ left: "50px", top: "40px", width: width });
+  $("#canvas-container").css({ left: "0px", top: "0px", width: width, height: height });
+  //canvas.setHeight(window.innerHeight - $("#toolbar").height() - 150);
+
+  // Subtract the left and right padding values
+  var padLeft = parseInt($("#toolbar").css("padding-left"));
+  var padRight = parseInt($("#toolbar").css("padding-right"));
+  $("#toolbar").css({ width: width - (padLeft + padRight) });
 
   // Resize the search results panel
-  page.fitArtworkResultsHeight();
+  //page.fitArtworkResultsHeight();
 }
 
 /**
@@ -1001,6 +1216,13 @@ function HandlersModule() {
     rotatingPointOffset: 30
   });
 
+  // Set some default values on the canvas
+  utils.setFont("Liberation Sans");
+  utils.setFontSize(18);
+  utils.setFillColor("#ff0000");
+  utils.setOutlineColor("#000000");
+  utils.setOutlineWidth(3);
+
   // Preserve object layer order when selecting objects
   canvas.preserveObjectStacking = true;
 
@@ -1010,6 +1232,7 @@ function HandlersModule() {
   listeners();
 
   // Load image
+  /*
   var logoFile = getUrlParameter('i');
   if (logoFile !== null && logoFile !== undefined && logoFile !== "") {
     try {
@@ -1036,32 +1259,39 @@ function HandlersModule() {
     }
 
     // Show popup tooltip on artwork search button when the page loads
-    /*
-    $("#sidebar-artwork > .inactive > img").tooltipster({
-      theme: 'tooltipster-daring',
-      contentAsHTML: true,
-      animation: 'grow',     // fade, grow, swing, slide, fall
-      speed: 150,
-      hideOnClick: true,
-      interactive: false,
-      interactiveTolerance: 350,
-      onlyOne: true,
-      position: 'right',
-      content: "<p class='onload-tooltip'><strong>Start here!</strong> Search for an image <br/> to begin making your image.</p>",
-      trigger: 'custom',
-      offsetX: 18,
-      offsetY: 5,
-      functionReady: function(){
-        $(document).click(function() {
-          $("#sidebar-artwork > .inactive > img").tooltipster('hide');
-        });
-    }
-    });
-    window.setTimeout(function() {
-      $("#sidebar-artwork > .inactive > img").tooltipster('show');
-    }, 400);
-    */
+    // $("#sidebar-artwork > .inactive > img").tooltipster({
+    //   theme: 'tooltipster-daring',
+    //   contentAsHTML: true,
+    //   animation: 'grow',     // fade, grow, swing, slide, fall
+    //   speed: 150,
+    //   hideOnClick: true,
+    //   interactive: false,
+    //   interactiveTolerance: 350,
+    //   onlyOne: true,
+    //   position: 'right',
+    //   content: "<p class='onload-tooltip'><strong>Start here!</strong> Search for an image <br/> to begin making your image.</p>",
+    //   trigger: 'custom',
+    //   offsetX: 18,
+    //   offsetY: 5,
+    //   functionReady: function(){
+    //     $(document).click(function() {
+    //       $("#sidebar-artwork > .inactive > img").tooltipster('hide');
+    //     });
+    // }
+    // });
+    // window.setTimeout(function() {
+    //   $("#sidebar-artwork > .inactive > img").tooltipster('show');
+    // }, 400);
   }
+  */
+  
+  try {
+    canvas.clear();
+    $("#loading-spinner").addClass("noshow");
+  } catch (err) {
+    $("#loading-spinner").addClass("noshow");
+  }
+
 
   // Undo redo
   canvas.on("object:modified", function() {

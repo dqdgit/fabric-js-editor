@@ -2,6 +2,8 @@
 
 var canvas = global.canvas;
 var drawing = new (require('./drawing.js'))();
+var utils = new (require('./fabricUtils.js'))();
+
 
 function insertText() {
   canvas.defaultCursor = 'crosshair';
@@ -20,9 +22,12 @@ function insertText() {
 
     drawing.disableDraw();
 
+    var fontFamily = utils.getFont();
+    var fontSize = utils.getFontSize();
     var pointer = canvas.getPointer(o.e);
     var text = new fabric.IText('', {
-      fontFamily: 'arial',
+      fontFamily: fontFamily,
+      fontSize: fontSize,
       left: pointer.x,
       top: pointer.y
     });

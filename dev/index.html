@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>SVG Editor Test</title>
+    <meta name="description" content="Development test wrapper for the SVG Editor">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style> 
+      #dev-body {
+        background-color: #f5f5f5;
+      }
+      
+      #svg-editor-iframe {
+        width: 900px;
+        height: 600px;
+        border-style: none;
+        overflow: visible;
+      }
+
+      #svg-editor-wrapper {
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body id="dev-body">
+    <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <h3>Development Wrapper for SVG Editor</h3>
+    <div id="svg-editor-wrapper" class="dev-wrapper">
+      <iframe src="http://localhost:8000/svg-editor.html" id="svg-editor-iframe" scrolling="no"></iframe>
+    </div>
+
+  </body>
+</html>

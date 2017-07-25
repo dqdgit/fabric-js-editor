@@ -22,158 +22,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css" /> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.5.0/jquery.contextMenu.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.7/dialog-polyfill.min.css" />
 
-    <link rel="stylesheet" type="text/css" href="editor.css">
+    <link rel="stylesheet" type="text/css" href="svg-editor.css">
   </head>
 
   <body>
-
-    <!-- Preview -->
-    <div id="preview" class="noshow">
-      <img src="/images/tshirt.png" id="preview-image">
-    </div>
-
-    <!-- Sidebar -->
-    <div id="sidebar" class="noselect">
-
-      <div id="sidebar-artwork" class="sidebar-item">
-        <span class="inactive"><img class="sidebar-img" src="images/sidebar/artwork.png"></span>
-        <span class="active noshow"><img class="sidebar-img" src="images/sidebar/artwork.png"></span>
-        <br/>
-        Search Artwork
-      </div><!-- /sidebar-item -->
-
-      <div id="sidebar-export" class="sidebar-item">
-        <span class="inactive"><img class="sidebar-img" src="images/sidebar/export.png"></span>
-        <span class="active noshow"><img class="sidebar-img" src="images/sidebar/export.png"></span>
-        <br/>
-        Share
-      </div><!-- /sidebar-item -->
-    </div><!-- /sidebar -->
-
     <!-- Layout -->
-    <div class="mdl-layout mdl-js-layout">
-
-      <!-- Drawer -->
-      <div id="drawer" class="mdl-layout__drawer">
-        <nav class="mdl-navigation">
-
-          <!-- Artwork panel -->
-          <div id="artwork-panel" class="slideout-body noselect">
-            <span class="mdl-layout-title">Artwork</span>
-            <form id="artwork-search-form" name="artwork-search-form" autocomplete="off">
-              <div id="left">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <input class="mdl-textfield__input" type="text" id="artwork-search">
-                  <label class="mdl-textfield__label" for="artwork-search">Search</label>
-                </div>
-              </div>
-              <div id="right">
-                <i id="search-submit" class="material-icons">search</i>
-              </div>
-            </form>
-
-            <!-- Artwork search -->
-            <div id="search-type-block" style="visibility: hidden;">
-              <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="icons">
-                <input type="radio" id="icons" class="mdl-radio__button" name="search-type" value="icons">
-                <span class="mdl-radio__label">Icons</span>
-              </label>
-              <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="clipart" id="clipart-label">
-                <input type="radio" id="clipart" class="mdl-radio__button" name="search-type" value="clipart" checked>
-                <span class="mdl-radio__label">Clipart</span>
-              </label>
-            </div><!-- /search-type-block -->
-
-            <div class="search-results">
-              <div id="artwork-spinner" class="noshow">
-                <div class="mdl-spinner mdl-js-spinner is-active"></div>
-              </div>
-              <span id="no-results" class="noshow">No results found.</span>
-            </div><!-- /search-results -->
-          </div><!-- /artwork-panel -->
-
-          <!-- Export panel -->
-          <div id="export-panel" class="slideout-body noselect">
-            <span class="mdl-layout-title">Download Image File</span>
-
-            <div class="export-options">
-              <p>Download an image file for use in other programs.</p>
-
-              <div class="file-options">
-                <p><strong>File Type</strong></p>
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="png">
-                  <input type="radio" id="png" class="mdl-radio__button" name="file-type" value="png" checked>
-                  <span class="mdl-radio__label">PNG</span>
-                </label>
-                <br/>
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="svg">
-                  <input type="radio" id="svg" class="mdl-radio__button" name="file-type" value="svg">
-                  <span class="mdl-radio__label">SVG</span>
-                </label>
-                <br/>
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="jpeg">
-                  <input type="radio" id="jpeg" class="mdl-radio__button" name="file-type" value="jpeg">
-                  <span class="mdl-radio__label">JPEG</span>
-                </label>
-              </div>
-              <div class="file-options">
-                <p><strong>Background Color</strong></p>
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="transparent">
-                  <input type="radio" id="transparent" class="mdl-radio__button" name="background-color" value="transparent" checked>
-                  <span class="mdl-radio__label">Transparent</span>
-                </label>
-                <br/>
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="white">
-                  <input type="radio" id="white" class="mdl-radio__button" name="background-color" value="white">
-                  <span class="mdl-radio__label">White</span>
-                </label>
-              </div>
-
-              <br/><br/>
-
-              <!-- Export button -->
-              <div class="export-button-set">
-                <button id="download-image-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored export-button">Download Image</button>
-              </div><!-- /export-button-set -->
-            </div><!-- /export-options -->
-
-            <br/><br/>
-
-            <!-- Import/Export -->
-            <span class="mdl-layout-title">Import or Export</span>
-
-            <div class="export-options">
-              <p>Save your work for later, or continue where you left off.</p>
-              <br/>
-
-              <div class="export-button-set">
-                <div class="export-import-buttons">
-                  <form id="import-wrapper">
-                    <input type="file" id="import-file-button" accept='.logo' class="noshow">
-                    <label for="import-file-button" id="file-picker-label" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored export-button">
-                      Import File
-                    </label>
-                  </form>
-                </div>
-
-                <div class="export-import-buttons">
-                  <button id="export-file-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored export-button">
-                    Export File
-                  </button>
-                </div>
-              </div><!-- /export-button-set -->
-            </div><!-- /export-options -->
-          </div><!-- /export-pane; -->
-        </nav>
-      </div> <!-- /drawer -->
-
+    <!--<div class="mdl-layout mdl-js-layout">-->
+    <div id="editor-layout">
       <!-- Main -->
-      <main class="mdl-layout__content">
+      <!--<main class="mdl-layout__content">-->
+      <main id="editor-content">
         <div class="container">
 
           <!-- Toolbar -->
           <div id="toolbar">
+
+            <!-- Fixed tools -->
+            <!-- File tool -->
+            <div id="toolbar-file" class="toolbar-item toolbar-dropdown mdi mdi-content-save mdi-18px">
+              <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+
+              <div class="toolbar-submenu noselect noshow">
+                <div id="file-import-template" class="submenu-item">Import template...</div>
+                <div id="file-import-svg" class="submenu-item">Import SVG...</div>
+                <div id="file-import-image" class="submenu-item">Import image...</div>
+
+                <div class="submenu-separator"></div>
+
+                <div id="File-export-svg" class="submenu-item">Download as SVG</div>
+                <div id="File-export-image" class="submenu-item">Download as image</div>
+              </div><!-- /toolbar-submenu -->
+            </div><!-- /toolbar-file -->
 
             <!-- Undo/redo -->
             <div id="toolbar-undo" class="toolbar-item mdi mdi-undo mdi-18px"></div>
@@ -184,9 +65,13 @@
 
             <div class="toolbar-separator"></div>
 
+            <!-- Select tool -->
+            <div id="toolbar-select" class="toolbar-item mdi mdi-cursor-default mdi-18px"></div>
+            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-select">Select</div>
+
             <!-- Text -->
             <div id="toolbar-text" class="toolbar-item mdi mdi-cursor-text mdi-18px"></div>
-            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text">Insert Text</div>
+            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text">Text</div>
 
             <!-- Shapes -->
             <div id="toolbar-shape" class="toolbar-item toolbar-dropdown mdi mdi-drawing mdi-18px">
@@ -207,19 +92,25 @@
                 </div>
               </div><!-- /toolbar-submenu -->
             </div><!-- /toolbar-shape -->
-            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-shape">Insert Shape</div>
+            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-shape">Shape</div>
 
             <div class="toolbar-separator"></div>
 
             <!-- Situational tools -->
             <div id="active-tools" class="noshow">
 
-              <!-- Text/Shape group -->
+              <!-- All tools (text, shape, group, svg) -->
               <div class="text shape group svg">
 
+                <!-- Centering -->
+                <div id="toolbar-horizontal-center" class="toolbar-item mdi mdi-format-horizontal-align-center mdi-18px"></div>
+                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-horizontal-center">Center horizontally</div>
+
+                <div id="toolbar-vertical-center" class="toolbar-item mdi mdi-format-vertical-align-center mdi-18px"></div>
+                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-vertical-center">Center vertically</div>
+
                 <!-- Arrange -->
-                <div id="toolbar-arrange" class="toolbar-item toolbar-dropdown noselect">
-                  Arrange
+                <div id="toolbar-arrange" class="toolbar-item toolbar-dropdown mdi mdi-arrange-bring-forward mdi-18px noselect">
                   <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
 
                   <div class="toolbar-submenu noselect noshow">
@@ -237,11 +128,13 @@
                     </div>
                   </div><!-- /toolbar-submenu -->
                 </div><!-- /toolbar-arrange -->
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-arrange">Arrange Objects</div>
+                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-arrange">Arrange objects</div>
 
                 <div class="toolbar-separator"></div>
+
               </div> <!-- /text shape group svg -->
 
+              <!-- Text tools -->
               <div class="text">
 
                 <!-- Font family -->
@@ -250,11 +143,7 @@
                   <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
 
                   <div id="toolbar-font-family-submenu" class="toolbar-submenu noselect scrolling noshow">
-                    <div class="submenu-item" id="font-arial">
-                      <span style="font-family: 'Arial'">Arial</span>
-                    </div>
-                  </div><!-- /toolbar-submenu -->
-
+                  </div><!-- /toolbar-font-submenu -->
                 </div>
                 <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-font-family">Font</div>
 
@@ -274,17 +163,16 @@
 
                 <!-- Font size -->
                 <div id="toolbar-font-size" class="toolbar-item toolbar-dropdown noselect">
-                  <span id="current-font-size">14</span>
+                  <span id="current-font-size">18</span>
                   <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
 
                   <div id="toolbar-font-size-submenu" class="toolbar-submenu noselect scrolling noshow">
                   </div>
-                  <!--<input type="text" id="font-size" maxlength="3" class="toolbar-text-input">-->
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-font-size">Font Size</div>
+                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-font-size">Font size</div>
 
                 <!-- Text alignment -->
-                <div id="toolbar-text-align" class="toolbar-item toolbar-dropdown mdi mdi-format-align-left">
+                <div id="toolbar-text-align" class="toolbar-item toolbar-dropdown mdi mdi-format-align-left mdi-18px noselect">
                   <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
 
                   <div id="toolbar-text-align-submenu" class="toolbar-submenu noselect scrolling noshow">
@@ -294,25 +182,30 @@
                   </div>
                 </div>
                 <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-align">Align</div>
-                
-                <div class="toolbar-separator"></div>
+              
+                <!-- Text line spacing -->
+                <div id="toolbar-text-line-spacing" class="toolbar-item mdi mdi-format-line-spacing mdi-18px noselect">
 
+                </div>
+                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-line-spacing">Line spacing</div>
+    
+                <div class="toolbar-separator"></div>
               </div><!-- /text -->
 
-              <!-- Shape group -->
+              <!-- Text, shape, svg tools -->
               <div class="text shape svg">
 
                 <!-- Fill color -->
                 <div id="toolbar-fill-color" class="toolbar-item toolbar-dropdown mdi mdi-format-color-fill mdi-18px">
                   <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-fill-color">Fill Color</div>
+                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-fill-color">Fill color</div>
 
                 <!-- Border color -->
                 <div id="toolbar-outline-color" class="toolbar-item toolbar-dropdown mdi mdi-border-color mdi-18px">
                   <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-color">Outline Color</div>
+                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-color">Outline color</div>
 
                 <!-- Border width -->
                 <div id="toolbar-outline-width" class="toolbar-item toolbar-dropdown mdi mdi-format-line-weight mdi-18px">
@@ -321,7 +214,7 @@
                   <div id="toolbar-outline-width-submenu" class="toolbar-submenu noselect scrolling noshow">
                   </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline Width</div>
+                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline width</div>
 
                 <!-- Border style -->
                 <div id="toolbar-outline-style" class="toolbar-item toolbar-dropdown mdi mdi-format-line-style mdi-18px">
@@ -330,7 +223,7 @@
                   <div id="toolbar-outline-style-submenu" class="toolbar-submenu noselect scrolling noshow">
                   </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline Style</div>
+                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline style</div>
 
                 <!-- Effects -->
                 <div id="toolbar-effects" class="toolbar-item toolbar-dropdown mdi mdi-blur mdi-18px">
@@ -385,14 +278,17 @@
                 <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-effects">Effects</div>
               </div><!-- /text shape svg -->
 
+              <!-- Text, shape tools -->
               <div class="text shape">
                 <!-- empty -->
               </div>
 
+              <!-- Shape tools -->
               <div class="shape">
                 <!-- empty -->
               </div>
 
+              <!-- SVG tools -->
               <div class="svg">
                 <!-- empty -->
               </div>
@@ -413,47 +309,91 @@
           <div class="mdl-spinner mdl-js-spinner is-active"></div>
         </div>
 
-        <!-- Preview button -->
-        <div id="preview-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--accent floating-button noselect">
-          <img width="15" height="15" src="images/new-window.png"> Preview
-        </div><!-- /preview-button -->
-
-        <!-- Download button -->
-        <div id="download-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--accent floating-button noselect">
-          <img width="20" height="15" src="images/cloud.png"> Download
-        </div><!-- /download-button -->
-
-      </main> <!-- /mdl-layout__content -->
-    </div> <!-- /mdl-layout -->
+      </main> <!-- /editor-content -->
+    </div> <!-- /editor-layout -->
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.16/fabric.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.7/dialog-polyfill.min.js"></script>
 
-    <script type="text/javascript" src="editor.js"></script>
+    <script type="text/javascript" src="svg-editor.js"></script>
 
     <!-- Fonts -->
     <script>
       WebFontConfig = {
+        // Google fonts
         google: {
-          families: ['Actor', 'Amaranth', 'Amatic SC', 'Amiri', 'Antic', 'Anton', 'Arapey', 'Architects Daughter', 'Archivo Black', 'Arimo', 'Audiowide', 'Bad Script', 'Bangers', 'BenchNine', 'Bitter', 'Black Ops One', 'Candal', 'Chewy', 'Cinzel', 'Cookie', 'Covered By Your Grace', 'Damion', 'Dancing Script', 'Droid Serif', 'Enriqueta', 'Exo', 'Francois One', 'Fredoka One', 'Fugaz One', 'Indie Flower', 'Karla', 'Kaushan Script', 'Lato', 'Limelight', 'Lobster', 'Lobster Two', 'Lora', 'Luckiest Guy', 'Molengo', 'Monda', 'Montserrat', 'News Cycle', 'Open Sans', 'Orbitron', 'Oswald', 'Pacifico', 'Passion One', 'Paytone One', 'Permanent Marker', 'Playfair Display SC', 'Poiret One', 'Raleway', 'Roboto', 'Roboto Mono', 'Rock Salt', 'Russo One', 'Satisfy', 'Shadows Into Light', 'Sigmar One', 'Special Elite', 'Ubuntu', 'Varela Round', 'Vidaloka', 'Yanone Kaffeesatz']
+          families: [
+            'Actor', 'Amaranth', 'Amatic SC', 'Amiri', 'Antic', 'Anton', 
+            'Arapey', 'Architects Daughter', 'Archivo Black', 'Arimo', 
+            'Audiowide', 'Bad Script', 'Bangers', 'BenchNine', 'Bitter', 
+            'Black Ops One', 'Candal', 'Chewy', 'Cinzel', 'Cookie', 
+            'Covered By Your Grace', 'Damion', 'Dancing Script', 
+            'Droid Serif', 'Enriqueta', 'Exo', 'Francois One', 
+            'Fredoka One', 'Fugaz One', 'Indie Flower', 'Karla', 
+            'Kaushan Script', 'Lato', 'Limelight', 'Lobster', 
+            'Lobster Two', 'Lora', 'Luckiest Guy', 'Molengo', 'Monda', 
+            'Montserrat', 'News Cycle', 'Open Sans', 'Orbitron', 'Oswald', 
+            'Pacifico', 'Passion One', 'Paytone One', 'Permanent Marker', 
+            'Playfair Display SC', 'Poiret One', 'Raleway', 'Roboto', 
+            'Roboto Mono', 'Rock Salt', 'Russo One', 'Satisfy', 
+            'Shadows Into Light', 'Sigmar One', 'Special Elite', 'Ubuntu', 
+            'Varela Round', 'Vidaloka', 'Yanone Kaffeesatz'
+          ]
         },
+
+        // Adobe fonts: Liberation Sans
+        typekit: {
+          id: 'qiu7asr'
+        },
+
+        // Event to trigger when a font is loaded
         fontactive: function(familyName, fvd) {
-          $(window).trigger("fontLoadedEvent", [familyName]);
+          $(window).trigger("fontLoadedEvent", [familyName, fvd]);
         },
+
+        // Event to trigger when all fonts are loaded
         active: function() {
           $(window).trigger("allFontsLoadedEvent");
         }
       };
 
+      // Load the specified fonts asynchronously
       (function(d) {
         var wf = d.createElement('script'), s = d.scripts[0];
         wf.src = '//ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js';
         s.parentNode.insertBefore(wf, s);
       })(document);
     </script>
+
+    <!-- Dialogs -->
+
+    <!-- Import file dialog -->
+    <dialog id="import-file-dialog" class="mdl-dialog editor-dialog">
+      <div class="mdl-dialog__title dialog-title">
+        Import images
+      </div>
+
+      <div id="import-file-dialog-content" class="mdl-dialog__content editor-dialog-content">
+        <div id="import-file-dialog-dropzone" class="import-file-dropzone">
+          Drag an image file here
+        </div>
+      </div>
+
+      <div class="mdl-dialog__actions">
+        <button id="import-file-dialog-ok" 
+                class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary dialog-ok-button">
+          Import
+        </button>
+        <button id="import-file-dialog-cancel" 
+                class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent dialog-cancel-button">
+          Cancel
+        </button>
+      </div>
+    </dialog><!-- /import-file-dialog -->
 
   </body>
 </html>
