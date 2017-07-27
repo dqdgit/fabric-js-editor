@@ -3,6 +3,7 @@ global.$ = global.jQuery;
 
 $(function() {
   "use strict";
-	global.canvas = new fabric.Canvas('c');
+  global.FABRIC_CANVAS_NAME = "svg-editor-canvas";
+	global.canvas = new fabric.Canvas(FABRIC_CANVAS_NAME);
 	new (require('./app/handlers.js'))();
 });

@@ -40,256 +40,340 @@
           <div id="toolbar">
 
             <!-- Fixed tools -->
-            <!-- File tool -->
-            <div id="toolbar-file" class="toolbar-item toolbar-dropdown mdi mdi-content-save mdi-18px">
-              <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+            <div id="fixed-tools" class="toolbar-section">
 
-              <div class="toolbar-submenu noselect noshow">
-                <div id="file-import-template" class="submenu-item">Import template...</div>
-                <div id="file-import-svg" class="submenu-item">Import SVG...</div>
-                <div id="file-import-image" class="submenu-item">Import image...</div>
-
-                <div class="submenu-separator"></div>
-
-                <div id="File-export-svg" class="submenu-item">Download as SVG</div>
-                <div id="File-export-image" class="submenu-item">Download as image</div>
-              </div><!-- /toolbar-submenu -->
-            </div><!-- /toolbar-file -->
-
-            <!-- Undo/redo -->
-            <div id="toolbar-undo" class="toolbar-item mdi mdi-undo mdi-18px"></div>
-            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-undo">Undo</div>
-
-            <div id="toolbar-redo" class="toolbar-item mdi mdi-redo mdi-18px"></div>
-            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-redo">Redo</div>
-
-            <div class="toolbar-separator"></div>
-
-            <!-- Select tool -->
-            <div id="toolbar-select" class="toolbar-item mdi mdi-cursor-default mdi-18px"></div>
-            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-select">Select</div>
-
-            <!-- Text -->
-            <div id="toolbar-text" class="toolbar-item mdi mdi-cursor-text mdi-18px"></div>
-            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text">Text</div>
-
-            <!-- Shapes -->
-            <div id="toolbar-shape" class="toolbar-item toolbar-dropdown mdi mdi-drawing mdi-18px">
-              <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
-
-              <div class="toolbar-submenu noselect noshow">
-                <div class="submenu-item mdi mdi-vector-line" id="shapes-line">
-                  Line
-                </div>
-                <div class="submenu-item mdi mdi-vector-circle-variant mdi-18px" id="shapes-circle">
-                  Circle
-                </div>
-                <div class="submenu-item mdi mdi-vector-rectangle mdi-18px" id="shapes-rectangle">
-                  Rectangle
-                </div>
-                <div class="submenu-item mdi mdi-vector-rectangle mdi-18px" id="shapes-rounded">
-                  Rounded Rectangle
-                </div>
-              </div><!-- /toolbar-submenu -->
-            </div><!-- /toolbar-shape -->
-            <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-shape">Shape</div>
-
-            <div class="toolbar-separator"></div>
-
-            <!-- Situational tools -->
-            <div id="active-tools" class="noshow">
-
-              <!-- All tools (text, shape, group, svg) -->
-              <div class="text shape group svg">
-
-                <!-- Centering -->
-                <div id="toolbar-horizontal-center" class="toolbar-item mdi mdi-format-horizontal-align-center mdi-18px"></div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-horizontal-center">Center horizontally</div>
-
-                <div id="toolbar-vertical-center" class="toolbar-item mdi mdi-format-vertical-align-center mdi-18px"></div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-vertical-center">Center vertically</div>
-
-                <!-- Arrange -->
-                <div id="toolbar-arrange" class="toolbar-item toolbar-dropdown mdi mdi-arrange-bring-forward mdi-18px noselect">
-                  <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+              <!-- File tool -->
+              <div id="toolbar-file-button" class="toolbar-button toolbar-dropdown">
+                <div class="toolbar-button-box">
+                  <div id="toolbar-file" class="toolbar-item mdi mdi-content-save mdi-18px"></div>
+                  <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
 
                   <div class="toolbar-submenu noselect noshow">
-                    <div class="submenu-item mdi mdi-arrange-send-to-back mdi-18px" id="toolbar-send-back">
-                      Send to Back
+                    <div id="file-import-template" class="submenu-item">Import template...</div>
+                    <div id="file-import-svg" class="submenu-item">Import SVG...</div>
+                    <div id="file-import-image" class="submenu-item">Import image...</div>
+
+                    <div class="submenu-separator"></div>
+
+                    <div id="File-export-svg" class="submenu-item">Download as SVG</div>
+                    <div id="File-export-image" class="submenu-item">Download as image</div>
+                  </div>
+                  <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-file-button">File</div>
+                </div>
+              </div>
+
+              <!-- Undo/redo -->
+              <div id="toolbar-undo-button" class="toolbar-button">
+                <div class="toolbar-button-box">
+                  <div id="toolbar-undo" class="toolbar-item mdi mdi-undo mdi-18px"></div>
+                  <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-undo-button">Undo</div>
+                </div>
+              </div>
+
+              <div id="toolbar-redo-button" class="toolbar-button">
+                <div class="toolbar-button-box">
+                  <div id="toolbar-redo" class="toolbar-item mdi mdi-redo mdi-18px"></div>
+                  <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-redo-button">Redo</div>
+                </div>
+              </div>
+
+              <div class="toolbar-separator"></div>
+
+              <!-- Select tool -->
+              <div id="toolbar-select-button" class="toolbar-button">
+                <div class="toolbar-button-box">
+                  <div id="toolbar-select" class="toolbar-item mdi mdi-cursor-default mdi-18px"></div>
+                  <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-select-button">Select</div>
+                </div>
+              </div>
+
+              <!-- Text -->
+              <div id="toolbar-text-button" class="toolbar-button">
+                <div class="toolbar-button-box">
+                  <div id="toolbar-text" class="toolbar-item mdi mdi-cursor-text mdi-18px"></div>
+                  <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-button">Text</div>
+                </div>
+              </div>
+
+              <!-- Shapes -->
+              <div id="toolbar-shape-button" class="toolbar-button toolbar-dropdown">
+                <div class="toolbar-button-box">
+                  <div id="toolbar-shape" class="toolbar-item mdi mdi-drawing mdi-18px"></div>
+                  <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
+
+                  <div class="toolbar-submenu noselect noshow">
+                    <div class="submenu-item mdi mdi-vector-line" id="shapes-line">
+                      Line
                     </div>
-                    <div class="submenu-item mdi mdi-arrange-send-backward mdi-18px" id="toolbar-send-backward">
-                      Send Backward
+                    <div class="submenu-item mdi mdi-vector-circle-variant mdi-18px" id="shapes-circle">
+                      Circle
                     </div>
-                    <div class="submenu-item mdi mdi-arrange-bring-forward mdi-18px" id="toolbar-bring-forward">
-                      Bring Forward
+                    <div class="submenu-item mdi mdi-vector-rectangle mdi-18px" id="shapes-rectangle">
+                      Rectangle
                     </div>
-                    <div class="submenu-item mdi mdi-arrange-bring-to-front mdi-18px" id="toolbar-bring-front">
-                      Bring to Front
+                    <div class="submenu-item mdi mdi-vector-rectangle mdi-18px" id="shapes-rounded">
+                      Rounded Rectangle
                     </div>
-                  </div><!-- /toolbar-submenu -->
-                </div><!-- /toolbar-arrange -->
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-arrange">Arrange objects</div>
+                  </div>
+                  <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-shape-button">Shape</div>
+                </div>
+              </div>
+
+              <div class="toolbar-separator"></div>
+            </div><!-- /fixed-tools -->
+
+            <!-- Situational tools -->
+            <div id="active-tools" class="toolbar-section noshow">
+
+              <!-- All tools (text, shape, group, svg) -->
+              <div class="active-tools-group text shape group svg">
+
+                <!-- Centering -->
+                <div id="toolbar-h-center-button" class="toolbar-button">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-horizontal-center" class="toolbar-item mdi mdi-format-horizontal-align-center mdi-18px"></div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-horizontal-center">Center horizontally</div>
+                  </div>
+                </div>
+
+                <div id="toolbar-v-center-button" class="toolbar-button">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-vertical-center" class="toolbar-item mdi mdi-format-vertical-align-center mdi-18px"></div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-vertical-center">Center vertically</div>
+                  </div>
+                </div>
+
+                <!-- Arrange -->
+                <div id="toolbar-arrange-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-arrange" class="toolbar-item mdi mdi-arrange-bring-forward mdi-18px noselect"></div>
+                    <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
+
+                    <div class="toolbar-submenu noselect noshow">
+                      <div class="submenu-item mdi mdi-arrange-send-to-back mdi-18px" id="toolbar-send-back">
+                        Send to Back
+                      </div>
+                      <div class="submenu-item mdi mdi-arrange-send-backward mdi-18px" id="toolbar-send-backward">
+                        Send Backward
+                      </div>
+                      <div class="submenu-item mdi mdi-arrange-bring-forward mdi-18px" id="toolbar-bring-forward">
+                        Bring Forward
+                      </div>
+                      <div class="submenu-item mdi mdi-arrange-bring-to-front mdi-18px" id="toolbar-bring-front">
+                        Bring to Front
+                      </div>
+                    </div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-arrange-button">Arrange objects</div>
+                  </div>
+                </div>
 
                 <div class="toolbar-separator"></div>
-
               </div> <!-- /text shape group svg -->
 
               <!-- Text tools -->
-              <div class="text">
+              <div class="active-tools-group text">
 
                 <!-- Font family -->
-                <div id="toolbar-font-family" class="toolbar-item toolbar-dropdown noselect">
-                  <span id="current-font" class="user-select: none"></span>
-                  <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                <div id="toolbar-font-family-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-font-family" class="toolbar-item">
+                      <span id="current-font" class="user-select: none"></span>
+                    </div>
+                    <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
 
-                  <div id="toolbar-font-family-submenu" class="toolbar-submenu noselect scrolling noshow">
-                  </div><!-- /toolbar-font-submenu -->
+                    <div id="toolbar-font-family-submenu" class="toolbar-submenu noselect scrolling noshow">
+                    </div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-font-family-button">Font</div>
+                  </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-font-family">Font</div>
 
                 <div class="toolbar-separator"></div>
 
                 <!-- Bold -->
-                <div id="toolbar-bold" class="toolbar-item mdi mdi-format-bold mdi-18px"></div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-bold">Bold</div>
+                <div id="toolbar-bold-button" class="toolbar-button">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-bold" class="toolbar-item mdi mdi-format-bold mdi-18px"></div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-bold-button">Bold</div>
+                  </div>
+                </div>
 
                 <!-- Italics -->
-                <div id="toolbar-italics" class="toolbar-item mdi mdi-format-italic mdi-18px"></div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-italics">Italics</div>
+                <div id="toolbar-italics-button" class="toolbar-button">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-italics" class="toolbar-item mdi mdi-format-italic mdi-18px"></div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-italics-button">Italics</div>
+                  </div>
+                </div>
 
                 <!-- Underline -->
-                <div id="toolbar-underline" class="toolbar-item mdi mdi-format-underline mdi-18px"></div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-underline">Underline</div>
+                <div id="toolbar-underline-button" class="toolbar-button">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-underline" class="toolbar-item mdi mdi-format-underline mdi-18px"></div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-underline-button">Underline</div>
+                  </div>
+                </div>
 
                 <!-- Font size -->
-                <div id="toolbar-font-size" class="toolbar-item toolbar-dropdown noselect">
-                  <span id="current-font-size">18</span>
-                  <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                <div id="toolbar-font-size-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-font-size" class="toolbar-item">
+                      <span id="current-font-size">18</span>
+                    </div>
+                    <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
 
-                  <div id="toolbar-font-size-submenu" class="toolbar-submenu noselect scrolling noshow">
+                    <div id="toolbar-font-size-submenu" class="toolbar-submenu noselect scrolling noshow">
+                    </div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-font-size-button">Font size</div>
                   </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-font-size">Font size</div>
+
+                <div class="toolbar-separator"></div>
 
                 <!-- Text alignment -->
-                <div id="toolbar-text-align" class="toolbar-item toolbar-dropdown mdi mdi-format-align-left mdi-18px noselect">
-                  <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                <div id="toolbar-text-align-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-text-align" class="toolbar-item mdi mdi-format-align-left mdi-18px"></div>
+                    <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
 
-                  <div id="toolbar-text-align-submenu" class="toolbar-submenu noselect scrolling noshow">
-                    <div id="text-align-left" class="submenu-item mdi mdi-format-align-left mdi-18px">Left</div>
-                    <div id="text-align-center" class="submenu-item mdi mdi-format-align-center mdi-18px">Center</div>
-                    <div id="text-align-right" class="submenu-item mdi mdi-format-align-right mdi-18px">Right</div>
+                    <div id="toolbar-text-align-submenu" class="toolbar-submenu noselect scrolling noshow">
+                      <div id="text-align-left" class="submenu-item mdi mdi-format-align-left mdi-18px">Left</div>
+                      <div id="text-align-center" class="submenu-item mdi mdi-format-align-center mdi-18px">Center</div>
+                      <div id="text-align-right" class="submenu-item mdi mdi-format-align-right mdi-18px">Right</div>
+                    </div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-align-button">Align</div>
                   </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-align">Align</div>
               
                 <!-- Text line spacing -->
-                <div id="toolbar-text-line-spacing" class="toolbar-item mdi mdi-format-line-spacing mdi-18px noselect">
-
+                <div id="toolbar-text-spacing-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-text-spacing" class="toolbar-item mdi mdi-format-line-spacing mdi-18px"></div>
+                    <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                    
+                    <div id="toolbar-text-spacing-submenu" class="toolbar-submenu noselect noshow">
+                      <div id="text-spacing-1" class="submenu-item" data-text-spacing="1">1.0</div>
+                      <div id="text-spacing-2" class="submenu-item" data-text-spacing="1.15">1.15</div>
+                      <div id="text-spacing-3" class="submenu-item" data-text-spacing="1.5">1.5</div>
+                      <div id="text-spacing-4" class="submenu-item" data-text-spacing="2">2.0</div>
+                    </div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-spacing-button">Line spacing</div>
+                  </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-line-spacing">Line spacing</div>
     
                 <div class="toolbar-separator"></div>
+
               </div><!-- /text -->
 
               <!-- Text, shape, svg tools -->
-              <div class="text shape svg">
+              <div class="active-tools-group text shape svg">
 
                 <!-- Fill color -->
-                <div id="toolbar-fill-color" class="toolbar-item toolbar-dropdown mdi mdi-format-color-fill mdi-18px">
-                  <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                <div id="toolbar-fill-color-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-fill-color" class="toolbar-item mdi mdi-format-color-fill mdi-18px"></div>
+                    <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-fill-color-button">Fill color</div>
+                  </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-fill-color">Fill color</div>
 
                 <!-- Border color -->
-                <div id="toolbar-outline-color" class="toolbar-item toolbar-dropdown mdi mdi-border-color mdi-18px">
-                  <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                <div id="toolbar-outline-color-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-outline-color" class="toolbar-item mdi mdi-border-color mdi-18px"></div>
+                    <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-color">Outline color</div>
+                  </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-color">Outline color</div>
 
                 <!-- Border width -->
-                <div id="toolbar-outline-width" class="toolbar-item toolbar-dropdown mdi mdi-format-line-weight mdi-18px">
-                  <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                <div id="toolbar-outline-width-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-outline-width" class="toolbar-item mdi mdi-format-line-weight mdi-18px"></div>
+                    <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
 
-                  <div id="toolbar-outline-width-submenu" class="toolbar-submenu noselect scrolling noshow">
+                    <div id="toolbar-outline-width-submenu" class="toolbar-submenu noselect scrolling noshow">
+                    </div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline width</div>
                   </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline width</div>
 
                 <!-- Border style -->
-                <div id="toolbar-outline-style" class="toolbar-item toolbar-dropdown mdi mdi-format-line-style mdi-18px">
-                  <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                <div id="toolbar-outline-style-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-outline-style" class="toolbar-item mdi mdi-format-line-style mdi-18px"></div>
+                    <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
 
-                  <div id="toolbar-outline-style-submenu" class="toolbar-submenu noselect scrolling noshow">
+                    <div id="toolbar-outline-style-submenu" class="toolbar-submenu noselect scrolling noshow">
+                    </div>
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline style</div>
                   </div>
                 </div>
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline style</div>
 
                 <!-- Effects -->
-                <div id="toolbar-effects" class="toolbar-item toolbar-dropdown mdi mdi-blur mdi-18px">
-                  <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
+                <div id="toolbar-effects-button" class="toolbar-button toolbar-dropdown">
+                  <div class="toolbar-button-box">
+                    <div id="toolbar-effects" class="toolbar-item mdi mdi-blur mdi-18px"></div>
+                    <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
 
-                  <div class="toolbar-submenu noselect noshow no-auto-close" id="shadow-submenu">
+                    <div id="shadow-submenu" class="toolbar-submenu noselect noshow no-auto-close">
+                      <div id="effects-box">
+                        <label id="shadow-switch-label" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="shadow-switch">
+                          <input id="shadow-switch" class="mdl-switch__input" type="checkbox">
+                          <span class="mdl-switch__label">Shadow</span>
+                        </label>
 
-                    <!-- Shadow -->
-                    <div id="effects-box">
-                      <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="shadow-switch" id="shadow-switch-label">
-                        <input type="checkbox" id="shadow-switch" class="mdl-switch__input">
-                        <span class="mdl-switch__label">Shadow</span>
-                      </label>
+                        <!-- Shadow -->
+                        <div id="shadow-options" class="fx-options">
+                          <span class="effects-form-label">Offset</span> <br/>
+                          <div class="slider-container">
+                            <input id="shadow-offset-slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="5" tabindex="0">
+                          </div>
 
-                      <div id="shadow-options" class="fx-options">
-                        <span class="effects-form-label">Offset</span> <br/>
-                        <div class="slider-container">
-                          <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="5" tabindex="0" id="shadow-offset-slider">
+                          <span class="effects-form-label">Blur</span> <br/>
+                          <div class="slider-container">
+                            <input id="shadow-blur-slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="15" tabindex="0">
+                          </div>
+
+                          <span class="effects-form-label">Color</span> <br/>
+                          <input id="shadow-color-hex" class="hex-display" type="text"value="#000000" disabled="disabled">
+                          <input id="shadow-color-picker" type="text">
                         </div>
 
-                        <span class="effects-form-label">Blur</span> <br/>
-                        <div class="slider-container">
-                          <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="15" tabindex="0" id="shadow-blur-slider">
+                        <!-- Glow -->
+                        <label id="glow-switch-label" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="glow-switch">
+                          <input id="glow-switch" class="mdl-switch__input" type="checkbox">
+                          <span class="mdl-switch__label">Glow</span>
+                        </label>
+
+                        <div id="glow-options" class="fx-options">
+                          <span class="effects-form-label">Size</span> <br/>
+                          <div class="slider-container">
+                            <input id="glow-size-slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0">
+                          </div>
+
+                          <span class="effects-form-label">Color</span> <br/>
+                          <input id="glow-color-hex" class="hex-display" type="text" value="#000000" disabled="disabled">
+                          <input id="glow-color-picker" type="text">
                         </div>
-
-                        <span class="effects-form-label">Color</span> <br/>
-                        <input type="text" class="hex-display" id="shadow-color-hex" value="#000000" disabled="disabled">
-                        <input type="text" id="shadow-color-picker">
-
-                      </div>
-
-                      <!-- Glow -->
-                      <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="glow-switch" id="glow-switch-label">
-                        <input type="checkbox" id="glow-switch" class="mdl-switch__input">
-                        <span class="mdl-switch__label">Glow</span>
-                      </label>
-
-                      <div id="glow-options" class="fx-options">
-                        <span class="effects-form-label">Size</span> <br/>
-                        <div class="slider-container">
-                          <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0" id="glow-size-slider">
-                        </div>
-
-                        <span class="effects-form-label">Color</span> <br/>
-                        <input type="text" class="hex-display" id="glow-color-hex" value="#000000" disabled="disabled">
-                        <input type="text" id="glow-color-picker">
-                      </div>
-
-                    </div><!-- /effects-box -->
-                  </div><!-- /submenu -->
-                </div><!-- /toolbar-effects -->
-                <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-effects">Effects</div>
-              </div><!-- /text shape svg -->
+                      </div><!-- /effects-box -->
+                    </div><!-- /submenu -->
+                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-effects">Effects</div>
+                  </div>
+                </div>
+              </div><!-- /active-tools-group -->
 
               <!-- Text, shape tools -->
-              <div class="text shape">
+              <div class="active-tools-group text shape">
                 <!-- empty -->
               </div>
 
               <!-- Shape tools -->
-              <div class="shape">
+              <div class="active-tools-group shape">
                 <!-- empty -->
               </div>
 
               <!-- SVG tools -->
-              <div class="svg">
+              <div class="active-tools-group svg">
                 <!-- empty -->
               </div>
 
@@ -299,7 +383,7 @@
           <!-- Canvas -->
           <div id="content">
             <div id="canvas-container">
-              <canvas id="c" width="100%" height="10000"></canvas>
+              <canvas id="svg-editor-canvas" width="100%" height="10000"></canvas>
             </div>
           </div><!-- /content -->
         </div><!-- /container -->

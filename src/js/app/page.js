@@ -418,8 +418,15 @@ function closePanel(button, animate) {
 }
 
 function closeSubmenu(menu, noTooltips) {
+  // DQD - Changed the HTML heirarchy so the submenu is a child of 
+  // the button. Now the menu parameter is truely the submenu
+  // not it's parent.
+  // 
+  // Not sure if we still need to remove the toolbar-item-active 
+  // class or not. Probably harmless to leave it.
   menu.removeClass("toolbar-item-active");
-  menu.children(".toolbar-submenu").addClass("noshow");
+  //menu.children(".toolbar-submenu").addClass("noshow");
+  menu.addClass("noshow");
 
   if (noTooltips !== true) {
     // Delay showing of tooltips to prevent flashing behavior

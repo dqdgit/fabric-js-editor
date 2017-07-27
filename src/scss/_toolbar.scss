@@ -1,22 +1,142 @@
 
-@function mdi($name) {
-  @return char(nth($hexes, index($names, $name)));
-}
-
+/* --- Toolbar --- */
 
 #toolbar {
   padding-left: 8px;
   padding-right: 8px;
+  padding-top: $toolbar-padding;
+  padding-bottom: $toolbar-padding;
   height: $toolbar-height;
-  line-height: 26px;
+  width: 100%;
+  line-height: $toolbar-height;
 
   border-top: 1px solid $toolbar-border;
   border-bottom: 1px solid $toolbar-border;
   border-left: 1px solid $toolbar-border;
   border-right: 1px solid $toolbar-border;
+
   background-color: $toolbar-background;
   overflow: hidden;
   z-index: 5;
+}
+
+.toolbar-section {
+  height: $toolbar-height;
+  float: left;
+}
+
+.active-tools-group {
+  height: $toolbar-height;
+  float: left;
+}
+
+.toolbar-separator {
+  height: $toolbar-separator-height;
+  width: 1px;
+  line-height: $toolbar-separator-height;
+  border-left: 1px solid $toolbar-border;
+  margin-left: 3px;
+  margin-right: 2px;
+  margin-top: (-$toolbar-padding);
+  padding: 0;
+  float: left;
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+.toolbar-button {
+  height: $toolbar-button-height;
+  line-height: $toolbar-button-height;
+  padding: $toolbar-button-padding;
+  border-radius: 2px;
+  outline: none;
+  border: 1px solid transparent;
+  font-size: 14px;
+  float: left;
+  text-align: center;
+  vertical-align: middle;
+  overflow: hidden;
+  overflow-x: hidden;
+
+  &:hover {
+    border: 1px solid #CCCCCC;
+    box-shadow: 1px 1px 1px #dadada;
+  }
+
+  &:active {
+    border: 1px solid #CCCCCC;
+    box-shadow: 1px 1px 1px #b7b7b7 inset;
+    background-color: #e8e8e8;
+    border: 1px solid #cecece;
+  }
+}
+
+.toolbar-button-box {
+  height: $toolbar-button-height;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.toolbar-item {
+  height: $toolbar-button-height;
+  width: $toolbar-button-height;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  float: left;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.toolbar-item-dropdown {
+  height: $toolbar-button-height;
+  width: $toolbar-button-height;
+  opacity: 0.8;
+  color: #333;
+  margin-left: -4px;
+  padding: 0;
+  border: 0;
+  float: left;
+  text-align: left;
+  vertical-align: middle;
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+.toolbar-text-input {
+  float: left;
+  width: 28px;
+  height: 18px;
+  font-size: 14px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  outline: none;
+  margin-top: 1px;
+
+  &:focus {
+    background-color: white;
+    border: 1px solid #0096FD;
+  }
+}
+
+.toolbar-item-active {
+  border: 1px solid #CCCCCC;
+  box-shadow: 1px 1px 2px #b1b1b1 inset;
+  background-color: #e9e7e7;
+  border: 1px solid #CCCCCC;
+
+  &:hover {
+    border: 1px solid #CCCCCC;
+    box-shadow: 1px 1px 2px #b1b1b1 inset;
+  }
+
+  &:active {
+    border: 1px solid #CCCCCC;
+    box-shadow: 1px 1px 2px #b1b1b1 inset;
+  }
 }
 
 /* ----- Fixed tools ----- */
@@ -53,116 +173,12 @@
   }
 }
 
-/* --- Toolbar --- */
-
-.toolbar-separator {
-  float: left;
-  border-left: 1px solid $toolbar-border;
-  width: 8px;
-  margin-left: 8px;
-  height: $toolbar-height;
-}
-
-.toolbar-item {
-  float:left;
-  width: 26px;
-  height: $toolbar-button-height;
-  margin-top: ($toolbar-height - $toolbar-button-height)/2;
-  margin-bottom: ($toolbar-height - $toolbar-button-height)/2;
-  border-radius: 2px;
-  outline: none;
-  border: 1px solid transparent;
-
-  &:hover {
-    border: 1px solid #CCCCCC;
-    box-shadow: 1px 1px 1px #dadada;
-  }
-
-  &:active {
-    border: 1px solid #CCCCCC;
-    box-shadow: 1px 1px 1px #b7b7b7 inset;
-    background-color: #e8e8e8;
-    border: 1px solid #cecece;
-  }
-}
-
-/*.toolbar-item.mdi {
-  padding-top: 1px;
-  padding-bottom: 0px;
-  &:before {
-    margin-top: 2px;
-  }
-}
-*/
-.toolbar-dropdown {
-  width: 38px;
-}
-
-.toolbar-input {
-  width: 48px;
-  padding-left: 4px;
-}
-
-.toolbar-arrow {
-  float: right;
-/*  margin-top: 11px;
-  margin-right: 3px;
-*/  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid #909090;
-}
-
-.toolbar-menu-down {
-  float: right;
-  margin-right: 11px;
-  padding-right: 8px;
-  width: 0;
-  height: 26px;
-  opacity: 0.8;
-  color: #333;
-}
-
-.toolbar-text-input {
-  float: left;
-  width: 28px;
-  height: 18px;
-  font-size: 14px;
-  background-color: transparent;
-  border: 1px solid transparent;
-  outline: none;
-  margin-top: 1px;
-
-  &:focus {
-    background-color: white;
-    border: 1px solid #0096FD;
-  }
-}
-
-.toolbar-item-active {
-  border: 1px solid #CCCCCC;
-  box-shadow: 1px 1px 2px #b1b1b1 inset;
-  background-color: #e9e7e7;
-  border: 1px solid #CCCCCC;
-
-  &:hover {
-    border: 1px solid #CCCCCC;
-    box-shadow: 1px 1px 2px #b1b1b1 inset;
-  }
-
-  &:active {
-    border: 1px solid #CCCCCC;
-    box-shadow: 1px 1px 2px #b1b1b1 inset;
-  }
-}
-
 /* --- toolbar submenu --- */
 
 .toolbar-submenu {
   position: absolute;
   background-color: white;
-  width: 205px;
+  width: $toolbar-submenu-width;
   top: -100px;
   left: -100px;
   z-index: 5;
@@ -170,12 +186,13 @@
   color: #5D5D5D;
   box-shadow: 1px 1px 2px #bebebe;
   max-height: 300px;
+  text-align: left;
   overflow: hidden;
 }
 
 .submenu-separator {
   border-top: 1px solid $toolbar-border;
-  width: 205px;
+  width: $toolbar-submenu-width;
   margin-top: 6px;
   margin-bottom: 6px;
 }

@@ -1,8 +1,20 @@
 /* --- toolbar colors --- */
-$toolbar-height: 36px;
+
+$glyph-height: 18px;
+$toolbar-button-padding: 3px;
+$toolbar-padding: 3px;
+
+$toolbar-button-height: $glyph-height;
+$toolbar-height: ($toolbar-button-height + (2 * $toolbar-button-padding) + 2px);
+$toolbar-separator-height: ($toolbar-height + (2 * $toolbar-padding));
+
 $toolbar-background: #F2F2F2;
 $toolbar-border: #BDBDBD;
-$toolbar-button-height: 26px;
+$toolbar-submenu-width: 205px;
+/*
+$toolbar-height: 27px;
+$toolbar-button-height: 18px;
+*/
 
 /* --- sidebar --- */
 /*

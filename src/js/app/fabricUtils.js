@@ -454,19 +454,27 @@ function insertSvgFromString(string, loader) {
 
 function getActiveStyle(styleName, object) {
   // Precedence:
-  //   - parambeter object
+  //   - parameter object
   //   - active object
   //   - canvas property
-  object = object || canvas.getActiveObject();
-  object = (object !== undefined) ? object : canvas;
   // Bracket notation is equivalent to .get
-  return (object[styleName] || '');
+  object = object || canvas.getActiveObject();
+  // getActiveObject returns null, not undefined
+  object = (object && object !== undefined) ? object : canvas;
+  var value = object[styleName];
+  // Handle the case where an object is found, but 
+  // does not have the specified property. Try to 
+  // get it from the canvas.
+  if (value === undefined) {
+    value = canvas[styleName];
+  } 
+
+  return value;
 
   // Don't change part of text
   /*
   return (object.getSelectionStyles && object.isEditing) ? (object.getSelectionStyles()[styleName] || '') : (object[styleName] || '');
   */
-
 }
 
 function setActiveStyle(styleName, value, object) {
@@ -641,28 +649,6 @@ function setOutlineStyle(value) {
   canvas.renderAll();
 }
 
-/* ----- Align Text ----- */
-
-function getTextAlign() {
-  var object = canvas.getActiveObject();
-  // textAlign: left, center, right, justify
-  if (object.type === 'i-text' || object.type === 'text') {
-    return object.getTextAlign();
-  } else {
-    return "none";
-  }
-}
-
-function setTextAlign(value) {
-  var object = canvas.getActiveObject();
-
-  if (object.type === 'i-text' || object.type === 'text') {
-    value = value.toLowerCase();
-    object.setTextAlign(value);
-    canvas.renderAll();
-  }
-}
-
 /* ----- Center objects and groups ----- */
 
 /*
@@ -732,7 +718,7 @@ function vCenterSelection() {
   canvas.renderAll();
 }
 
-/* ----- Fonts ----- */
+/* ----- Text ----- */
 
 function getFontSize() {
   var px;
@@ -780,6 +766,49 @@ function setFont(font) {
     canvas.renderAll();
   } else {
     setActiveStyle("fontFamily", font.toLowerCase(), canvas);
+  }
+}
+
+function getTextAlign() {
+  var obj = canvas.getActiveObject();
+  // textAlign: left, center, right, justify
+  if (obj !== undefined && (obj.type === 'i-text' || obj.type === 'text')) {
+    return obj.getTextAlign();
+  } else {
+    return getActiveStyle("textAlign", canvas);
+  }
+}
+
+function setTextAlign(value) {
+  var obj = canvas.getActiveObject();
+
+  value = value.toLowerCase();
+  if (obj !== undefined && (obj.type === 'i-text' || obj.type === 'text')) {
+    obj.setTextAlign(value);
+    canvas.renderAll();
+  } else {
+    setActiveStyle("textAlign", value, canvas);
+  }
+}
+
+function getTextSpacing() {
+  var obj = canvas.getActiveObject();
+
+  if (obj !== undefined && (obj.type === 'i-text' || obj.type === 'text')) {
+    return obj.getLineHeight();
+  } else {
+    return getActiveStyle("lineHeight", canvas);
+  }
+}
+
+function setTextSpacing(value) {
+  var obj = canvas.getActiveObject();
+
+  if (obj !== undefined && (obj.type === 'i-text' || obj.type === 'text')) {
+    obj.setLineHeight(value);
+    canvas.renderAll();
+  } else {
+    setActiveStyle("lineHeight", value, canvas);
   }
 }
 
@@ -926,6 +955,8 @@ UtilsModule.prototype.getFontSize = getFontSize;
 UtilsModule.prototype.setFontSize = setFontSize;
 UtilsModule.prototype.getFont = getFont;
 UtilsModule.prototype.setFont = setFont;
+UtilsModule.prototype.getTextSpacing = getTextSpacing;
+UtilsModule.prototype.setTextSpacing = setTextSpacing;
 UtilsModule.prototype.setShadow = setShadow;
 UtilsModule.prototype.clearShadow = clearShadow;
 UtilsModule.prototype.isShadow = isShadow;

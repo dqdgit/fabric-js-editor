@@ -201,17 +201,30 @@ function showCurrentTextAlign() {
   element.addClass("submenu-item-selected");
 }
 
+function showCurrentTextSpacing() {
+  var value = utils.getTextSpacing();
+  var element = $("#toolbar-text-spacing-submenu > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+
+  element = $("[data-text-spacing='" + value.toString() + "']");
+  element.addClass("submenu-item-selected");
+}
+
 /**
  * Undisplay the currently active contextual tools
  */
 function hideActiveTools() {
   $("#active-tools").addClass("noshow");
-  var active = $("#active-tools > .toolbar-item-active");
+  //var active = $("#active-tools > .toolbar-item-active");
+  var active = $(".toolbar-item-active");
   if (active.length > 0) {
     active.removeClass("toolbar-item-active");
   }
 
-  var submenus = $("#active-tools > .toolbar-submenu");
+  //var submenus = $("#active-tools > .toolbar-submenu");
+  var submenus = $(".toolbar-submenu");
   if (submenus.length > 0) {
     submenus.addClass("noshow");
   }
@@ -229,9 +242,16 @@ function showActiveTools() {
   var obj = canvas.getActiveObject();
   var group = canvas.getActiveGroup();
 
-  // DQD
-  // Figure out the intended logic. This seems
-  // overly complicated.
+  // Determine which situational (aka active) toolbars should be displayed.
+  //
+  // If a group of objects is selected then undisplay all the
+  // situational toolbars.
+  //
+  // If a single object is selected determine what kind of object
+  // it is and display the appropriate situational toolbars.
+  //
+  // Otherwise, nothing was selected so undisplay all the
+  // situational toolbars
   if (group !== null && group !== undefined) {
     $("#active-tools > div").addClass("noshow");
     tools.removeClass("noshow");
@@ -240,27 +260,28 @@ function showActiveTools() {
     $("#active-tools > div").addClass("noshow");
     tools.removeClass("noshow");
 
+    // Get the type of the selected Fabric.js object
     var type = canvas.getActiveObject().type;
 
     if (type === "i-text") {
       $("div.text", tools).removeClass("noshow");
 
       if (text.isBold(obj)) {
-        $("#toolbar-bold").addClass("toolbar-item-active");
+        $("#toolbar-bold-button").addClass("toolbar-item-active");
       } else {
-        $("#toolbar-bold").removeClass("toolbar-item-active");
+        $("#toolbar-bold-button").removeClass("toolbar-item-active");
       }
 
       if (text.isItalics(obj)) {
-        $("#toolbar-italics").addClass("toolbar-item-active");
+        $("#toolbar-italics-button").addClass("toolbar-item-active");
       } else {
-        $("#toolbar-italics").removeClass("toolbar-item-active");
+        $("#toolbar-italics-button").removeClass("toolbar-item-active");
       }
 
       if (text.isUnderline(obj)) {
-        $("#toolbar-underline").addClass("toolbar-item-active");
+        $("#toolbar-underline-button").addClass("toolbar-item-active");
       } else {
-        $("#toolbar-underline").removeClass("toolbar-item-active");
+        $("#toolbar-underline-button").removeClass("toolbar-item-active");
       }
 
       showCurrentFontSize();
@@ -275,14 +296,14 @@ function showActiveTools() {
     page.fillColorPicker();
     var color = utils.getFillColor();
     if (color && color !== "") {
-      $("#toolbar-fill-color").spectrum("set", color);
+      $("#toolbar-fill-color-button").spectrum("set", color);
     }
 
     // Init outline color picker
     page.outlineColorPicker();
     var outlineColor = utils.getOutlineColor();
     if (outlineColor && outlineColor !== "") {
-      $("#toolbar-outline-color").spectrum("set", outlineColor);
+      $("#toolbar-outline-color-button").spectrum("set", outlineColor);
     }
 
     // Init outline width
@@ -364,12 +385,12 @@ function initFontFamily() {
 
   $(window).on("allFontsLoadedEvent", function (event) {
     // Is the menu being used?
-    if ($("#toolbar-font-family").hasClass("toolbar-item-active") === true) {
+    if ($("#toolbar-font-family-button").hasClass("toolbar-item-active") === true) {
       return;
     }
 
     // Sort the fonts, use the display name as the key
-    var sorted = $("#toolbar-font-family .submenu-item").sort(function (a, b) {
+    var sorted = $("#toolbar-font-family-submenu > .submenu-item").sort(function (a, b) {
       var contentA = $(a).attr('data-display-name');
       var contentB = $(b).attr('data-display-name');
       return (contentA < contentB) ? -1 : (contentA > contentB) ? 1 : 0;
@@ -379,7 +400,7 @@ function initFontFamily() {
     $("#toolbar-font-family-submenu").html(sorted);
 
     // Set new event listeners for all the submen-items
-    $("#toolbar-font-family .submenu-item").click(fontClickHandler);
+    $("#toolbar-font-family-submenu > .submenu-item").click(fontClickHandler);
   });
 
   // $("#font-arial").click(function () {
@@ -408,7 +429,7 @@ function initFontSize() {
     var size = fontSizes[i].toString();
     var str = '<div class="submenu-item" id="font-size-' + size +
       '" data-font-size="' + size + '">' + size + '</div>';
-    $("#toolbar-font-size > .toolbar-submenu").append(str);
+    $("#toolbar-font-size-submenu").append(str);
     var element = $("#font-size-" + size);
     element.click(fontSizeClickHandler);
   }
@@ -469,7 +490,14 @@ function initCanvas() {
     },
     "selection:cleared": function () {
       showActiveTools();
-    }
+    },
+    // DQD - Added this to try and deactivate active toolbars
+    // when nothing is selected. May not be needed.
+    // "mouse:up": function (event) {
+    //   if (!event.target) {
+    //     hideActiveTools();
+    //   }
+    // }
   });
 
   window.addEventListener('resize', fitSearchResults, false);
@@ -480,11 +508,11 @@ function initCanvas() {
  * Initialize the undo and redo event handlers
  */
 function initUndo() {
-  $("#toolbar-undo").click(function () {
+  $("#toolbar-undo-button").click(function () {
     state.undo();
   });
 
-  $("#toolbar-redo").click(function () {
+  $("#toolbar-redo-button").click(function () {
     state.redo();
   });
 }
@@ -493,7 +521,7 @@ function initUndo() {
  * Initialize the text tool event handler
  */
 function initText() {
-  $("#toolbar-text").click(function () {
+  $("#toolbar-text-button").click(function () {
     $(document).trigger("click.submenu"); // Make sure all submenus are closed
     if ($("#toolbar-text").hasClass("toolbar-item-active")) {
       $("#toolbar-text").removeClass("toolbar-item-active");
@@ -509,14 +537,17 @@ function initText() {
  * Initialize the submenu event handlers
  */
 function initSubmenus() {
+  // Main event handler for submenus
+  //
+  // Set an event handler for each tool that has a dropdown menu
   $('.toolbar-dropdown').each(function (i, obj) {
     $(obj).click(function (event) {
       var button = $(this);
-      var popup = $(".toolbar-submenu", button);
-      var visible = popup.is(":visible");
+      var submenu = $(".toolbar-submenu", button);
+      var visible = submenu.is(":visible");
 
       if (visible) {
-        // We're closing the submenu
+        // Close a submenu
         var clickedButton = event.target.id === button.attr('id');
         var noAutoClose = $(".toolbar-submenu", button).hasClass("no-auto-close");
         if (!clickedButton && noAutoClose) {
@@ -527,10 +558,13 @@ function initSubmenus() {
           button.removeClass("toolbar-item-active");
         }
 
-        page.closeSubmenu(button);
+        // DQD - Changed the HTML heirarchy so the button is no longer
+        // the submenu.
+        //page.closeSubmenu(button);
+        page.closeSubmenu(submenu);
         $(document).unbind("click.submenu");
       } else {
-        // We're opening the submenu
+        // Open a submenu
         $(document).trigger("click.submenu", true);
 
         button.addClass("toolbar-item-active");
@@ -538,8 +572,8 @@ function initSubmenus() {
 
         var x = button.offset().top + 27;
         var y = button.offset().left;
-        popup.css({ top: x, left: y });
-        popup.removeClass("noshow");
+        submenu.css({ top: x, left: y });
+        submenu.removeClass("noshow");
 
         // DQD - This block was causing the font family submeny to be hidden when 
         // the user clicked some place other than the current font name. Not sure
@@ -555,7 +589,7 @@ function initSubmenus() {
         // });
 
         // Hack to get spectrum color pickers to redraw
-        if (popup[0] && popup[0].id === "shadow-submenu") {
+        if (submenu[0] && submenu[0].id === "shadow-submenu") {
           var shadowColor = utils.getShadowColor();
           $("#shadow-color-picker").spectrum("set", shadowColor);
           $("#shadow-color-hex").val($("#shadow-color-picker").spectrum("get").toHexString());
@@ -725,21 +759,35 @@ function initSearchArt() {
 /**
  * Initialize the basic text tool event handlers
  */
-function initTextTools() {
-  $("#toolbar-bold").click(function () {
+function initTextEmphasis() {
+  $("#toolbar-bold-button").click(function () {
     text.toggleBold();
     text.returnFocus();
   });
 
-  $("#toolbar-italics").click(function () {
+  $("#toolbar-italics-button").click(function () {
     text.toggleItalics();
     text.returnFocus();
   });
 
-  $("#toolbar-underline").click(function () {
+  $("#toolbar-underline-button").click(function () {
     text.toggleUnderline();
     text.returnFocus();
   });
+}
+
+/**
+ * 
+ */
+function initTextSpacing() {
+  var textSpacingHandler = function () {
+    var value = $(this).text();
+    utils.setTextSpacing(parseFloat(value));
+    showCurrentTextSpacing();
+  };
+
+  $("#toolbar-text-spacing-submenu > .submenu-item").click(textSpacingHandler);
+  showCurrentTextSpacing();
 }
 
 /**
@@ -760,7 +808,7 @@ function initTextAlign() {
 /**
  * Initialize the arrange tool event handlers
  */
-function initArrangeTools() {
+function initArrange() {
   $("#toolbar-send-back").click(function () {
     utils.sendToBack();
   });
@@ -782,11 +830,11 @@ function initArrangeTools() {
  * Initialize the center selection on page event handlers
  */
 function initCentering() {
-  $("#toolbar-horizontal-center").click(function () {
+  $("#toolbar-h-center-button").click(function () {
     utils.hCenterSelection();
   });
 
-  $("#toolbar-vertical-center").click(function () {
+  $("#toolbar-v-center-button").click(function () {
     utils.vCenterSelection();
   });
 }
@@ -794,7 +842,7 @@ function initCentering() {
 /**
  * Initialize the effects tools event handlers
  */
-function initEffectsTools() {
+function initEffects() {
   $("#shadow-switch").change(function () {
     if ($(this).is(":checked")) {
       $("#glow-switch-label")[0].MaterialSwitch.off();
@@ -867,8 +915,8 @@ function initSidebar() {
 /**
  * Initialize the event handler for the select tool
  */
-function initSelectTool() {
-  $("#toolbar-select").click(function () {
+function initSelect() {
+  $("#toolbar-select-button").click(function () {
     canvas.defaultCursor = 'auto';
     canvas.deactivateAllWithDispatch();
     canvas.renderAll();
@@ -1010,7 +1058,7 @@ function openImportDialog(type) {
 /**
  * Initialize the file tool
  */
-function initFileTool() {
+function initFile() {
   // Import template
   $("#file-import-template").click(function () {
     // TODO: Inserting a template may need special treatment
@@ -1042,26 +1090,27 @@ function initFileTool() {
  * Initialize all the editor user interface event handlers
  */
 function listeners() {
-  initFontFamily();
-  initFontSize();
   initOutlineWidth();
   initOutlineStyle();
   initCanvas();
   initUndo();
   initSidebar();
-  initText();
-  initSubmenus();
   initShapes();
   //initButtons();
   //initImportExport();
   //initSearchArt();
-  initTextTools();
+  initFontFamily();
+  initFontSize();
+  initText();
+  initTextEmphasis();
   initTextAlign();
-  initArrangeTools();
+  initTextSpacing();
+  initArrange();
   initCentering();
-  initEffectsTools();
-  initSelectTool();
-  initFileTool();
+  initEffects();
+  initSelect();
+  initFile();
+  initSubmenus();
 }
 
 /**
@@ -1222,6 +1271,7 @@ function HandlersModule() {
   utils.setFillColor("#ff0000");
   utils.setOutlineColor("#000000");
   utils.setOutlineWidth(3);
+  utils.setTextSpacing(1.15);
 
   // Preserve object layer order when selecting objects
   canvas.preserveObjectStacking = true;

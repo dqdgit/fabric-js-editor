@@ -167,7 +167,7 @@ function drawObj(objType) {
 function cancelInsert() {
   canvas.defaultCursor = 'auto';
   disableDraw();
-  $("#toolbar-text").removeClass("toolbar-item-active ");
+  $("#toolbar-text-button").removeClass("toolbar-item-active ");
 }
 
 // Cancel text insertion
