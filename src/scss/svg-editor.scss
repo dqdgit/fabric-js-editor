@@ -6,24 +6,13 @@ $toolbar-padding: 3px;
 
 $toolbar-button-height: $glyph-height;
 $toolbar-height: ($toolbar-button-height + (2 * $toolbar-button-padding) + 2px);
-$toolbar-separator-height: ($toolbar-height + (2 * $toolbar-padding));
+$toolbar-separator-height: ($toolbar-height + (1 * $toolbar-padding));
 
 $toolbar-background: #F2F2F2;
 $toolbar-border: #BDBDBD;
 $toolbar-submenu-width: 205px;
-/*
-$toolbar-height: 27px;
-$toolbar-button-height: 18px;
-*/
 
-/* --- sidebar --- */
-/*
-$sidebar-width: 80px;
-$sidebar-color: #37375A;
-$sidebar-color-hover: lighten($sidebar-color, 12%);
-$sidebar-color-highlight: #E74C3C;
-*/
+$statusbar-height: 20px;
 
 @import 'page';
-/* @import 'sidebar'; */
 @import 'toolbar';

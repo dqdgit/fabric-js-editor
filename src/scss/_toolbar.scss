@@ -1,23 +1,23 @@
 
 /* --- Toolbar --- */
-
-#toolbar {
+#toolbar-container {
+  margin: 0px;
+  padding: 0px;
   padding-left: 8px;
   padding-right: 8px;
-  padding-top: $toolbar-padding;
-  padding-bottom: $toolbar-padding;
   height: $toolbar-height;
-  width: 100%;
+  width: calc(100% - 18px);
   line-height: $toolbar-height;
-
-  border-top: 1px solid $toolbar-border;
-  border-bottom: 1px solid $toolbar-border;
-  border-left: 1px solid $toolbar-border;
-  border-right: 1px solid $toolbar-border;
-
+  border: 1px solid $toolbar-border;
   background-color: $toolbar-background;
-  overflow: hidden;
   z-index: 5;
+}
+
+#toolbar {
+  margin: 0px;
+  width: 100%;
+  height: ($toolbar-height - $toolbar-padding);
+  padding-bottom: $toolbar-padding;
 }
 
 .toolbar-section {

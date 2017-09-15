@@ -11,6 +11,10 @@ var canvas = global.canvas;
 //var filesaver = require('../lib/filesaver.min.js');
 var filesaver = require('filesaver.js');
 
+/**
+ * 
+ * @param {*} objs 
+ */
 function selectAll(objs) {
   canvas.deactivateAll();
 
@@ -29,6 +33,9 @@ function selectAll(objs) {
   canvas.setActiveGroup(group.setCoords());
 }
 
+/**
+ * 
+ */
 function clone() {
   var object = null;
   if (canvas.getActiveGroup() !== null) {
@@ -64,6 +71,9 @@ function clone() {
   canvas.trigger("object:statechange");
 }
 
+/**
+ * 
+ */
 function deleteSelected() {
   // Delete the current object(s)
   if (canvas.getActiveGroup() !== null && canvas.getActiveGroup() !== undefined) {
@@ -74,8 +84,9 @@ function deleteSelected() {
   }
 }
 
-/* ----- Layers ----- */
-
+/**
+ * 
+ */
 function sendForward() {
   if (canvas.getActiveGroup() !== null) {
     sendGroupForward(canvas.getActiveGroup(), false);
@@ -86,6 +97,9 @@ function sendForward() {
   canvas.trigger("object:statechange");
 }
 
+/**
+ * 
+ */
 function sendBackward() {
   if (canvas.getActiveGroup() !== null) {
     sendGroupBackward(canvas.getActiveGroup(), false);
@@ -96,6 +110,9 @@ function sendBackward() {
   canvas.trigger("object:statechange");
 }
 
+/**
+ * 
+ */
 function sendToFront() {
   if (canvas.getActiveGroup() !== null) {
     sendGroupForward(canvas.getActiveGroup(), true);
@@ -106,6 +123,9 @@ function sendToFront() {
   canvas.trigger("object:statechange");
 }
 
+/**
+ * 
+ */
 function sendToBack() {
   if (canvas.getActiveGroup() !== null) {
     sendGroupBackward(canvas.getActiveGroup(), true);
@@ -117,6 +137,11 @@ function sendToBack() {
 }
 
 // TODO Fabric.js might do this for us now that we've on version >1.5
+/**
+ * 
+ * @param {*} group 
+ * @param {*} bottom 
+ */
 function sendGroupBackward(group, bottom) {
   // Copy object references
   var sorted = group.objects.slice();
@@ -145,6 +170,11 @@ function sendGroupBackward(group, bottom) {
 }
 
 // TODO Fabric.js might do this for us now that we've on version >1.5
+/**
+ * 
+ * @param {*} group 
+ * @param {*} top 
+ */
 function sendGroupForward(group, top) {
   // Copy object references
   var sorted = group.objects.slice();
@@ -184,6 +214,10 @@ function getImageBounds() {
 */
 
 // inludes shadows
+/**
+ * 
+ * @param {*} fitToCanvas 
+ */
 function getImageBounds(fitToCanvas) {
   var objs = canvas.getObjects();
 
@@ -254,6 +288,10 @@ function getImageBounds(fitToCanvas) {
 }
 
 // includes shadows
+/**
+ * 
+ * @param {*} obj 
+ */
 function getObjBounds(obj) {
   var bounds = obj.getBoundingRect();
   var shadow = obj.getShadow();
@@ -292,9 +330,11 @@ function getObjBounds(obj) {
   return bounds;
 }
 
-/* ----- Export ----- */
-
 // fileType should be "png", "jpeg", or "svg"
+/**
+ * 
+ * @param {*} fileType 
+ */
 function exportFile(fileType) {
   // Get bounds of image
   var bounds = getImageBounds(true);
@@ -330,11 +370,14 @@ function exportFile(fileType) {
   }
 
   // Save file
-  filesaver.saveAs(blob, "design." + fileType);
+  filesaver.saveAs(blob, "svg-editor." + fileType);
 }
 
-/* ----- Import ----- */
-
+/**
+ * 
+ * @param {*} url 
+ * @param {*} loader 
+ */
 function insertSvg(url, loader) {
   loader.removeClass("noshow");
   fabric.loadSVGFromURL(url, function(objects, options) {
@@ -450,8 +493,40 @@ function insertSvgFromString(string, loader) {
   });
 }
 
-/* ----- Styles ----- */
+/**
+ * Read the contents of the given file and insert it as a string
+ * 
+ * @param {File} file - Web API File object to insert
+ */
+function readFromString(file) {
+  var reader = new FileReader();
 
+  reader.onload = function (ev) {
+    insertSvgFromString(ev.target.result, $("#loading-spinner"));
+  };
+
+  reader.readAsText(file);
+}
+
+/**
+ * 
+ * @param {File} file - Web API File object to insert
+ */
+function readFromData(file) {
+  var reader = new FileReader();
+
+  reader.onload = function (ev) {
+    insertImageFromData(ev.target.result, $("#loading-spinner"));
+  };
+
+  reader.readAsDataURL(file);
+}
+
+/**
+ * 
+ * @param {*} styleName 
+ * @param {*} object 
+ */
 function getActiveStyle(styleName, object) {
   // Precedence:
   //   - parameter object
@@ -477,9 +552,15 @@ function getActiveStyle(styleName, object) {
   */
 }
 
+/**
+ * 
+ * @param {*} styleName 
+ * @param {*} value 
+ * @param {*} object 
+ */
 function setActiveStyle(styleName, value, object) {
   // Precedence:
-  //   - parambeter object
+  //   - parameter object
   //   - active object
   //   - canvas property
   object = object || canvas.getActiveObject();
@@ -499,6 +580,9 @@ function setActiveStyle(styleName, value, object) {
   */
 }
 
+/**
+ * 
+ */
 function getFillColor() {
   // var object = canvas.getActiveObject();
   // if (object.customFillColor !== undefined) {
@@ -519,6 +603,10 @@ function getFillColor() {
   }
 }
 
+/**
+ * 
+ * @param {*} hex 
+ */
 function setFillColor(hex) {
   // var object = canvas.getActiveObject();
   // if (object) {
@@ -551,6 +639,9 @@ function setFillColor(hex) {
   }
 }
 
+/**
+ * 
+ */
 function getOutlineColor() {
   // var object = canvas.getActiveObject();
   // if (object.customOutlineColor !== undefined) {
@@ -560,6 +651,10 @@ function getOutlineColor() {
   return getActiveStyle("stroke");
 }
 
+/**
+ * 
+ * @param {*} hex 
+ */
 function setOutlineColor(hex) {
   // var object = canvas.getActiveObject();
   // if (object) {
@@ -577,8 +672,18 @@ function setOutlineColor(hex) {
 
   //   object.customOutlineColor = hex;
   // }
+  var object = canvas.getActiveObject();
 
-  setActiveStyle("stroke", hex);
+  if (object && object !== undefined) {
+    if (object.type === 'i-text' || object.type === 'line') {
+      setActiveStyle("stroke", hex, object);
+    } else {
+      object.setStroke(hex);
+      setActiveStyle("stroke", hex, object);
+    }
+  } else {
+    setActiveStyle("stroke", hex, canvas);
+  }
 }
 
 function getOutlineWidth() {
@@ -720,6 +825,9 @@ function vCenterSelection() {
 
 /* ----- Text ----- */
 
+/**
+ * 
+ */
 function getFontSize() {
   var px;
   var obj = canvas.getActiveObject();
@@ -733,6 +841,10 @@ function getFontSize() {
   return Math.round(px * (72/96));
 }
 
+/**
+ * 
+ * @param {*} value 
+ */
 function setFontSize(value) {
   var px = Math.round(value * (96/72));
   var obj = canvas.getActiveObject();
@@ -966,5 +1078,7 @@ UtilsModule.prototype.getShadowOffset = getShadowOffset;
 UtilsModule.prototype.changeShadowColor = changeShadowColor;
 UtilsModule.prototype.getShadowColor = getShadowColor;
 UtilsModule.prototype.centerContent = centerContent;
+UtilsModule.prototype.readFromString = readFromString;
+UtilsModule.prototype.readFromData = readFromData;
 
 module.exports = UtilsModule;

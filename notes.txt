@@ -184,3 +184,5 @@ font-weight: 700;
 ##
 Material Components for the Web 
   - https://github.com/material-components/material-components-web
+  - Replacement for Material Design lite
+  - Would requre updating entire application

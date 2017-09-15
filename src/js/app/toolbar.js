@@ -1,11 +1,11 @@
 "use strict";
 
 var canvas = global.canvas;
+var state = global.state;
 
-// DQD
-//require('../lib/jquery.ui.position.min.js');
-//require('../lib/jquery.contextMenu.min.js');
-//require('../lib/jquery.tooltipster.min.js');
+/**
+ * Third party modules
+ */
 require('jquery');
 require('jquery-ui');
 require('jquery-contextmenu');
@@ -13,120 +13,20 @@ require('spectrum-colorpicker');
 require('material-design-lite');
 require('dialog-polyfill');
 
-
-var config = require('./config.js');
+/**
+ * Application modules
+ */
 var utils = new (require('./fabricUtils.js'))();
 var page = new (require('./page.js'))();
 var drawing = new (require('./drawing.js'))();
 var text = new (require('./text.js'))();
-var fetchApi = new (require('./fetchApi.js'))();
-var importExport = new (require('./importExport.js'))();
-var isAppLoading = true;
+var statusBar = new (require('./statusBar.js'))();
+var svgDoc = new (require('./svg.js'))();
 
-/**
- * Initialize the editor state cache
- */
-var state = new (require('./state.js'))(
-  function() {
-    // get state
-    return JSON.stringify(canvas);
-  },
-  function(newState) {
-    // set state
-    canvas.clear();
-    canvas.loadFromJSON(newState);
-    canvas.renderAll();
-  }
-);
+var Metadata = require('./metadata.js');
 
-/**
- * Handler for the delete and backspace keys
- */
-function deleteHandler() {
-  // Handler for the delete and backspace keys
-  $(document).keyup(function(e) {
-    if(e.which == 46 || e.which == 8) {
-      // Block the functionality if user is entering text
-      var active = $(document.activeElement);
-      if (active.is('input,textarea,text,password,file,email,search,tel,date')) {
-        return;
-      }
+var tileMetadata = null;
 
-      utils.deleteSelected();
-      e.preventDefault();
-    }
-  });
-}
-
-/**
- * Initialize the right click context menu and event handlers
- */
-function rightClick() {
-  // Setup right-click context menu
-  $.contextMenu({
-    selector: '#content',
-    trigger: 'right',
-    animation: { duration: 0 },
-    callback: function(itemKey, opt){
-      if (itemKey === "delete") {
-        utils.deleteSelected();
-      } else if (itemKey === "forward") {
-        utils.sendForward();
-      } else if (itemKey === "front") {
-        utils.sendToFront();
-      } else if (itemKey === "backward") {
-        utils.sendBackward();
-      } else if (itemKey === "back") {
-        utils.sendToBack();
-      } else if (itemKey === "clone") {
-        utils.clone();
-      }
-    },
-    items: {
-      "forward": {name: "Bring Forward"},
-      "front": {name: "Bring to Front"},
-      "backward": {name: "Send Backward"},
-      "back": {name: "Send to Back"},
-      "sep1": "---------",
-      "clone": {name: "Clone"},
-      "sep2": "---------",
-      "delete": {name: "Delete"}
-    }
-  });
-
-  // Bind right-click menu
-  $('#content').bind('contextmenu.custom', function (e) {
-    var target = canvas.findTarget(e.e);
-    if (target !== null && target !== undefined) {
-      canvas.setActiveObject(target);
-      return true;
-    }
-    return false;
-  });
-}
-
-/**
- * TODO: Not yet sure what this does
- * 
- * @param {*} button 
- */
-function toggle(button) {
-  var open = $("div.sidebar-item-selected");
-
-  if (open.length === 0) {
-    page.openPanel(button, true);
-    return;
-  }
-
-  if (open.attr("id") == button.attr("id")) {
-    // Same button clicked
-    page.closePanel(open, true);
-  } else {
-    // Different button clicked
-    page.closePanel(open, false);
-    page.openPanel(button, false);
-  }
-}
 
 /**
  * Return a string with the frist character or each
@@ -134,82 +34,23 @@ function toggle(button) {
  * 
  * @param {string} str 
  */
-function toTitleCase(str)
-{
-  return str.replace(/\w\S*/g, function(txt) {
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, function (txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
 }
 
 /**
- * Display the active font in the toolbar tool
+ * TODO: What does this do?
+ * @param {*} e 
  */
-function showCurrentFont() {
-  var font = toTitleCase(utils.getFont());
-  if (font.length > 9) {
-    font = font.substring(0,10) + "...";
-  }
-  $("#current-font").text(font);
-}
+function resetFormElement(e) {
+  e.wrap('<form>').closest('form').get(0).reset();
+  e.unwrap();
 
-/**
- * Display the current font size in the toolbar
- */
-function showCurrentFontSize() {
-  var fontSize = utils.getFontSize();
-  $("#current-font-size").text(fontSize.toString());
-}
-
-/**
- * Indicate the active outline (border) width in the tool submenu
- */
-function showCurrentOutlineWidth() {
-  var width = utils.getOutlineWidth();
-
-  var element = $("#toolbar-outline-width-submenu > .submenu-item-selected");
-  if (element.length > 0) {
-    element.removeClass("submenu-item-selected");
-  }
-
-  element = $("#outline-width-" + width.toString());
-  element.addClass("submenu-item-selected");
-}
-
-/**
- * Indicate the active outline (border) style in the tool submenu
- */
-function showCurrentOutlineStyle() {
-  var style = utils.getOutlineStyle();
-
-  var element = $("#toolbar-outline-style-submenu > .submenu-item-selected");
-  if (element.length > 0) {
-    element.removeClass("submenu-item-selected");
-  }
-}
-
-/**
- * Incicate the active text alignment in the tool submenu
- */
-function showCurrentTextAlign() {
-  var mode = utils.getTextAlign();
-  var element = $("#toolbar-text-align-submenu > .submenu-item-selected");
-  if (element.length > 0) {
-    element.removeClass("submenu-item-selected");
-  }
-
-  element = $("#text-align-" + mode);
-  element.addClass("submenu-item-selected");
-}
-
-function showCurrentTextSpacing() {
-  var value = utils.getTextSpacing();
-  var element = $("#toolbar-text-spacing-submenu > .submenu-item-selected");
-  if (element.length > 0) {
-    element.removeClass("submenu-item-selected");
-  }
-
-  element = $("[data-text-spacing='" + value.toString() + "']");
-  element.addClass("submenu-item-selected");
+  // Prevent form submission
+  e.stopPropagation();
+  e.preventDefault();
 }
 
 /**
@@ -234,9 +75,9 @@ function hideActiveTools() {
  * Display the appropriate contextual tools for the selected object or group
  */
 function showActiveTools() {
-  if (isAppLoading === true) {
-    return;
-  }
+  // if (isAppLoading === true) {
+  //   return;
+  // }
 
   var tools = $("#active-tools");
   var obj = canvas.getActiveObject();
@@ -320,25 +161,74 @@ function showActiveTools() {
 }
 
 /**
- * TODO: What does this do?
+ * Display the active font in the toolbar tool
  */
-function fitSearchResults() {
-  var results = $("#slideout-artwork > .slideout-body > .search-results");
-  var padding = $("#top").height() + 175;
-  results.css("height", window.innerHeight - padding);
+function showCurrentFont() {
+  var font = toTitleCase(utils.getFont());
+  if (font.length > 9) {
+    font = font.substring(0, 10) + "...";
+  }
+  $("#current-font").text(font);
 }
 
 /**
- * TODO: What does this do?
- * @param {*} e 
+ * Display the current font size in the toolbar
  */
-function resetFormElement(e) {
-  e.wrap('<form>').closest('form').get(0).reset();
-  e.unwrap();
+function showCurrentFontSize() {
+  var fontSize = utils.getFontSize();
+  $("#current-font-size").text(fontSize.toString());
+}
 
-  // Prevent form submission
-  e.stopPropagation();
-  e.preventDefault();
+/**
+ * Indicate the active outline (border) width in the tool submenu
+ */
+function showCurrentOutlineWidth() {
+  var width = utils.getOutlineWidth();
+
+  var element = $("#toolbar-outline-width-submenu > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+
+  element = $("#outline-width-" + width.toString());
+  element.addClass("submenu-item-selected");
+}
+
+/**
+ * Indicate the active outline (border) style in the tool submenu
+ */
+function showCurrentOutlineStyle() {
+  var style = utils.getOutlineStyle();
+
+  var element = $("#toolbar-outline-style-submenu > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+}
+
+/**
+ * Incicate the active text alignment in the tool submenu
+ */
+function showCurrentTextAlign() {
+  var mode = utils.getTextAlign();
+  var element = $("#toolbar-text-align-submenu > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+
+  element = $("#text-align-" + mode);
+  element.addClass("submenu-item-selected");
+}
+
+function showCurrentTextSpacing() {
+  var value = utils.getTextSpacing();
+  var element = $("#toolbar-text-spacing-submenu > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+
+  element = $("[data-text-spacing='" + value.toString() + "']");
+  element.addClass("submenu-item-selected");
 }
 
 /**
@@ -417,9 +307,9 @@ function initFontFamily() {
  */
 function initFontSize() {
   var fontSizeClickHandler = function () {
-    //var fontSize = $(this).text();
+    var fontSize = $(this).text();
     //var fontSize = utils.getFontSize();
-    //utils.setFontSize(parseInt(fontSize));
+    utils.setFontSize(parseInt(fontSize));
     showCurrentFontSize();
     text.returnFocus();
   };
@@ -465,7 +355,7 @@ function initOutlineWidth() {
 function initOutlineStyle() {
   var outlineStyleClickHandler = function () {
     var outlineStyle = $(this).text();
-    utils.setOutlineStyle(parseInt(outlineStyle));
+    utils.setOutlineStyle(outlineStyle);
     showCurrentOutlineStyle();
   };
 
@@ -478,30 +368,6 @@ function initOutlineStyle() {
     var element = $("#outline-style-" + style);
     element.click(outlineStyleClickHandler);
   }
-}
-
-/**
- * Initialize the canvas event handlers
- */
-function initCanvas() {
-  canvas.on({
-    "object:selected": function () {
-      showActiveTools();
-    },
-    "selection:cleared": function () {
-      showActiveTools();
-    },
-    // DQD - Added this to try and deactivate active toolbars
-    // when nothing is selected. May not be needed.
-    // "mouse:up": function (event) {
-    //   if (!event.target) {
-    //     hideActiveTools();
-    //   }
-    // }
-  });
-
-  window.addEventListener('resize', fitSearchResults, false);
-  fitSearchResults();
 }
 
 /**
@@ -638,123 +504,87 @@ function initShapes() {
 /**
  * Initialize the import and export event handlers
  */
-function initImportExport() {
-  // Download jpeg, png or svg
-  $("#download-image-button").click(function () {
-    var type = $("input[name=file-type]:checked").val();
-    var background = $("input[name=background-color]:checked").val();
+// function initImportExport() {
+//   // Download jpeg, png or svg
+//   $("#download-image-button").click(function () {
+//     var type = $("input[name=file-type]:checked").val();
+//     var background = $("input[name=background-color]:checked").val();
 
-    var rect;
-    if (background === 'white' || type === 'jpeg') {
-      if (type === 'png' || type === 'jpeg') {
-        canvas.setBackgroundColor("#FFFFFF");
-        canvas.renderAll();
-      } else {
-        rect = new fabric.Rect({
-          left: 0,
-          top: 0,
-          fill: 'white',
-          width: canvas.width,
-          height: canvas.height
-        });
-        canvas.add(rect);
-        canvas.sendToBack(rect);
-        canvas.renderAll();
-      }
-    }
+//     var rect;
+//     if (background === 'white' || type === 'jpeg') {
+//       if (type === 'png' || type === 'jpeg') {
+//         canvas.setBackgroundColor("#FFFFFF");
+//         canvas.renderAll();
+//       } else {
+//         rect = new fabric.Rect({
+//           left: 0,
+//           top: 0,
+//           fill: 'white',
+//           width: canvas.width,
+//           height: canvas.height
+//         });
+//         canvas.add(rect);
+//         canvas.sendToBack(rect);
+//         canvas.renderAll();
+//       }
+//     }
 
-    utils.exportFile(type);
-    hideActiveTools();
+//     utils.exportFile(type);
+//     hideActiveTools();
 
-    // Cleanup background
-    if (background === 'white' || type === 'jpeg') {
-      if (type === 'png' || type === 'jpeg') {
-        canvas.setBackgroundColor("");
-      } else {
-        canvas.remove(rect);
-      }
-      canvas.renderAll();
-    }
-  });
+//     // Cleanup background
+//     if (background === 'white' || type === 'jpeg') {
+//       if (type === 'png' || type === 'jpeg') {
+//         canvas.setBackgroundColor("");
+//       } else {
+//         canvas.remove(rect);
+//       }
+//       canvas.renderAll();
+//     }
+//   });
 
-  // Export JSON
-  $("#export-file-button").click(function () {
-    // Broken in Safari
-    var isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
-      navigator.userAgent && !navigator.userAgent.match('CriOS');
-    if (isSafari === true) {
-      window.alert("Sorry, Safari does not support exporting your work. You can still use the sharing tool instead!");
-      return;
-    }
+//   // Export JSON
+//   $("#export-file-button").click(function () {
+//     // Broken in Safari
+//     var isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
+//       navigator.userAgent && !navigator.userAgent.match('CriOS');
+//     if (isSafari === true) {
+//       window.alert("Sorry, Safari does not support exporting your work. You can still use the sharing tool instead!");
+//       return;
+//     }
 
-    var data = JSON.stringify(canvas);
-    importExport.exportFile(data, 'design.logo');
-  });
+//     var data = JSON.stringify(canvas);
+//     importExport.exportFile(data, 'design.logo');
+//   });
 
-  // Import JSON
-  $("#import-file-button").on("change", function (e) {
-    $("#loading-spinner").removeClass("noshow");
-    page.closePanel(null, true);
+//   // Import JSON
+//   $("#import-file-button").on("change", function (e) {
+//     $("#loading-spinner").removeClass("noshow");
+//     page.closePanel(null, true);
 
-    var files = e.target.files;
-    var reader = new FileReader();
+//     var files = e.target.files;
+//     var reader = new FileReader();
 
-    reader.onload = function (e) {
-      try {
-        var data = reader.result;
-        importExport.importFile(data, function (data) {
-          canvas.clear();
-          canvas.loadFromJSON(data);
-          utils.centerContent();
-          $("#loading-spinner").addClass("noshow");
-        });
+//     reader.onload = function (e) {
+//       try {
+//         var data = reader.result;
+//         importExport.importFile(data, function (data) {
+//           canvas.clear();
+//           canvas.loadFromJSON(data);
+//           utils.centerContent();
+//           $("#loading-spinner").addClass("noshow");
+//         });
 
-        // Clear the form so you can load another file
-        resetFormElement($("#import-wrapper"));
-      } catch (err) {
-        $("#loading-spinner").addClass("noshow");
-      }
-    };
+//         // Clear the form so you can load another file
+//         resetFormElement($("#import-wrapper"));
+//       } catch (err) {
+//         $("#loading-spinner").addClass("noshow");
+//       }
+//     };
 
-    reader.readAsArrayBuffer(files[0]);
-  });
-}
-
-/**
- * Initialize the search for art event handlers
- */
-function initSearchArt() {
-  $("#artwork-search-form").submit(function (e) {
-    // Prevent form submission
-    e.preventDefault();
-
-    // Fetch artwork
-    var term = $("#artwork-search").val().trim();
-    var resultsDiv = $("#artwork-panel > .search-results");
-
-    var isClipart = $("input[name=search-type]:checked").val() === "clipart";
-    fetchApi.search(term,
-      page.toggleArtworkSearchSpinner,
-      page.toggleArtworkNoResults,
-      resultsDiv,
-      function (url) {
-        utils.insertSvg(url, $("#loading-spinner"));
-        page.closePanel(null, true);
-      },
-      isClipart);
-  });
-
-  $("#search-submit").click(function () {
-    $('form[name=artwork-search-form]').submit();
-  });
-
-  // Search again if user changes search type
-  $('input[type=radio][name=search-type]').change(function () {
-    if ($("#artwork-search").val() !== "") {
-      $('form[name=artwork-search-form]').submit();
-    }
-  });
-}
+//     reader.readAsArrayBuffer(files[0]);
+//   });
+// }
 
 /**
  * Initialize the basic text tool event handlers
@@ -897,22 +727,6 @@ function initEffects() {
 }
 
 /**
- * Initialize the sidebar event handlers
- */
-function initSidebar() {
-  $(".sidebar-item").click(function () {
-    toggle($(this));
-    return false;
-  }).hover(function () {
-    if (!$(this).hasClass("sidebar-item-active")) {
-      $(this).addClass("sidebar-item-hover");
-    }
-  }, function () {
-    $(this).removeClass("sidebar-item-hover");
-  });
-}
-
-/**
  * Initialize the event handler for the select tool
  */
 function initSelect() {
@@ -924,6 +738,7 @@ function initSelect() {
   });
 }
 
+
 /**
  * Download the canvas content as the specified file type
  * 
@@ -931,6 +746,10 @@ function initSelect() {
  */
 function downloadImage(type) {
   var rect;
+
+  // TODO: Implement export tile with tile specific
+  //       operations: set size to bounding box, set
+  //       background color, etc.
   if (type === 'png' || type === 'jpeg') {
     canvas.setBackgroundColor("#FFFFFF");
     canvas.renderAll();
@@ -947,6 +766,11 @@ function downloadImage(type) {
     canvas.renderAll();
   }
 
+  // TODO: Testing SVG conversion
+  if (type === 'svg') {
+    svg = svgDoc.xmlFromCanvas(canvas);
+  }
+
   utils.exportFile(type);
   hideActiveTools();
 
@@ -959,37 +783,14 @@ function downloadImage(type) {
   canvas.renderAll();
 }
 
-/**
- * Read the contents of the given file and insert it as a string
- * 
- * @param {File} file - Web API File object to insert
- */
-function readFromString(file) {
-  var reader = new FileReader();
-
-  reader.onload = function (ev) {
-    utils.insertSvgFromString(ev.target.result, $("#loading-spinner"));
-  };
-
-  reader.readAsText(file);
-}
-
-function readFromData(file) {
-  var reader = new FileReader();
-
-  reader.onload = function (ev) {
-    utils.insertImageFromData(ev.target.result, $("#loading-spinner"));
-  };
-
-  reader.readAsDataURL(file);
-}
 
 /**
- * Display the import from dialog and handle it's events
+ * Display the import dialog and handle it's events
  * 
- * @param {string} type - the type of file "svg" or "png"
+ * @param {String} type - the type of file "svg" or "png"
+ * @param {String} title = the title to use for the dialog
  */
-function openImportDialog(type) {
+function openImportDialog(type, title) {
   var dialog = $("#import-file-dialog").get(0);
 
   // For browsers that don't have the dialog element
@@ -1009,10 +810,10 @@ function openImportDialog(type) {
       if (fileList[i].type === mimeType) {
         switch (type) {
           case "svg":
-            readFromString(fileList[i]);
+            utils.readFromString(fileList[i]);
             break;
           case "png":
-            readFromData(fileList[i]);
+            utils.readFromData(fileList[i]);
             break;
           default:
             // TODO: Error, unknown type
@@ -1034,7 +835,7 @@ function openImportDialog(type) {
   });
 
   // Drag enter event handler. May not need this.
-  $("#import-file-dialog-dropzone").on("dragenter",function (ev) {
+  $("#import-file-dialog-dropzone").on("dragenter", function (ev) {
     ev.preventDefault();
     ev.stopPropagation();
   });
@@ -1049,7 +850,10 @@ function openImportDialog(type) {
     for (var i = 0; i < files.length; i++) {
       fileList.push(files[i]);
     }
- });
+  });
+
+  // Set the dialog title
+  $("#import-file-dialog-title").text(title);
 
   // Display the Import from file dialog
   dialog.showModal();
@@ -1062,17 +866,17 @@ function initFile() {
   // Import template
   $("#file-import-template").click(function () {
     // TODO: Inserting a template may need special treatment
-    openImportDialog("svg");
+    openImportDialog("svg", "Import Template");
   });
 
   // Import SVG
   $("#file-import-svg").click(function () {
-    openImportDialog("svg");
-  });  
+    openImportDialog("svg", "Import SVG");
+  });
 
   // Import image
   $("#file-import-image").click(function () {
-    openImportDialog("png");
+    openImportDialog("png", "Import Image");
   });
 
   // Export SVG
@@ -1087,31 +891,68 @@ function initFile() {
 }
 
 /**
- * Initialize all the editor user interface event handlers
+ * 
  */
-function listeners() {
-  initOutlineWidth();
-  initOutlineStyle();
-  initCanvas();
-  initUndo();
-  initSidebar();
-  initShapes();
-  //initButtons();
-  //initImportExport();
-  //initSearchArt();
-  initFontFamily();
-  initFontSize();
-  initText();
-  initTextEmphasis();
-  initTextAlign();
-  initTextSpacing();
-  initArrange();
-  initCentering();
-  initEffects();
-  initSelect();
-  initFile();
-  initSubmenus();
+function openMetadataDialog() {
+  var dialog = $("#edit-metadata-dialog").get(0);
+
+  // Initialize the dialog using the current metadata values
+  $("#metadata-title").val(tileMetadata.title);
+  //$("#svg_viewbox").text(metadata.viewbox)
+  //$("#svg_width").text(metadata.width)
+  //$("#svg_height").text(metadata.height)
+  $("#metadata-date").val(tileMetadata.date);
+  $("#metadata-creator").val(tileMetadata.creator);
+  $("#metadata-rights").val(tileMetadata.rights);
+  $("#metadata-publisher").val(tileMetadata.publisher);
+  $("#metadata-description").val(tileMetadata.description);
+  $("#metadata-keywords").attr("data-value", tileMetadata.keywords);
+  $("#metadata-keywords").val(tileMetadata.keywords);
+  $("#metadata-keywords").attr("data-index", "0");
+
+  // Update the SVG metadata
+  $("#edit-metadata-dialog-ok").click(function () {
+    tileMetadata.title = $("#metadata-title").val();
+    tileMetadata.date = $("#metadata-date").val();
+    tileMetadata.creator = $("#metadata-creator").val();
+    tileMetadata.rights = $("#metadata-rights").val();
+    tileMetadata.publisher = $("#metadata-publisher").val();
+    tileMetadata.description = $("#metadata-description").val();
+    tileMetadata.keywords = $("#metadata-keywords").val();
+    dialog.close();
+  });
+
+  // Cancel button click hander. 
+  $("#edit-metadata-dialog-cancel").click(function () {
+    dialog.close();
+  });
+
+  // Display the Import from file dialog
+  dialog.showModal();
 }
+
+/**
+ * 
+ */
+function initMetadata() {
+  // Initalize the metadata 
+  tileMetadata = new Metadata();
+
+  // Set the menubar click handler
+  $("#toolbar-metadata-button").click(function (ev) {
+    openMetadataDialog();
+  });
+}
+
+/**
+ * 
+ */
+function initDelete() {
+  $("#toolbar-delete-button").click(function (ev) {
+    utils.deleteSelected();
+  });
+}
+
 
 /**
  * TODO: What does this do?
@@ -1172,194 +1013,37 @@ function setShadow() {
 }
 
 /**
- * Event handler for canvas resize events
- */
-function resizeHandler() {
-  // Resize the canvas size
-  //var width = $("#content").width() - 100;
-  //var width = $("#content").width() - 40;
-  var width = $("body").width() - 10;
-  //var height = 600;
-  var height = $("body").height() - 10;
-  var toolbarHeight = $("#toolbar").height() + 4;
-  canvas.setWidth(width);
-  canvas.setHeight(height - toolbarHeight);
-  //$("#canvas-container").css({ left: "50px", top: "40px", width: width });
-  $("#canvas-container").css({ left: "0px", top: "0px", width: width, height: height });
-  //canvas.setHeight(window.innerHeight - $("#toolbar").height() - 150);
-
-  // Subtract the left and right padding values
-  var padLeft = parseInt($("#toolbar").css("padding-left"));
-  var padRight = parseInt($("#toolbar").css("padding-right"));
-  $("#toolbar").css({ width: width - (padLeft + padRight) });
-
-  // Resize the search results panel
-  //page.fitArtworkResultsHeight();
-}
-
-/**
- * TODO: What does this do?
- * @param {*} sParam 
- */
-var getUrlParameter = function getUrlParameter(sParam) {
-  var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-    sURLVariables = sPageURL.split('&'),
-    sParameterName,
-    i;
-
-  for (i = 0; i < sURLVariables.length; i++) {
-    sParameterName = sURLVariables[i].split('=');
-
-    if (sParameterName[0] === sParam) {
-      return sParameterName[1] === undefined ? true : sParameterName[1];
-    }
-  }
-};
-
-/**
- * TODO: What does this do?
  * 
- * @param {*} url 
- * @param {*} title 
- * @param {*} w 
- * @param {*} h 
  */
-function popupCenter(url, title, w, h) {
-	// Fixes dual-screen position                         Most browsers      Firefox
-	var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
-	var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
-
-	var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
-	var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
-
-	var left = ((width / 2) - (w / 2)) + dualScreenLeft;
-	var top = ((height / 3) - (h / 3)) + dualScreenTop;
-
-	var newWindow = window.open(url, title, 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
-
-	// Puts focus on the newWindow
-	if (newWindow && newWindow.focus) {
-		newWindow.focus();
-	}
+function initialize() {
+  initOutlineWidth();
+  initOutlineStyle();
+  initUndo();
+  initShapes();
+  initFontFamily();
+  initFontSize();
+  initText();
+  initTextEmphasis();
+  initTextAlign();
+  initTextSpacing();
+  initArrange();
+  initCentering();
+  initEffects();
+  initSelect();
+  initFile();
+  initSubmenus();
+  initMetadata();
+  initDelete();
 }
 
-/**
- * Initialize the module
- */
-function HandlersModule() {
-  if (!(this instanceof HandlersModule)) return new HandlersModule();
+/* ----- Exports ----- */
 
-  // Show loading spinner until sample image has been loaded
-  $("#loading-spinner").removeClass("noshow");
-
-  // Initialize canvas
-  fabric.Object.prototype.transparentCorners = false;
-  window.addEventListener('resize', resizeHandler, false);
-  resizeHandler();
-
-  // Change fabric.js selection styles
-  fabric.Object.prototype.set({
-    borderColor: "#1c55d5",
-    cornerColor: "#1c55d5",
-    cornerSize: 8,
-    rotatingPointOffset: 30
-  });
-
-  // Set some default values on the canvas
-  utils.setFont("Liberation Sans");
-  utils.setFontSize(18);
-  utils.setFillColor("#ff0000");
-  utils.setOutlineColor("#000000");
-  utils.setOutlineWidth(3);
-  utils.setTextSpacing(1.15);
-
-  // Preserve object layer order when selecting objects
-  canvas.preserveObjectStacking = true;
-
-  // Setup handlers
-  deleteHandler();
-  rightClick();
-  listeners();
-
-  // Load image
-  /*
-  var logoFile = getUrlParameter('i');
-  if (logoFile !== null && logoFile !== undefined && logoFile !== "") {
-    try {
-      var url = config.icons.host + "/shared/" + logoFile;
-      importExport.loadRemoteFile(url, function(decoded_data) {
-        if (decoded_data !== null) {
-          canvas.clear();
-          canvas.loadFromJSON(decoded_data);
-          utils.centerContent();
-        }
-        $("#loading-spinner").addClass("noshow");
-      });
-    } catch (err) {
-      $("#loading-spinner").addClass("noshow");
-    }
-  } else {
-    try {
-      canvas.clear();
-      //canvas.loadFromJSON(sampleImage); -- use this to load a default image
-      //utils.centerContent();
-      $("#loading-spinner").addClass("noshow");
-    } catch (err) {
-      $("#loading-spinner").addClass("noshow");
-    }
-
-    // Show popup tooltip on artwork search button when the page loads
-    // $("#sidebar-artwork > .inactive > img").tooltipster({
-    //   theme: 'tooltipster-daring',
-    //   contentAsHTML: true,
-    //   animation: 'grow',     // fade, grow, swing, slide, fall
-    //   speed: 150,
-    //   hideOnClick: true,
-    //   interactive: false,
-    //   interactiveTolerance: 350,
-    //   onlyOne: true,
-    //   position: 'right',
-    //   content: "<p class='onload-tooltip'><strong>Start here!</strong> Search for an image <br/> to begin making your image.</p>",
-    //   trigger: 'custom',
-    //   offsetX: 18,
-    //   offsetY: 5,
-    //   functionReady: function(){
-    //     $(document).click(function() {
-    //       $("#sidebar-artwork > .inactive > img").tooltipster('hide');
-    //     });
-    // }
-    // });
-    // window.setTimeout(function() {
-    //   $("#sidebar-artwork > .inactive > img").tooltipster('show');
-    // }, 400);
-  }
-  */
-  
-  try {
-    canvas.clear();
-    $("#loading-spinner").addClass("noshow");
-  } catch (err) {
-    $("#loading-spinner").addClass("noshow");
-  }
-
-
-  // Undo redo
-  canvas.on("object:modified", function() {
-    state.save();
-  });
-
-  canvas.on("object:removed", function() {
-    state.save();
-  });
-
-  canvas.on("object:statechange", function() {
-    state.save();
-  });
-
-  isAppLoading = false;
+function ToolbarModule() {
+  if (!(this instanceof ToolbarModule)) return new ToolbarModule();
 }
 
-/**
- * Module exports
- */
-module.exports = HandlersModule;
+ToolbarModule.prototype.initialize = initialize;
+ToolbarModule.prototype.showActiveTools = showActiveTools;
+ToolbarModule.prototype.hideActiveTools = hideActiveTools;
+
+module.exports = ToolbarModule;

@@ -5,12 +5,16 @@ var currentState = 0;
 var restoring = false;
 var getState, setState;
 
+/**
+ * 
+ */
 function pushState() {
   if (restoring) {
     return;
   }
 
   var state = getState();
+
   if (state === states[currentState]) {
     // nothing has changed
     return;
@@ -32,12 +36,19 @@ function pushState() {
   states.push(state);
 }
 
+/**
+ * 
+ * @param {*} state 
+ */
 function restore(state) {
   restoring = true;
   setState(state);
   restoring = false;
 }
 
+/**
+ * 
+ */
 function undo() {
   if (currentState > 0) {
     currentState--;
@@ -45,6 +56,9 @@ function undo() {
   }
 }
 
+/**
+ * 
+ */
 function redo() {
   if (currentState < (states.length - 1)) {
     currentState++;
@@ -56,6 +70,7 @@ function redo() {
 
 function StateModule(_getState, _setState) {
   if (!(this instanceof StateModule)) return new StateModule();
+
   getState = _getState;
   setState = _setState;
 	states.push(getState());

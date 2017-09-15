@@ -105,46 +105,6 @@ function arrowKeys() {
   });
 }
 
-function showPreview() {
-  var preview = $("#preview");
-
-  // Get a cropped PNG
-  var bounds = utils.getImageBounds(true);
-  var url = canvas.toDataURL({
-    format: 'png',
-    left: bounds.left,
-    top: bounds.top,
-    width: bounds.width,
-    height: bounds.height
-  });
-  $("#dynamic-preview").remove();
-  var dynamic = preview.append("<img id='dynamic-preview' src='" + url + "'/>");
-  var shirt = $("#preview-image");
-  var design = $("#dynamic-preview");
-
-  // Set width of image so that it fits in the tshirt
-  design.width("18%");
-
-  // Show shirt
-  preview.removeClass("noshow");
-
-  // Set image coordinates
-  var shirtTop = shirt.position().top + parseInt(shirt.css("padding-top"));
-  var shirtLeft = shirt.position().left;
-  var shirtWidth = shirt.width();
-  var shirtHeight = shirt.height();
-
-  var top = shirtTop + Math.floor(shirtHeight * 0.32);
-  var left = shirtLeft + Math.floor(shirtWidth * 0.32);
-  design.css({top: top, left: left});
-
-  // Set event listener
-  $(document).bind("click.preview", function(event) {
-    preview.addClass("noshow");
-    $(document).unbind("click.preview");
-  });
-}
-
 /* --- Color Pickers --- */
 
 var changedFillColor;
@@ -205,20 +165,25 @@ function fillColorPicker() {
   });
 }
 
+/**
+ * 
+ * @param {*} color 
+ */
 function handleOutlineColorChangeEvent(color) {
   if (canvas.getActiveObject() === null || canvas.getActiveObject() === undefined) {
     // no object selected
     return;
   }
 
+  // Transparent outline color
   if (color === null) {
-    // Transparent outline color
     utils.setOutlineColor(null);
     canvas.renderAll();
     changedOutlineColor = true;
     return;
   }
 
+  // Opaque outline color
   var hex = color;
   if (typeof(hex) === "object") {
     hex = color.toHexString();
@@ -333,90 +298,6 @@ function glowColorPicker() {
   });
 }
 
-
-/* --- Sidebar --- */
-
-// Close an open panel with the ESC key
-function escHandler(e) {
-  if (e.keyCode == 27) {
-    var open = $("div.sidebar-item-selected");
-    closePanel(open, true);
-
-    // Unregister escape key handler
-    $(document).unbind("keyup", escHandler);
-  }
-}
-
-function openPanel(button, animate) {
-  // Register escape key handler
-  $(document).keyup(escHandler);
-
-  // Change button style
-  button.addClass("sidebar-item-selected");
-  $('.inactive', button).addClass("noshow");
-  $('.active', button).removeClass("noshow");
-
-  // Swap panels
-  var pname = button.attr("id").split("-")[1];
-  $('#drawer .slideout-body').addClass("noshow");
-  $('#drawer #' + pname + "-panel").removeClass("noshow");
-
-  // Open panel
-  if (animate) {
-    if ($("#drawer.is-visible").length === 0) {
-      $(".mdl-layout__drawer-button").click();
-    }
-  }
-
-  // Set artwork search results height
-  // so that scrolling handler works correctly
-  fitArtworkResultsHeight();
-
-  // Register click event handler
-  $(document).bind("click.menu", function(event) {
-    if (!( $(event.target).closest($("#drawer")).length )) {
-      if ($(event.target)[0].id === "sidebar") {
-        closePanel(null, true);
-      } else {
-        closePanel(null, false);
-      }
-    }
-  });
-
-  // Panel-specific logic
-  if (pname === "artwork") {
-    $("#drawer #artwork-search").select();
-  }
-}
-
-function closePanel(button, animate) {
-  // Unregister escape key handler
-  $(document).unbind("keyup", escHandler);
-
-  // Find open panel
-  if (button === null) {
-    button = $(".sidebar-item-selected");
-  }
-
-  // Error catching
-  if (button === null || button === []) return;
-
-  // Change button style
-  $('.inactive', button).removeClass("noshow");
-  $('.active', button).addClass("noshow");
-  button.removeClass("sidebar-item-selected");
-
-  // Close panel
-  if (animate === true) {
-    if ($("#drawer.is-visible").length === 1) {
-      $(".mdl-layout__drawer-button").click();
-    }
-  }
-
-  // Unregister click event handler
-  $(document).unbind("click.menu");
-}
-
 function closeSubmenu(menu, noTooltips) {
   // DQD - Changed the HTML heirarchy so the submenu is a child of 
   // the button. Now the menu parameter is truely the submenu
@@ -434,36 +315,6 @@ function closeSubmenu(menu, noTooltips) {
   }
 }
 
-/* --- artwork search --- */
-
-function toggleArtworkSearchSpinner(show) {
-  if (show === true) {
-    $("#no-results").addClass("noshow");
-    var parent = $("#artwork-panel > .search-results");
-    parent.append($("#artwork-spinner").remove());
-    $("#artwork-spinner").removeClass("noshow");
-  } else {
-    $("#artwork-spinner").addClass("noshow");
-  }
-}
-
-function toggleArtworkNoResults(show) {
-  if (show === true) {
-    $("#no-results").removeClass("noshow");
-  } else {
-    $("#no-results").addClass("noshow");
-  }
-}
-
-function fitArtworkResultsHeight() {
-  if ($("#drawer.is-visible").length !== 0) {
-    // Set artwork search results height
-    // so that scrolling handler works correctly
-    var height = window.innerHeight - ($("#artwork-panel > .mdl-layout-title").height() + $("#artwork-panel > form").height() + 85);
-    $("#artwork-panel > .search-results").height(height);
-  }
-}
-
 /* ----- exports ----- */
 
 function PageModule() {
@@ -474,29 +325,23 @@ function PageModule() {
   arrowKeys();
 
   // fix broken MDL sliders in IE Edge Browser
-  var user_agent = navigator.userAgent;
-  var edge = /(edge)\/((\d+)?[\w\.]+)/i;
-  if (edge.test(user_agent)) {
-    $("input.mdl-slider.mdl-js-slider").removeClass("mdl-slider mdl-js-slider");
-  }
+  // var user_agent = navigator.userAgent;
+  // var edge = /(edge)\/((\d+)?[\w\.]+)/i;
+  // if (edge.test(user_agent)) {
+  //   $("input.mdl-slider.mdl-js-slider").removeClass("mdl-slider mdl-js-slider");
+  // }
 
   // Fix broken sidebar in Safari
-  var isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
-               navigator.userAgent && !navigator.userAgent.match('CriOS');
-  if (isSafari === true) {
-    $(".mdl-navigation").css("height", "100%");
-  }
+  // var isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
+  //              navigator.userAgent && !navigator.userAgent.match('CriOS');
+  // if (isSafari === true) {
+  //   $(".mdl-navigation").css("height", "100%");
+  // }
 }
 
-PageModule.prototype.showPreview = showPreview;
-PageModule.prototype.openPanel = openPanel;
-PageModule.prototype.closePanel = closePanel;
 PageModule.prototype.closeSubmenu = closeSubmenu;
 PageModule.prototype.fillColorPicker = fillColorPicker;
 PageModule.prototype.outlineColorPicker = outlineColorPicker;
-PageModule.prototype.toggleArtworkSearchSpinner = toggleArtworkSearchSpinner;
-PageModule.prototype.toggleArtworkNoResults = toggleArtworkNoResults;
-PageModule.prototype.fitArtworkResultsHeight = fitArtworkResultsHeight;
 PageModule.prototype.shadowColorPicker = shadowColorPicker;
 PageModule.prototype.glowColorPicker = glowColorPicker;
 
