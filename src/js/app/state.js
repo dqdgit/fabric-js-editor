@@ -66,8 +66,12 @@ function redo() {
   }
 }
 
-/* ----- exports ----- */
-
+/**
+ * Constructor
+ * 
+ * @param {*} _getState 
+ * @param {*} _setState 
+ */
 function StateModule(_getState, _setState) {
   if (!(this instanceof StateModule)) return new StateModule();
 
@@ -75,6 +79,8 @@ function StateModule(_getState, _setState) {
   setState = _setState;
 	states.push(getState());
 }
+
+/*---- exports ----*/
 
 StateModule.prototype.save = pushState;
 StateModule.prototype.undo = undo;

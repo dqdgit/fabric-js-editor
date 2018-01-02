@@ -1,3 +1,5 @@
+var path       = require('path');
+
 /* ----- plugins ----- */
 
 var gulp        = require('gulp');
@@ -18,12 +20,12 @@ var gulpif      = require('gulp-if');
 var del         = require('del');
 var runSequence = require('run-sequence');
 var processes   = require('child_process');
+var exec        = require('child_process').exec;
 
 
-/* ----- build tasks ----- */
-
-var exec = require('child_process').exec;
 var isDebug;
+
+/*----- build tasks -----*/
 
 // Handle errors
 function errorHandler (error) {
@@ -83,7 +85,7 @@ gulp.task('x-browserify', function() {
 // compile SASS
 gulp.task('x-sass', function() {
   return gulp.src('src/scss/*.scss')
-    .pipe(sass({includePaths: ['node_modules']})
+    .pipe(sass({ includePaths: ['node_modules'] })
     .on('error', sass.logError))
     .pipe(gulp.dest('build'));
 });

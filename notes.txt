@@ -23,6 +23,12 @@ git remote rm origin
 git remote add origin https://github.com/dqdgit/tile-editor.git
 git remote -v
 
+##
+## Run
+##
+gulp dev
+
+
 ##-----------------------------------------------------------------------------------------------
 ##
 ## 3-fabric-js-editor package.json
@@ -182,7 +188,51 @@ font-weight: 700;
 ##
 ## Research
 ##
+Reference application - Google Draw
+
 Material Components for the Web 
   - https://github.com/material-components/material-components-web
   - Replacement for Material Design lite
   - Would requre updating entire application
+
+##-----------------------------------------------------------------------------------------------
+##
+## To Do 
+##
+
+- Electron application wrapper?
+- Move font loading from .html to main.js
+- Add status bar with info about selected element.
+- Resize/Zoom canvas
+- Size to fit
+- Line spacing spinner control?
+- Save SVG
+- Insert table/grid (for templates)
+- Group/ungroup selection
+- Switch to Bower for client side assets
+  - Not worth it. Consider webpack
+- Resize viewBox to fit
+- Check tile
+  - Background color 
+  - Keywords
+  - viewBox
+  - Font 
+  - Size 
+- Packaging
+  - NPM?
+  - Gem?
+- Edit Keywords
+  - Menu item?
+  - Popup modal dialog?
+  - Other metadata (author, copyright...)?
+  - tag, tag-multiple?
+- Metadata class
+  - Export to SVG
+  - Import from SVG
+  - Edit
+- Export tile (as?)
+- Consolidate escHandler and cancelInsert functions. Move to listeners.js?
+- Convert to ES5 syntax
+- Rename private functions to have leading underscore
+- Consolidate getStyle and setStyle functions in fabricUtils.js?
+- Extend Fabric object for Ted

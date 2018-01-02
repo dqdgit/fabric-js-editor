@@ -15,16 +15,8 @@
     <![endif]-->
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/1.9.33/css/materialdesignicons.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.min.css" /> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css" /> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.5.0/jquery.contextMenu.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.7/dialog-polyfill.min.css" />
-
     <link rel="stylesheet" type="text/css" href="svg-editor.css">
+
   </head>
 
   <body>
@@ -35,370 +27,401 @@
         <div class="editor-container">
 
           <!-- Toolbar -->
-          <div id="toolbar-container">
-            <div id="toolbar">
+          <div id="ted-toolbar">
 
-              <!-- Fixed tools -->
-              <div id="fixed-tools" class="toolbar-section">
+            <!-- Fixed tools -->
+            <div id="ted-fixed-tools" class="ted-toolbar-section">
 
-                <!-- File tool -->
-                <div id="toolbar-file-button" class="toolbar-button toolbar-dropdown">
-                  <div class="toolbar-button-box">
-                    <div id="toolbar-file" class="toolbar-item mdi mdi-content-save mdi-18px"></div>
-                    <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
+              <!-- File -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-file" class="ted-toolbar-widget">
+                  <i class="mdi mdi-content-save mdi-18px"></i>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-file">File</span>
+                </button>
 
-                    <div class="toolbar-submenu noselect noshow">
-                    <!-- 
-                      <div id="file-import-template" class="submenu-item">Import template...</div>
-                      <div id="file-import-svg" class="submenu-item">Import SVG...</div>
-                      <div id="file-import-image" class="submenu-item">Import image...</div>
+                <div id="ted-toolbar-menu-file" class="ted-toolbar-menu noselect">
+                  <div id="ted-file-export-image" class="ted-menu-item">Export image...</div>
+                  <div id="ted-file-export-tile" class="ted-menu-item">Export ted-toolbar-menu-file...</div>
+                  <div class="ted-menu-separator"></div>
+                  <div id="ted-file-import-template" class="ted-menu-item">Import tile template...</div>
+                </div>
+              </div>
 
-                      <div class="submenu-separator"></div> 
-                    -->
+              <!-- Edit metadata -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-metadata" class="ted-toolbar-widget">
+                  <i class="mdi mdi-tag mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-metadata">Edit metadata</span>
+                </button>
+              </div>
 
-                      <div id="file-download-tile" class="submenu-item">Download Tile</div>
-                      <!--
-                      <div id="file-export-image" class="submenu-item">Download as image</div>
-                      -->
-                    </div>
-                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-file-button">File</div>
+              <!-- Undo -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-undo" class="ted-toolbar-widget">
+                  <i class="mdi mdi-undo mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-undo">Undo</span>
+                </button>
+              </div>
+
+              <!-- Redo -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-redo" class="ted-toolbar-widget">
+                  <i class="mdi mdi-redo mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-redo">Redo</span>
+                </button>
+              </div>
+
+              <!-- Delete -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-delete" class="ted-toolbar-widget">
+                  <i class="mdi mdi-delete mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-delete">Delete selected</span>
+                </button>
+              </div>
+
+              <div class="ted-toolbar-separator"></div>
+
+              <!-- Select -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-select" class="ted-toolbar-widget">
+                  <i class="mdi mdi-cursor-default mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-select">Select</span>
+                </button>
+              </div>
+
+              <!-- Text -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-text" class="ted-toolbar-widget">
+                  <i class="mdi mdi-cursor-text mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-text">Text</span>
+                </button>
+              </div>
+
+              <!-- Table -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-table" class="ted-toolbar-widget">
+                  <i class="mdi mdi-grid mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-text">Table</span>
+                </button>
+              </div>
+
+              <!-- Shapes -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-shape" class="ted-toolbar-widget">
+                  <i class="mdi mdi-drawing mdi-18px"></i>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-shape">Shape</span>
+                </button>
+
+                <div id="ted-toolbar-menu-shape" class="ted-toolbar-menu noselect">
+                  <div id="ted-shape-line" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-vector-line mdi-18px"></i>
+                    <span class="ted-menu-item-label">Line</span>
+                  </div>
+                  <div id="ted-shape-circle" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-vector-circle-variant mdi-18px"></i>
+                    <span class="ted-menu-item-label">Circle</span>
+                  </div>
+                  <div id="ted-shape-rectangle" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-vector-rectangle mdi-18px"></i>
+                    <span class="ted-menu-item-label">Rectangle</span>
+                  </div>
+                  <div id="ted-shape-rounded-rectangle" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-vector-rectangle mdi-18px"></i>
+                    <span class="ted-menu-item-label">Rounded rectangle</span>
                   </div>
                 </div>
+              </div>
 
-                <!-- Edit metadata tool -->
-                <div id="toolbar-metadata-button" class="toolbar-button">
-                  <div class="toolbar-button-box">
-                    <div id="toolbar-metadata" class="toolbar-item mdi mdi-tag mdi-18px"></div>
-                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-metadata-button">Edit metadata</div>
+              <div class="ted-toolbar-separator"></div>
+            </div><!-- Fixed tools -->
+
+            <!-- Group 1: text, shape, group, svg -->
+            <div id="ted-active-tools-1" class="ted-toolbar-section active-tools-group text shape group svg">
+
+              <!-- Horizontal center -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-h-center" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-horizontal-align-center mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-h-center">
+                    Center horizontally
+                  </span>
+                </button>
+              </div>
+              
+              <!-- Vertical center -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-v-center" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-vertical-align-center mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-v-center">
+                    Center vertically
+                  </span>
+                </button>
+              </div>
+            
+              <!-- Arrange objects -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-arrange" class="ted-toolbar-widget">
+                  <i class="mdi mdi-arrange-bring-forward mdi-18px"></i>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-arrange">
+                    Arrange objects
+                  </span>
+                </button>
+
+                <div id="ted-toolbar-menu-arrange" class="ted-toolbar-menu noselect">
+                  <div id="ted-arrange-send-back" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-arrange-send-to-back mdi-18px"></i>
+                    <span class="ted-menu-item-label">Send to back</span>
+                  </div>
+                  <div id="ted-arrange-send-backward" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-arrange-send-backward mdi-18px"></i>
+                    <span class="ted-menu-item-label">Send backward</span>
+                  </div>
+                  <div id="ted-arrange-bring-forward" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-arrange-bring-forward mdi-18px"></i>
+                    <span class="ted-menu-item-label">Bring forward</span>
+                  </div>
+                  <div id="ted-arrange-bring-front" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-arrange-bring-to-front mdi-18px"></i>
+                    <span class="ted-menu-item-label">Bring to front</span>
                   </div>
                 </div>
+              </div>
 
-                <!-- Undo/redo -->
-                <div id="toolbar-undo-button" class="toolbar-button">
-                  <div class="toolbar-button-box">
-                    <div id="toolbar-undo" class="toolbar-item mdi mdi-undo mdi-18px"></div>
-                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-undo-button">Undo</div>
-                  </div>
+              <div class="ted-toolbar-separator"></div>
+            </div><!-- Group 1 -->
+
+            <!-- Group 2: text -->
+            <div id="ted-active-tools-2" class="ted-toolbar-section active-tools-group text">
+
+              <!-- Font family -->
+              <div class="ted-toolbar-tool">
+                <div id="ted-toolbar-font-family" class="ted-toolbar-widget ted-toolbar-tool-select">
+                  <span id="ted-current-font" class="ted-toolbar-select-text"></span>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-font-family">
+                    Font
+                  </span>
+                </div>
+                <div id="ted-toolbar-menu-font-family" class="ted-toolbar-menu noselect scrolling">
+                </div>
+              </div>
+
+              <div class="ted-toolbar-separator"></div>
+
+              <!-- Font size -->
+              <div class="ted-toolbar-tool">
+                <div id="ted-toolbar-font-size" class="ted-toolbar-widget ted-toolbar-tool-select">
+                  <span id="ted-current-font-size" class="ted-toolbar-select-text"></span>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-font-size">
+                    Font size
+                  </span>
                 </div>
 
-                <div id="toolbar-redo-button" class="toolbar-button">
-                  <div class="toolbar-button-box">
-                    <div id="toolbar-redo" class="toolbar-item mdi mdi-redo mdi-18px"></div>
-                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-redo-button">Redo</div>
+                <div id="ted-toolbar-menu-font-size" class="ted-toolbar-menu noselect">
+                </div>
+              </div>
+
+              <div class="ted-toolbar-separator"></div>
+
+              <!-- Text bold -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-bold" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-bold mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-bold">
+                    Bold
+                  </span>
+                </button>
+              </div>
+              
+              <!-- Text italic -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-italic" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-italic mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-italic">
+                    Italic
+                  </span>
+                </button>
+              </div>
+
+              <!-- Text underline -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-underline" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-underline mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-underline">
+                    Underline
+                  </span>
+                </button>
+              </div>
+
+              <div class="ted-toolbar-separator"></div>
+
+              <!-- Align text -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-align" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-align-left mdi-18px"></i>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-align">
+                    Align
+                  </span>
+                </button>
+
+                <div id="ted-toolbar-menu-align" class="ted-toolbar-menu noselect">
+                  <div id="ted-align-left" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-format-align-left mdi-18px"></i>
+                    <span class="ted-menu-item-label">Left</span>
+                  </div>
+                  <div id="ted-align-center" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-format-align-center mdi-18px"></i>
+                    <span class="ted-menu-item-label">Center</span>
+                  </div>
+                  <div id="ted-align-right" class="ted-menu-item">
+                    <i class="ted-menu-item-icon mdi mdi-format-align-right mdi-18px"></i>
+                    <span class="ted-menu-item-label">Right</span>
                   </div>
                 </div>
+              </div>
 
-                <!-- Delete tool -->
-                <div id="toolbar-delete-button" class="toolbar-button">
-                  <div class="toolbar-button-box">
-                    <div id="toolbar-delete" class="toolbar-item mdi mdi-delete mdi-18px"></div>
-                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-delete-button">Delete selected</div>
-                  </div>
+              <!-- Line spacing -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-line-spacing" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-line-spacing mdi-18px"></i>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-line-spacing">
+                    Line spacing
+                  </span>
+                </button>
+
+                <div id="ted-toolbar-menu-line-spacing" class="ted-toolbar-menu noselect">
+                  <div id="ted-line-spacing-1" class="ted-menu-item" data-text-spacing="1">1.0</div>
+                  <div id="ted-line-spacing-2" class="ted-menu-item" data-text-spacing="1">1.15</div>
+                  <div id="ted-line-spacing-3" class="ted-menu-item" data-text-spacing="1">1.5</div>
+                  <div id="ted-line-spacing-4" class="ted-menu-item" data-text-spacing="1">2.0</div>
                 </div>
+              </div>
 
-                <div class="toolbar-separator"></div>
+              <div class="ted-toolbar-separator"></div>
 
-                <!-- Select tool -->
-                <div id="toolbar-select-button" class="toolbar-button">
-                  <div class="toolbar-button-box">
-                    <div id="toolbar-select" class="toolbar-item mdi mdi-cursor-default mdi-18px"></div>
-                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-select-button">Select</div>
-                  </div>
+            </div><!-- Group 2 -->
+
+            <!-- Group 3: text shape, svg -->
+            <div id="ted-active-tools-3" class="ted-toolbar-section active-tools-group text shape svg">
+
+              <!-- Fill color -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-fill-color" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-color-fill mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-fill-color">
+                    Fill color
+                  </span>
+                </button>
+              </div>
+
+              <!-- Border color -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-border-color" class="ted-toolbar-widget">
+                  <i class="mdi mdi-border-color mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-border-color">
+                    Border color
+                  </span>
+                </button>
+              </div>
+
+              <!-- Border width -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-border-width" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-line-weight mdi-18px"></i>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-border-width">
+                    Border width
+                  </span>
+                </button>
+
+                <div id="ted-toolbar-menu-border-width" class="ted-toolbar-menu noselect">
                 </div>
+              </div>
 
-                <!-- Text -->
-                <div id="toolbar-text-button" class="toolbar-button">
-                  <div class="toolbar-button-box">
-                    <div id="toolbar-text" class="toolbar-item mdi mdi-cursor-text mdi-18px"></div>
-                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-button">Text</div>
-                  </div>
+              <!-- Border style -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-border-style" class="ted-toolbar-widget">
+                  <i class="mdi mdi-format-line-style mdi-18px"></i>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-border-style">
+                    Border style
+                  </span>
+                </button>
+
+                <div id="ted-toolbar-menu-border-style" class="ted-toolbar-menu noselect">
                 </div>
+              </div>
 
-                <!-- Shapes -->
-                <div id="toolbar-shape-button" class="toolbar-button toolbar-dropdown">
-                  <div class="toolbar-button-box">
-                    <div id="toolbar-shape" class="toolbar-item mdi mdi-drawing mdi-18px"></div>
-                    <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
+              <!-- Effects -->
+              <div class="ted-toolbar-tool">
+                <button id="ted-toolbar-effects" class="ted-toolbar-widget">
+                  <i class="mdi mdi-blur mdi-18px"></i>
+                  <i class="ted-toolbar-menu-down mdi mdi-menu-down mdi-18px"></i>
+                  <span class="mdl-tooltip mdl-tooltip--large noselect" for="ted-toolbar-effects">
+                    Effects
+                  </span>
 
-                    <div class="toolbar-submenu noselect noshow">
-                      <div class="submenu-item mdi mdi-vector-line" id="shapes-line">
-                        Line
-                      </div>
-                      <div class="submenu-item mdi mdi-vector-circle-variant mdi-18px" id="shapes-circle">
-                        Circle
-                      </div>
-                      <div class="submenu-item mdi mdi-vector-rectangle mdi-18px" id="shapes-rectangle">
-                        Rectangle
-                      </div>
-                      <div class="submenu-item mdi mdi-vector-rectangle mdi-18px" id="shapes-rounded">
-                        Rounded Rectangle
-                      </div>
-                    </div>
-                    <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-shape-button">Shape</div>
-                  </div>
-                </div>
+                </button>
 
-                <div class="toolbar-separator"></div>
-              </div><!-- /fixed-tools -->
-
-              <!-- Situational tools -->
-              <div id="active-tools" class="toolbar-section noshow">
-
-                <!-- All tools (text, shape, group, svg) -->
-                <div class="active-tools-group text shape group svg">
-
-                  <!-- Centering -->
-                  <div id="toolbar-h-center-button" class="toolbar-button">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-horizontal-center" class="toolbar-item mdi mdi-format-horizontal-align-center mdi-18px"></div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-horizontal-center">Center horizontally</div>
-                    </div>
-                  </div>
-
-                  <div id="toolbar-v-center-button" class="toolbar-button">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-vertical-center" class="toolbar-item mdi mdi-format-vertical-align-center mdi-18px"></div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-vertical-center">Center vertically</div>
-                    </div>
-                  </div>
-
-                  <!-- Arrange -->
-                  <div id="toolbar-arrange-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-arrange" class="toolbar-item mdi mdi-arrange-bring-forward mdi-18px noselect"></div>
-                      <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
-
-                      <div class="toolbar-submenu noselect noshow">
-                        <div class="submenu-item mdi mdi-arrange-send-to-back mdi-18px" id="toolbar-send-back">
-                          Send to Back
-                        </div>
-                        <div class="submenu-item mdi mdi-arrange-send-backward mdi-18px" id="toolbar-send-backward">
-                          Send Backward
-                        </div>
-                        <div class="submenu-item mdi mdi-arrange-bring-forward mdi-18px" id="toolbar-bring-forward">
-                          Bring Forward
-                        </div>
-                        <div class="submenu-item mdi mdi-arrange-bring-to-front mdi-18px" id="toolbar-bring-front">
-                          Bring to Front
-                        </div>
-                      </div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-arrange-button">Arrange objects</div>
-                    </div>
-                  </div>
-
-                  <div class="toolbar-separator"></div>
-                </div> <!-- /text shape group svg -->
-
-                <!-- Text tools -->
-                <div class="active-tools-group text">
-
-                  <!-- Font family -->
-                  <div id="toolbar-font-family-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-font-family" class="toolbar-item">
-                        <span id="current-font" class="user-select: none"></span>
-                      </div>
-                      <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
-
-                      <div id="toolbar-font-family-submenu" class="toolbar-submenu noselect scrolling noshow">
-                      </div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-font-family-button">Font</div>
-                    </div>
-                  </div>
-
-                  <div class="toolbar-separator"></div>
-
-                  <!-- Bold -->
-                  <div id="toolbar-bold-button" class="toolbar-button">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-bold" class="toolbar-item mdi mdi-format-bold mdi-18px"></div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-bold-button">Bold</div>
-                    </div>
-                  </div>
-
-                  <!-- Italics -->
-                  <div id="toolbar-italics-button" class="toolbar-button">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-italics" class="toolbar-item mdi mdi-format-italic mdi-18px"></div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-italics-button">Italics</div>
-                    </div>
-                  </div>
-
-                  <!-- Underline -->
-                  <div id="toolbar-underline-button" class="toolbar-button">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-underline" class="toolbar-item mdi mdi-format-underline mdi-18px"></div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-underline-button">Underline</div>
-                    </div>
-                  </div>
-
-                  <!-- Font size -->
-                  <div id="toolbar-font-size-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-font-size" class="toolbar-item">
-                        <span id="current-font-size">18</span>
-                      </div>
-                      <div class="toolbar-item-dropdown mdi mdi-menu-down mdi-18px"></div>
-
-                      <div id="toolbar-font-size-submenu" class="toolbar-submenu noselect scrolling noshow">
-                      </div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-font-size-button">Font size</div>
-                    </div>
-                  </div>
-
-                  <div class="toolbar-separator"></div>
-
-                  <!-- Text alignment -->
-                  <div id="toolbar-text-align-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-text-align" class="toolbar-item mdi mdi-format-align-left mdi-18px"></div>
-                      <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
-
-                      <div id="toolbar-text-align-submenu" class="toolbar-submenu noselect scrolling noshow">
-                        <div id="text-align-left" class="submenu-item mdi mdi-format-align-left mdi-18px">Left</div>
-                        <div id="text-align-center" class="submenu-item mdi mdi-format-align-center mdi-18px">Center</div>
-                        <div id="text-align-right" class="submenu-item mdi mdi-format-align-right mdi-18px">Right</div>
-                      </div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-align-button">Align</div>
-                    </div>
-                  </div>
+                <div id="ted-toolbar-menu-effects" class="ted-toolbar-menu noselect">
+                  <div id="effects-box">
+                    <label id="shadow-switch-label" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="shadow-switch">
+                      <input id="shadow-switch" class="mdl-switch__input" type="checkbox">
+                      <span class="mdl-switch__label">Shadow</span>
+                    </label>
                 
-                  <!-- Text line spacing -->
-                  <div id="toolbar-text-spacing-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-text-spacing" class="toolbar-item mdi mdi-format-line-spacing mdi-18px"></div>
-                      <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
-                      
-                      <div id="toolbar-text-spacing-submenu" class="toolbar-submenu noselect noshow">
-                        <div id="text-spacing-1" class="submenu-item" data-text-spacing="1">1.0</div>
-                        <div id="text-spacing-2" class="submenu-item" data-text-spacing="1.15">1.15</div>
-                        <div id="text-spacing-3" class="submenu-item" data-text-spacing="1.5">1.5</div>
-                        <div id="text-spacing-4" class="submenu-item" data-text-spacing="2">2.0</div>
+                    <!-- Shadow -->
+                    <div id="shadow-options" class="fx-options">
+                      <span class="effects-form-label">Offset</span>
+                      <br/>
+                      <div class="slider-container">
+                        <input id="shadow-offset-slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="5" tabindex="0">
                       </div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-text-spacing-button">Line spacing</div>
-                    </div>
-                  </div>
-      
-                  <div class="toolbar-separator"></div>
-
-                </div><!-- /text -->
-
-                <!-- Text, shape, svg tools -->
-                <div class="active-tools-group text shape svg">
-
-                  <!-- Fill color -->
-                  <div id="toolbar-fill-color-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-fill-color" class="toolbar-item mdi mdi-format-color-fill mdi-18px"></div>
-                      <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-fill-color-button">Fill color</div>
-                    </div>
-                  </div>
-
-                  <!-- Border color -->
-                  <div id="toolbar-outline-color-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-outline-color" class="toolbar-item mdi mdi-border-color mdi-18px"></div>
-                      <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-color">Outline color</div>
-                    </div>
-                  </div>
-
-                  <!-- Border width -->
-                  <div id="toolbar-outline-width-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-outline-width" class="toolbar-item mdi mdi-format-line-weight mdi-18px"></div>
-                      <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
-
-                      <div id="toolbar-outline-width-submenu" class="toolbar-submenu noselect scrolling noshow">
+                
+                      <span class="effects-form-label">Blur</span>
+                      <br/>
+                      <div class="slider-container">
+                        <input id="shadow-blur-slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="15" tabindex="0">
                       </div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline width</div>
+                
+                      <span class="effects-form-label">Color</span>
+                      <br/>
+                      <input id="shadow-color-hex" class="hex-display" type="text" value="#000000" disabled="disabled">
+                      <input id="shadow-color-picker" type="text">
                     </div>
-                  </div>
-
-                  <!-- Border style -->
-                  <div id="toolbar-outline-style-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-outline-style" class="toolbar-item mdi mdi-format-line-style mdi-18px"></div>
-                      <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
-
-                      <div id="toolbar-outline-style-submenu" class="toolbar-submenu noselect scrolling noshow">
+                
+                    <!-- Glow -->
+                    <label id="glow-switch-label" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="glow-switch">
+                      <input id="glow-switch" class="mdl-switch__input" type="checkbox">
+                      <span class="mdl-switch__label">Glow</span>
+                    </label>
+                
+                    <div id="glow-options" class="fx-options">
+                      <span class="effects-form-label">Size</span>
+                      <br/>
+                      <div class="slider-container">
+                        <input id="glow-size-slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0">
                       </div>
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-outline-width">Outline style</div>
+                
+                      <span class="effects-form-label">Color</span>
+                      <br/>
+                      <input id="glow-color-hex" class="hex-display" type="text" value="#000000" disabled="disabled">
+                      <input id="glow-color-picker" type="text">
                     </div>
                   </div>
+                  <!-- /effects-box -->
+                </div>              
+              </div>
+              
+            </div><!-- Group 3 -->
 
-                  <!-- Effects -->
-                  <div id="toolbar-effects-button" class="toolbar-button toolbar-dropdown">
-                    <div class="toolbar-button-box">
-                      <div id="toolbar-effects" class="toolbar-item mdi mdi-blur mdi-18px"></div>
-                      <div class="toolbar-menu-down mdi mdi-menu-down mdi-18px"></div>
-
-                      <div id="shadow-submenu" class="toolbar-submenu noselect noshow no-auto-close">
-                        <div id="effects-box">
-                          <label id="shadow-switch-label" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="shadow-switch">
-                            <input id="shadow-switch" class="mdl-switch__input" type="checkbox">
-                            <span class="mdl-switch__label">Shadow</span>
-                          </label>
-
-                          <!-- Shadow -->
-                          <div id="shadow-options" class="fx-options">
-                            <span class="effects-form-label">Offset</span> <br/>
-                            <div class="slider-container">
-                              <input id="shadow-offset-slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="5" tabindex="0">
-                            </div>
-
-                            <span class="effects-form-label">Blur</span> <br/>
-                            <div class="slider-container">
-                              <input id="shadow-blur-slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="15" tabindex="0">
-                            </div>
-
-                            <span class="effects-form-label">Color</span> <br/>
-                            <input id="shadow-color-hex" class="hex-display" type="text"value="#000000" disabled="disabled">
-                            <input id="shadow-color-picker" type="text">
-                          </div>
-
-                          <!-- Glow -->
-                          <label id="glow-switch-label" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="glow-switch">
-                            <input id="glow-switch" class="mdl-switch__input" type="checkbox">
-                            <span class="mdl-switch__label">Glow</span>
-                          </label>
-
-                          <div id="glow-options" class="fx-options">
-                            <span class="effects-form-label">Size</span> <br/>
-                            <div class="slider-container">
-                              <input id="glow-size-slider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0">
-                            </div>
-
-                            <span class="effects-form-label">Color</span> <br/>
-                            <input id="glow-color-hex" class="hex-display" type="text" value="#000000" disabled="disabled">
-                            <input id="glow-color-picker" type="text">
-                          </div>
-                        </div><!-- /effects-box -->
-                      </div><!-- /submenu -->
-                      <div class="mdl-tooltip mdl-tooltip--large noselect" for="toolbar-effects">Effects</div>
-                    </div>
-                  </div>
-                </div><!-- /active-tools-group -->
-
-                <!-- Text, shape tools -->
-                <div class="active-tools-group text shape">
-                  <!-- empty -->
-                </div>
-
-                <!-- Shape tools -->
-                <div class="active-tools-group shape">
-                  <!-- empty -->
-                </div>
-
-                <!-- SVG tools -->
-                <div class="active-tools-group svg">
-                  <!-- empty -->
-                </div>
-
-              </div><!-- /active-tools -->
-            </div><!-- /toolbar -->
-          </div>
+          </div><!-- /toolbar -->
 
           <!-- Drawing -->
           <div id="drawing-content">
@@ -410,14 +433,14 @@
         </div><!-- /editor-container -->
 
         <!-- Status bar -->
-        <div id="status_bar">
-          <div id="status_left" class="status-area"></div>
-          <div id="status_middle" class="status-area"></div>
-          <div id="status_right" class="status-area"></div>
+        <div id="ted-status-bar">
+          <div id="ted-status-left" class="ted-status-area"></div>
+          <div id="ted-status-middle" class="ted-status-area"></div>
+          <div id="ted-status-right" class="ted-status-area"></div>
         </div>
 
         <!-- Spinner -->
-        <div id="loading-spinner" class="noshow">
+        <div id="loading-spinner">
           <div class="mdl-spinner mdl-js-spinner is-active"></div>
         </div>
 
@@ -425,34 +448,28 @@
     </div> <!-- /editor-layout -->
 
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.16/fabric.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.7/dialog-polyfill.min.js"></script>
-
     <script type="text/javascript" src="svg-editor.js"></script>
 
-    <!-- Fonts -->
+    <!-- WebFonts https://github.com/typekit/webfontloader -->
     <script>
       WebFontConfig = {
         // Google fonts
         google: {
           families: [
-            'Actor', 'Amaranth', 'Amatic SC', 'Amiri', 'Antic', 'Anton', 
-            'Arapey', 'Architects Daughter', 'Archivo Black', 'Arimo', 
-            'Audiowide', 'Bad Script', 'Bangers', 'BenchNine', 'Bitter', 
-            'Black Ops One', 'Candal', 'Chewy', 'Cinzel', 'Cookie', 
-            'Covered By Your Grace', 'Damion', 'Dancing Script', 
-            'Droid Serif', 'Enriqueta', 'Exo', 'Francois One', 
-            'Fredoka One', 'Fugaz One', 'Indie Flower', 'Karla', 
-            'Kaushan Script', 'Lato', 'Limelight', 'Lobster', 
-            'Lobster Two', 'Lora', 'Luckiest Guy', 'Molengo', 'Monda', 
-            'Montserrat', 'News Cycle', 'Open Sans', 'Orbitron', 'Oswald', 
-            'Pacifico', 'Passion One', 'Paytone One', 'Permanent Marker', 
-            'Playfair Display SC', 'Poiret One', 'Raleway', 'Roboto', 
-            'Roboto Mono', 'Rock Salt', 'Russo One', 'Satisfy', 
-            'Shadows Into Light', 'Sigmar One', 'Special Elite', 'Ubuntu', 
+            'Actor', 'Amaranth', 'Amatic SC', 'Amiri', 'Antic', 'Anton',
+            'Arapey', 'Architects Daughter', 'Archivo Black', 'Arimo',
+            'Audiowide', 'Bad Script', 'Bangers', 'BenchNine', 'Bitter',
+            'Black Ops One', 'Candal', 'Chewy', 'Cinzel', 'Cookie',
+            'Covered By Your Grace', 'Damion', 'Dancing Script',
+            'Droid Serif', 'Enriqueta', 'Exo', 'Francois One',
+            'Fredoka One', 'Fugaz One', 'Indie Flower', 'Karla',
+            'Kaushan Script', 'Lato', 'Limelight', 'Lobster',
+            'Lobster Two', 'Lora', 'Luckiest Guy', 'Molengo', 'Monda',
+            'Montserrat', 'News Cycle', 'Open Sans', 'Orbitron', 'Oswald',
+            'Pacifico', 'Passion One', 'Paytone One', 'Permanent Marker',
+            'Playfair Display SC', 'Poiret One', 'Raleway', 'Roboto',
+            'Roboto Mono', 'Rock Salt', 'Russo One', 'Satisfy',
+            'Shadows Into Light', 'Sigmar One', 'Special Elite', 'Ubuntu',
             'Varela Round', 'Vidaloka', 'Yanone Kaffeesatz'
           ]
         },
@@ -463,44 +480,44 @@
         },
 
         // Event to trigger when a font is loaded
-        fontactive: function(familyName, fvd) {
+        fontactive: function (familyName, fvd) {
           $(window).trigger("fontLoadedEvent", [familyName, fvd]);
         },
 
         // Event to trigger when all fonts are loaded
-        active: function() {
+        active: function () {
           $(window).trigger("allFontsLoadedEvent");
         }
       };
 
       // Load the specified fonts asynchronously
-      (function(d) {
+      (function (d) {
         var wf = d.createElement('script'), s = d.scripts[0];
-        wf.src = '//ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js';
+        wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js';
         s.parentNode.insertBefore(wf, s);
-      })(document);
-    </script>
-
+      })(document);    
+    </script><!-- WebFonts -->
+    
     <!-- Dialogs -->
 
     <!-- Import file dialog -->
-    <dialog id="import-file-dialog" class="mdl-dialog editor-dialog">
-      <div id="import-file-dialog-title" class="mdl-dialog__title dialog-title">
+    <dialog id="ted-dialog-import-file" class="mdl-dialog editor-dialog">
+      <div id="ted-dialog-import-file-title" class="mdl-dialog__title dialog-title">
         Import images
       </div>
 
-      <div id="import-file-dialog-content" class="mdl-dialog__content editor-dialog-content">
-        <div id="import-file-dialog-dropzone" class="import-file-dropzone">
+      <div id="ted-dialog-import-file-content" class="mdl-dialog__content editor-dialog-content">
+        <div id="ted-dialog-import-file-dropzone" class="import-file-dropzone">
           Drag files here
         </div>
       </div>
 
       <div class="mdl-dialog__actions">
-        <button id="import-file-dialog-ok" 
+        <button id="ted-dialog-import-file-ok" 
                 class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary dialog-ok-button">
           Import
         </button>
-        <button id="import-file-dialog-cancel" 
+        <button id="ted-dialog-import-file-cancel" 
                 class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent dialog-cancel-button">
           Cancel
         </button>
@@ -508,12 +525,12 @@
     </dialog><!-- /import-file-dialog -->
 
     <!-- Edit metadata dialog -->
-    <dialog id="edit-metadata-dialog" class="mdl-dialog editor-dialog">
+    <dialog id="ted-edit-edit-metadata" class="mdl-dialog editor-dialog">
       <div class="mdl-dialog__title dialog-title">
         Edit SVG Metadata
       </div>
 
-      <div id="edit-metadata-dialog-content" class="mdl-dialog__content editor-dialog-content">
+      <div id="ted-dialog-edit-metadata-content" class="mdl-dialog__content editor-dialog-content">
         <table class="property-table">
           <thead>
             <tr>
@@ -577,10 +594,10 @@
       </div>
 
       <div class="mdl-dialog__actions">
-        <button id="edit-metadata-dialog-ok" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary dialog-ok-button">
+        <button id="ted-dialog-edit-metadata-ok" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary dialog-ok-button">
           Save
         </button>
-        <button id="edit-metadata-dialog-cancel" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent dialog-cancel-button">
+        <button id="ted-dialog-edit-metadata-cancel" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent dialog-cancel-button">
           Cancel
         </button>
       </div>

@@ -1,18 +1,71 @@
-/* --- toolbar colors --- */
 
-$glyph-height: 18px;
-$toolbar-button-padding: 3px;
-$toolbar-padding: 3px;
+/*---- Third party imports ----*/
+@import 'https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/1.9.33/css/materialdesignicons.min.css';
+@import 'http://fonts.googleapis.com/css?family=Roboto:300,400,500,700';
+@import 'https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css';
+@import 'material-design-lite/material.min';
+@import 'spectrum-colorpicker/spectrum';
+@import 'jquery-contextmenu/dist/jquery.contextMenu.min';
+@import 'tooltipster/dist/css/tooltipster.bundle.min';
+@import 'dialog-polyfill/dialog-polyfill';
+//<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css" />
 
-$toolbar-button-height: $glyph-height;
-$toolbar-height: ($toolbar-button-height + (2 * $toolbar-button-padding) + 2px);
-$toolbar-separator-height: ($toolbar-height + (1 * $toolbar-padding));
 
-$toolbar-background: #F2F2F2;
-$toolbar-border: #BDBDBD;
-$toolbar-submenu-width: 205px;
+/*---- Greys ----*/
+$color-white                   : #FFFFFF;
+$color-grey-100                : #F5F5F5;
+$color-grey-200                : #EEEEEE;
+$color-grey-300                : #E0E0E0;
+$color-grey-400                : #BDBDBD;
+$color-grey-500                : #9E9E9E;
+$color-grey-600                : #757575;
+$color-grey-700                : #616161;
+$color-grey-800                : #424242;
+$color-grey-900                : #212121;
+$color-black                   : #000000;
 
-$statusbar-height: 20px;
+/*---- Blues ----*/
+$color-blue-100                : #BBDEFB;
+$color-blue-200                : #90CAF9;
+$color-blue-300                : #64B5F6;
+$color-blue-400                : #42A5F5;
+$color-blue-500                : #2196F3;
+$color-blue-600                : #1E88E5;
+$color-blue-700                : #1976D2;
+$color-blue-800                : #1565C0;
+$color-blue-900                : #0D47A1;
 
+/*---- Page ----*/
+
+/*---- Toolbar ----*/
+$toolbar-icon-height           : 18px;
+$toolbar-height                : 36px;
+$toolbar-separator-height      : $toolbar-height - 2px;
+
+$toolbar-background-color      : $color-grey-100;
+$toolbar-border-color          : $color-grey-300;
+$toolbar-border-top-color      : $color-grey-300;
+$toolbar-border-bottom-color   : $color-grey-500;
+$toolbar-separator-color       : $color-grey-300;
+$toolbar-hover-color           : $color-grey-300;
+$toolbar-active-color          : $color-grey-500;
+$toolbar-focus-color           : $color-grey-400;
+$toolbar-border-hover-color    : $color-grey-700;
+
+$toolbar-menu-background-color : $color-white;
+$toolbar-menu-color            : $color-grey-900;
+$toolbar-menu-border-color     : $color-grey-400;
+$toolbar-menu-shadow-color     : $color-grey-400;
+$toolbar-menu-hover-color      : $color-grey-300;
+
+/*---- Status bar ----*/
+$statusbar-height              : 20px;
+$statusbar-background-color    : $color-blue-600;
+$statusbar-color               : $color-white;
+$statusbar-border-color        : $color-blue-600;
+$statusbar-border-top-color    : $color-blue-400;
+$statusbar-border-bottom-color : $color-blue-900;
+
+/*---- Application imports ----*/
 @import 'page';
 @import 'toolbar';

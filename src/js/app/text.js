@@ -1,3 +1,4 @@
+// text.js
 "use strict";
 
 var canvas = global.canvas;
@@ -5,20 +6,22 @@ var drawing = new (require('./drawing.js'))();
 var utils = new (require('./fabricUtils.js'))();
 
 
+/**
+ * 
+ */
 function insertText() {
   canvas.defaultCursor = 'crosshair';
 
   // Esc key handler
-  $(document).keyup(escHandler);
+  $(document).keyup(_escHandler);
 
-  canvas.selection = false;
-  canvas.forEachObject(function(o) {
-    o.selectable = false;
-  });
+  // Turn off canvas group selection so that it doesn't interfer
+  // with creating the new object.
+  canvas.set("selection", false);
 
-  canvas.on('mouse:down', function(o){
+  canvas.on('mouse:down', function __textMouseDown(o){
     // Unregister escape key handler
-    $(document).unbind("keyup", escHandler);
+    $(document).unbind("keyup", _escHandler);
 
     drawing.disableDraw();
 
@@ -32,8 +35,11 @@ function insertText() {
       top: pointer.y
     });
 
-    text.on('editing:exited', function(o){
-      $("#toolbar-text").removeClass("toolbar-item-active ");
+    // Handler for Fabric iText editing:exited event
+    text.on('editing:exited', function __textEditingExited(o) {
+      $("#ted-toolbar-text").removeClass("toolbar-item-active ");
+      // If the text has zero length just delete it otherwise
+      // keep it and update undo/redo.
       if ($(this)[0].text.length === 0) {
         canvas.remove(text);
       } else {
@@ -43,9 +49,15 @@ function insertText() {
         // Push the canvas state to history
         canvas.trigger("object:statechange");
       }
+      text.off('editing:exited', __textEditingExited);
     });
 
     text.targetFindTolerance = 4;
+
+    // Remove the text mouse event handler
+    canvas.off('mouse:down', __textMouseDown);
+
+    // TODO: Is select workaround needed here?
 
     canvas.add(text);
     canvas.setActiveObject(text);
@@ -54,23 +66,33 @@ function insertText() {
   });
 }
 
+/**
+ * TODO: I think this is intended to cancel creating a new text object
+ *       but not quite sure how it works.
+ */
 function cancelInsert() {
   canvas.defaultCursor = 'auto';
   drawing.disableDraw();
-  $("#toolbar-text").removeClass("toolbar-item-active ");
+  $("#ted-toolbar-text").removeClass("toolbar-item-active ");
 }
 
-// Cancel text insertion
-function escHandler(e) {
+/**
+ * Cancel text insertion
+ * 
+ * @param {Object} e - Fabric mouse event
+ */
+function _escHandler(e) {
   if (e.keyCode == 27) {
     cancelInsert();
 
     // Unregister escape key handler
-    $(document).unbind("keyup", escHandler);
+    $(document).unbind("keyup", _escHandler);
   }
 }
 
-// Return focus to itext if user was editing text
+/**
+ * Return focus to itext if user was editing text
+ */
 function returnFocus() {
   var o = canvas.getActiveObject();
   if (o === undefined || o === null || o.type !== "i-text") {
@@ -82,8 +104,14 @@ function returnFocus() {
   }
 }
 
-// Set object style
-function setStyle(object, styleName, value) {
+/**
+ * Set object style
+ * 
+ * @param {Object} object - Fabric object
+ * @param {String} styleName 
+ * @param {String} value 
+ */
+function _setStyle(object, styleName, value) {
   // Don't allow changing part of the text
   /*
   if (object.setSelectionStyles && object.isEditing) {
@@ -98,8 +126,13 @@ function setStyle(object, styleName, value) {
   object[styleName] = value;
 }
 
-// Get object style
-function getStyle(object, styleName) {
+/**
+ * Get object style
+ * 
+ * @param {*} object 
+ * @param {*} styleName 
+ */
+function _getStyle(object, styleName) {
   // Don't allow changing part of the text
   /*
   if (object.getSelectionStyles && object.isEditing) {
@@ -112,15 +145,22 @@ function getStyle(object, styleName) {
   return object[styleName];
 }
 
+/**
+ * 
+ * @param {*} obj 
+ */
 function isItalics(obj) {
-  return (getStyle(obj, 'fontStyle') || '').indexOf('italic') > -1;
+  return (_getStyle(obj, 'fontStyle') || '').indexOf('italic') > -1;
 }
 
+/**
+ * 
+ */
 function toggleItalics() {
   var button = $("#toolbar-italics");
   var obj = canvas.getActiveObject();
   var italics = !isItalics(obj);
-  setStyle(obj, 'fontStyle', italics ? 'italic' : 'normal');
+  _setStyle(obj, 'fontStyle', italics ? 'italic' : 'normal');
 
   if (italics) {
     button.addClass("toolbar-item-active");
@@ -133,15 +173,22 @@ function toggleItalics() {
   canvas.trigger("object:statechange");
 }
 
+/**
+ * 
+ * @param {*} obj 
+ */
 function isBold(obj) {
-  return (getStyle(obj, 'fontWeight') || '').indexOf('bold') > -1;
+  return (_getStyle(obj, 'fontWeight') || '').indexOf('bold') > -1;
 }
 
+/**
+ * 
+ */
 function toggleBold() {
   var button = $("#toolbar-bold");
   var obj = canvas.getActiveObject();
   var bold = !isBold(obj);
-  setStyle(obj, 'fontWeight', bold ? 'bold' : '');
+  _setStyle(obj, 'fontWeight', bold ? 'bold' : '');
 
   if (bold) {
     button.addClass("toolbar-item-active");
@@ -154,15 +201,22 @@ function toggleBold() {
   canvas.trigger("object:statechange");
 }
 
+/**
+ * 
+ * @param {*} obj 
+ */
 function isUnderline(obj) {
-  return (getStyle(obj, 'textDecoration') || '').indexOf('underline') > -1;
+  return (_getStyle(obj, 'textDecoration') || '').indexOf('underline') > -1;
 }
 
+/**
+ * 
+ */
 function toggleUnderline() {
   var button = $("#toolbar-underline");
   var obj = canvas.getActiveObject();
   var underlined = !isUnderline(obj);
-  setStyle(obj, 'textDecoration', underlined ? 'underline' : '');
+  _setStyle(obj, 'textDecoration', underlined ? 'underline' : '');
 
   if (underlined) {
     button.addClass("toolbar-item-active");
@@ -175,13 +229,14 @@ function toggleUnderline() {
   canvas.trigger("object:statechange");
 }
 
-
-/* ----- exports ----- */
-
+/**
+ * Module constructor
+ */
 function TextModule() {
   if (!(this instanceof TextModule)) return new TextModule();
 }
 
+// Exports
 TextModule.prototype.isBold = isBold;
 TextModule.prototype.isUnderline = isUnderline;
 TextModule.prototype.isItalics = isItalics;

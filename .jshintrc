@@ -1,6 +1,7 @@
 {
   "browserify": true,
   "jquery": true,
+  "esversion": 5,
   "predef": [
     "fabric"
   ]

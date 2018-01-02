@@ -1,7 +1,9 @@
-@mixin hide {
-  visibility: hidden;
-  display: none;
-}
+
+// @mixin hide {
+//   /*visibility: hidden;*/
+//   visibility: collapse;
+//   /*display: none;*/
+// }
 
 html {
   width: 100%;
@@ -23,9 +25,10 @@ body {
   user-select: none;
 }
 
-.noshow {
-  @include hide;
-}
+// .noshow {
+//   display: none;
+//   visibility: collapse;
+// }
 
 #editor-layout {
   width: 100%;
@@ -142,7 +145,7 @@ body {
   }
 }
 
-#status_bar {
+#ted-status-bar {
   display: flex;
   flex-direction: row;
   position: fixed;
@@ -151,32 +154,32 @@ body {
   left: 0;
   width: 100%;
   height: $statusbar-height;
-  background-color: #0066ff;
+  background-color: $statusbar-background-color;
+  color: $statusbar-color;
+  font-family: "Lucida Sans Unicode",	"Lucida Grande", Sans-Serif;
+  font-size: 12px;
+  border-top: 1px solid $statusbar-border-top-color;
+  border-bottom: 1px solid $statusbar-border-bottom-color;
 }
 
-.status-area {
+.ted-status-area {
   flex-grow: 1;
   flex-shrink: 1;
   flex-basis: 30%;
-  margin-top: 3px;
-  margin-bottom: 4px;
-  color: #ffffff;
-  font-family: "Lucida Sans Unicode",	"Lucida Grande", Sans-Serif;
-  font-size: 12px;
+  align-items: center;
 }
 
-#status_left {
+#ted-status-left {
   text-align: left;
   margin-left: 8px;
 }
 
-#status_middle {
+#ted-status-middle {
   text-align: center;
   margin-left: 4px;
-  margin-right: 4px;
 }
 
-#status_right {
+#ted-status-right {
   text-align: right;
   margin-right: 8px;
 }

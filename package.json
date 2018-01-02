@@ -5,16 +5,21 @@
   "private": true,
   "main": "gulpfile.js",
   "dependencies": {
+    "console": "^0.6.4",
     "dialog-polyfill": "^0.4.7",
+    "fabric": "^2.0.0-rc.3",
     "filesaver.js": "^0.2.0",
     "jquery": "^2.2.4",
     "jquery-contextmenu": "^2.5.0",
     "jquery-ui": "^1.12.1",
     "material-design-lite": "^1.3.0",
-    "spectrum-colorpicker": "^1.8.0"
+    "spectrum-colorpicker": "^1.8.0",
+    "tooltipster": "^4.2.5",
+    "uuid4": "^1.0.0"
   },
   "devDependencies": {
     "browserify": "^12.0.2",
+    "browserify-shim": "^3.8.14",
     "del": "^2.2.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.1",

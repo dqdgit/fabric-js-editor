@@ -1,109 +1,117 @@
 
-/* --- Toolbar --- */
-#toolbar-container {
+/*---- Toolbar ----*/
+
+#ted-toolbar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+  width: calc(100% - 8px);
   margin: 0px;
-  padding: 0px;
-  padding-left: 8px;
-  padding-right: 8px;
-  height: $toolbar-height;
-  width: calc(100% - 18px);
-  line-height: $toolbar-height;
-  border: 1px solid $toolbar-border;
-  background-color: $toolbar-background;
-  z-index: 5;
+  padding-left: 3px;
+  padding-right: 3px;
+  border-top: 1px solid $toolbar-border-top-color;
+  border-left: 1px solid $toolbar-border-top-color;
+  border-right: 1px solid $toolbar-border-top-color;
+  border-bottom: 1px solid $toolbar-border-bottom-color;
+  background-color: $toolbar-background-color;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  z-index: 5;  
 }
 
-#toolbar {
+/*
+ *  Don't display toolbar sections by default
+ */
+.ted-toolbar-section {
+  display: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;  
   margin: 0px;
-  width: 100%;
-  height: ($toolbar-height - $toolbar-padding);
-  padding-bottom: $toolbar-padding;
+  padding: 0px
 }
 
-.toolbar-section {
-  height: $toolbar-height;
-  float: left;
+/*
+ *  Fixed tools section is always displayed
+ */
+#ted-fixed-tools {
+  display: flex;
 }
 
+/*
 .active-tools-group {
-  height: $toolbar-height;
   float: left;
 }
+*/
 
-.toolbar-separator {
-  height: $toolbar-separator-height;
-  width: 1px;
-  line-height: $toolbar-separator-height;
-  border-left: 1px solid $toolbar-border;
-  margin-left: 3px;
-  margin-right: 2px;
-  margin-top: (-$toolbar-padding);
-  padding: 0;
-  float: left;
-  overflow: hidden;
-  overflow-x: hidden;
-}
-
-.toolbar-button {
-  height: $toolbar-button-height;
-  line-height: $toolbar-button-height;
-  padding: $toolbar-button-padding;
-  border-radius: 2px;
+.ted-toolbar-tool {
+  flex: 0 0 auto;
+  background-color: transparent;
+  border: none;
   outline: none;
-  border: 1px solid transparent;
-  font-size: 14px;
-  float: left;
-  text-align: center;
-  vertical-align: middle;
+  box-shadow: none;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
   overflow: hidden;
-  overflow-x: hidden;
 
   &:hover {
-    border: 1px solid #CCCCCC;
-    box-shadow: 1px 1px 1px #dadada;
+    border: none;
+    background-color: $toolbar-hover-color;
   }
 
   &:active {
-    border: 1px solid #CCCCCC;
-    box-shadow: 1px 1px 1px #b7b7b7 inset;
-    background-color: #e8e8e8;
-    border: 1px solid #cecece;
+    border: none;
+    background-color: $toolbar-active-color;
+  }
+
+  &:focus {
+    border: none;
+    background-color: $toolbar-focus-color;
   }
 }
 
-.toolbar-button-box {
-  height: $toolbar-button-height;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  vertical-align: middle;
-  text-align: center;
-}
-
-.toolbar-item {
-  height: $toolbar-button-height;
-  width: $toolbar-button-height;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  float: left;
-  text-align: left;
-  vertical-align: middle;
-}
-
-.toolbar-item-dropdown {
-  height: $toolbar-button-height;
-  width: $toolbar-button-height;
-  opacity: 0.8;
-  color: #333;
-  margin-left: -4px;
-  padding: 0;
-  border: 0;
-  float: left;
-  text-align: left;
-  vertical-align: middle;
+.ted-toolbar-widget {
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
   overflow: hidden;
-  overflow-x: hidden;
+  background-color: transparent;
+}
+
+.ted-toolbar-menu-down {
+  margin-left: -6px;
+  padding: 0;
+  border: 0;
+}
+
+.ted-toolbar-tool-select {
+  height: 20px;
+  .ted-toolbar-select-text {
+    font-size: 12px;
+  }
+
+  .ted-toolbar-menu-down {
+    margin-left: 5px;
+  }
+}
+
+.ted-toolbar-separator {
+  height: $toolbar-separator-height;
+  width: 1px;
+  border-left: 1px solid $toolbar-separator-color;
+  margin-left: 3px;
+  margin-right: 2px;
+  padding: 0px;
 }
 
 .toolbar-text-input {
@@ -122,6 +130,7 @@
   }
 }
 
+/*
 .toolbar-item-active {
   border: 1px solid #CCCCCC;
   box-shadow: 1px 1px 2px #b1b1b1 inset;
@@ -138,63 +147,71 @@
     box-shadow: 1px 1px 2px #b1b1b1 inset;
   }
 }
-
-/* ----- Fixed tools ----- */
-
-/*
-#toolbar-arrange {
-  width: 70px;
-  padding-left: 5px;
-  font-weight: 400;
-  &:hover {
-    cursor: default;
-  }
-}
 */
 
-#toolbar-font-family {
+/* ----- Font tools ----- */
+
+#ted-current-font {
   width: 100px;
-  padding-left: 5px;
-  font-weight: 400;
-  &:hover {
-    cursor: default;
-  }
-  .submenu-item {
-    margin-left: 10px;
-  }
 }
 
-#toolbar-font-size {
+#ted-current-font-size {
   width: 50px;
-  padding-left: 5px;
-  font-weight: 400;
-  &:hover {
-    cursor: default;
-  }
 }
 
-/* --- toolbar submenu --- */
+/*---- Toolbar menus ----*/
 
-.toolbar-submenu {
+.ted-toolbar-menu {
+  display: none;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  /*justify-content: center;*/
+  margin: 0px;
+  padding: 6px 0;
   position: absolute;
-  background-color: white;
-  width: $toolbar-submenu-width;
-  top: -100px;
-  left: -100px;
-  z-index: 5;
-  border: 1px solid #b6b5b5;
-  color: #5D5D5D;
-  box-shadow: 1px 1px 2px #bebebe;
+  outline: none;
+  background-color: $toolbar-menu-background-color;
+  color: $toolbar-menu-color;
+  z-index: 1000;
+  border-radius: 0px;
+  border: 1px solid $toolbar-menu-border-color;
+  box-shadow: 1px 1px 2px $toolbar-menu-shadow-color;
   max-height: 300px;
   text-align: left;
   overflow: hidden;
 }
 
-.submenu-separator {
-  border-top: 1px solid $toolbar-border;
-  width: $toolbar-submenu-width;
-  margin-top: 6px;
-  margin-bottom: 6px;
+.ted-menu-item {
+  border: 0px;
+  margin: 0px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-right: 10px;
+  padding-left: 10px;
+  font-size: 13px;
+  list-style: none;
+  border-bottom: 0px solid $toolbar-menu-border-color;
+
+  &:hover {
+    background-color: $toolbar-menu-hover-color;
+    cursor: pointer;
+  }
+}
+
+.ted-menu-item-icon {
+  margin: 0px;
+  padding: 0px;
+  background-color: transparent;
+}
+
+.ted-menu-item-label {
+  margin: 0px;
+  padding: 0px;
+}
+
+.ted-menu-separator {
+  border-top: 1px solid $toolbar-border-top-color;
+  width: 100%;
 }
 
 .scrolling {
@@ -218,20 +235,6 @@
   &::-webkit-scrollbar-track {
     background-color: #FAFAFA;
     border-radius: 8px;
-  }
-}
-
-.submenu-item {
-  width: 100%;
-  height: 30px;
-  border: 0px;
-  padding-left: 20px;
-  font-size: 14px;
-  line-height: 30px;
-  border-bottom: 0px solid #979797;
-  &:hover {
-    background-color: #EAEAEA;
-    cursor: pointer;
   }
 }
 

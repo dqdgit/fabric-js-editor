@@ -1,5 +1,5 @@
 
-require('jquery');
+//require('jquery');
 
 var utils = new (require('./fabricUtils.js'))();
 
@@ -52,10 +52,10 @@ function addMetadata(xmlDoc, metadata) {
 
 function insertMetadata(xmlDoc, metadata) {
   // Add namespaces if needed
-  addNamespaces(xmlDoc)
+  addNamespaces(xmlDoc);
 
   // Add/Update metadata section
-  addMetadata(xmlDoc, metadata)
+  addMetadata(xmlDoc, metadata);
 
   return xmlDoc;
 }

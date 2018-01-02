@@ -1,0 +1,81 @@
+
+
+#
+#  Tile Editor toolbar functions
+#
+
+- Fixed tool group (group=fixed)
+  - File tool (dropdown, icon=mdi-content-save)
+    - Export Image... (text)
+    - Export Tile... (text)
+  - Edit metadata tool (button, mdi-tag)
+  - Undo tool (button, mdi-undo)
+  - Redo tool (button, mdi-redo)
+  - Delete tool (button, mdi-delete)
+  - Select tool (button, mdi-cursor-default)
+  - Text tool (button, mdi-curso-text)
+  - Shapes tool (dropdown, icon=mdi-drawing)
+    - Line (icon, text, mdi-vector-line)
+    - Circle (icon, text, mdi-vector-circle)
+    - Rectangle (icon, text, mdi-vector-rectangle)
+    - Rounded Rectangle (icon, text, mdi-vector-rectangle)
+  - Separator
+- Situational tool group (group=dynamic)
+  - All tools group (group=text, shape, svg)
+    - Horizontal center tool (button, mdi-format-horizontal-align-center)
+    - Vertical center tool (button, mdi-format-vertical-align-center)
+    - Arrange tool (dropdown, icon=mdi-arrange-bring-forward)
+      - Send to Back (icon, text, mdi-arrange-send-to-back)
+      - Send Backward (icon, text, mdi-arrange-send-backward)
+      - Bring Forward (icon, text, mdi-arrange-bring-forward)
+      - Bring to Front (icon, text, mdi-arrange-bring-to-front)
+    - Separator
+  - Text tools group (group=text)
+    - Font family tool (dropdown, text=<active font family>)
+      - <list of available fonts> (dynamic)
+    - Separator
+    - Bold tool (button, mdi-format-bold)
+    - Italics tool (button, mdi-format-italic)
+    - Underline tool (button, mdi-format-underline)
+    - Font size tool (dropdown, text=<active font size>)
+      - <list of available font sizes> (dynamic)
+    - Separator
+    - Text alignment tool (dropdown, icon=mdi-format-align-left)
+      - Left (icon, text, mdi-format-align-left)
+      - Center (icon, text, mdi-format-align-center)
+      - Right (icon, text, mdi-format-align-right)
+    - Text line spacing (dropdown, icon=mdi-format-line-spacing)
+      - 1.0 (text)
+      - 1.15 (text)
+      - 1.5 (text)
+      - 2.0 (text)
+    - Separator
+  - Shape tools group (group=shape, svg)
+    - Fill color tool (button, mdi-format-color-fill, action=colorpicker)
+    - Border color tool (button, mdi-border-color, action=colorpicker)
+    - Border width tool (dropdown, mdi-format-line-weight)
+      <list of available line widths> (dynamic)
+    - Border style tool (dropdown, mdi-format-line-style)
+      <list of available line styles> (dynamic)
+    - Effects tool (dropdown, mdi-blur)
+      - Shadow (toggle)
+      - Glow (toggle)
+
+##
+##
+##
+
+# Using font-awesome
+#
+https://jsfiddle.net/lbriquet/397488j4/
+https://stackoverflow.com/questions/17459115/extend-jquery-ui-icons-with-font-awesome
+
+
+<div id="ted-toolbar-container">
+  <div id="ted-toolbar">
+   <div id="ted-fixed-tools" class="ui-controlgroup ted-toolbar-section">
+      <button id="ted-toolbar-file-button" class="ui-controlgroup-item ted-toolbar-button ted-toolbar-dropdown>
+        # Attach menu to button?
+        # ted classes needed?
+      
+

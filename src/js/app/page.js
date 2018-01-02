@@ -3,6 +3,12 @@
 var canvas = global.canvas;
 var utils = new (require('./fabricUtils.js'))();
 
+var changedFillColor;
+var changedOutlineColor;
+
+/**
+ * 
+ */
 function noBackspace() {
   // Prevent the backspace key from navigating back
   $(document).unbind('keydown').bind('keydown', function (event) {
@@ -33,6 +39,9 @@ function noBackspace() {
   });
 }
 
+/**
+ * 
+ */
 function arrowKeys() {
   $(document).bind("keydown", function(evt) {
     // Block the functionality if user is not on canvas
@@ -51,7 +60,7 @@ function arrowKeys() {
     }
 
     var activeObject = canvas.getActiveObject();
-    var activeGroup = canvas.getActiveGroup();
+    //var activeGroup = canvas.getActiveGroup();
 
     var a;
     if (evt.keyCode === 37) {
@@ -59,57 +68,68 @@ function arrowKeys() {
       if (activeObject) {
         a = activeObject.get('left') - movementDelta;
         activeObject.set('left', a);
-      } else if (activeGroup) {
-        a = activeGroup.get('left') - movementDelta;
-        activeGroup.set('left', a);
-      }
+      } 
+      // else if (activeGroup) {
+      //   a = activeGroup.get('left') - movementDelta;
+      //   activeGroup.set('left', a);
+      // }
 
     } else if (evt.keyCode === 39) {
       evt.preventDefault(); // Prevent the default action
       if (activeObject) {
         a = activeObject.get('left') + movementDelta;
         activeObject.set('left', a);
-      } else if (activeGroup) {
-        a = activeGroup.get('left') + movementDelta;
-        activeGroup.set('left', a);
-      }
+      } 
+      // else if (activeGroup) {
+      //   a = activeGroup.get('left') + movementDelta;
+      //   activeGroup.set('left', a);
+      // }
 
     } else if (evt.keyCode === 38) {
       evt.preventDefault(); // Prevent the default action
       if (activeObject) {
         a = activeObject.get('top') - movementDelta;
         activeObject.set('top', a);
-      } else if (activeGroup) {
-        a = activeGroup.get('top') - movementDelta;
-        activeGroup.set('top', a);
-      }
+      } 
+      // else if (activeGroup) {
+      //   a = activeGroup.get('top') - movementDelta;
+      //   activeGroup.set('top', a);
+      // }
 
     } else if (evt.keyCode === 40) {
       evt.preventDefault(); // Prevent the default action
       if (activeObject) {
         a = activeObject.get('top') + movementDelta;
         activeObject.set('top', a);
-      } else if (activeGroup) {
-        a = activeGroup.get('top') + movementDelta;
-        activeGroup.set('top', a);
-      }
+      } 
+      // else if (activeGroup) {
+      //   a = activeGroup.get('top') + movementDelta;
+      //   activeGroup.set('top', a);
+      // }
     }
 
     if (activeObject) {
       activeObject.setCoords();
       canvas.renderAll();
-    } else if (activeGroup) {
-      activeGroup.setCoords();
-      canvas.renderAll();
-    }
+    } 
+    // else if (activeGroup) {
+    //   activeGroup.setCoords();
+    //   canvas.renderAll();
+    // }
   });
 }
 
-/* --- Color Pickers --- */
+/**
+ * 
+ */
+function hideTooltips() {
+  $(".mdl-tooltip").removeClass("is-active");
+}
 
-var changedFillColor;
-var changedOutlineColor;
-
+/**
+ * 
+ * @param {*} color 
+ */
 function handleFillColorChangeEvent(color) {
   if (canvas.getActiveObject() === null || canvas.getActiveObject() === undefined) {
     // no object selected
@@ -131,8 +151,11 @@ function handleFillColorChangeEvent(color) {
   changedFillColor = true;
 }
 
+/**
+ * 
+ */
 function fillColorPicker() {
-  $("#toolbar-fill-color").spectrum({
+  $("#ted-toolbar-fill-color").spectrum({
     preferredFormat: "hex",
     showInput: true,
     color: 'white',
@@ -146,18 +169,18 @@ function fillColorPicker() {
         // Push the canvas state to history
         canvas.trigger("object:statechange");
       }
-      $("#toolbar-fill-color").removeClass("toolbar-item-active");
-      $(".mdl-tooltip").removeClass("noshow");
+      $("#ted-toolbar-fill-color").removeClass("toolbar-item-active");
+      //$(".mdl-tooltip").removeClass("noshow");
     }
   });
 
-  $("#toolbar-fill-color").unbind("dragstop.spectrum");
-  $("#toolbar-fill-color").bind("dragstop.spectrum", function(e, color) {
+  $("#ted-toolbar-fill-color").unbind("dragstop.spectrum");
+  $("#ted-toolbar-fill-color").bind("dragstop.spectrum", function(e, color) {
     handleFillColorChangeEvent(color);
     return false;
   });
 
-  $("#toolbar-fill-color").spectrum("container").find(".sp-input").on('keydown', function(evt) {
+  $("#ted-toolbar-fill-color").spectrum("container").find(".sp-input").on('keydown', function(evt) {
     var key = evt.keyCode || evt.which;
     if (key === 13) {
       handleFillColorChangeEvent($(this).val());
@@ -199,8 +222,11 @@ function handleOutlineColorChangeEvent(color) {
   changedOutlineColor = true;
 }
 
+/**
+ * 
+ */
 function outlineColorPicker() {
-  $("#toolbar-outline-color").spectrum({
+  $("#ted-toolbar-border-color").spectrum({
     preferredFormat: "hex",
     showInput: true,
     color: 'white',
@@ -214,8 +240,8 @@ function outlineColorPicker() {
         // Push the canvas state to history
         canvas.trigger("object:statechange");
       }
-      $("#toolbar-outline-color").removeClass("toolbar-item-active");
-      $(".mdl-tooltip").removeClass("noshow");
+      $("#ted-toolbar-border-color").removeClass("toolbar-item-active");
+      //$(".mdl-tooltip").removeClass("noshow");
     },
     move: function(color) {
       if (color === null) {
@@ -226,13 +252,13 @@ function outlineColorPicker() {
     allowEmpty:true
   });
 
-  $("#toolbar-outline-color").unbind("dragstop.spectrum");
-  $("#toolbar-outline-color").bind("dragstop.spectrum", function(e, color) {
+  $("#ted-toolbar-border-color").unbind("dragstop.spectrum");
+  $("#ted-toolbar-border-color").bind("dragstop.spectrum", function(e, color) {
     handleOutlineColorChangeEvent(color);
     return false;
   });
 
-  $("#toolbar-outline-color").spectrum("container").find(".sp-input").on('keydown', function(evt) {
+  $("#ted-toolbar-border-color").spectrum("container").find(".sp-input").on('keydown', function(evt) {
     var key = evt.keyCode || evt.which;
     if (key === 13) {
       handleOutlineColorChangeEvent($(this).val());
@@ -240,8 +266,9 @@ function outlineColorPicker() {
   });
 }
 
-/* --- shadow color pickers --- */
-
+/**
+ * 
+ */
 function shadowColorPicker() {
   $("#shadow-color-picker").spectrum({
     showAlpha: true,
@@ -271,6 +298,9 @@ function shadowColorPicker() {
   });
 }
 
+/**
+ * 
+ */
 function glowColorPicker() {
   $("#glow-color-picker").spectrum({
     preferredFormat: "hex",
@@ -298,25 +328,49 @@ function glowColorPicker() {
   });
 }
 
+/**
+ * 
+ * @param {*} menu 
+ * @param {*} noTooltips 
+ */
 function closeSubmenu(menu, noTooltips) {
-  // DQD - Changed the HTML heirarchy so the submenu is a child of 
-  // the button. Now the menu parameter is truely the submenu
-  // not it's parent.
-  // 
-  // Not sure if we still need to remove the toolbar-item-active 
-  // class or not. Probably harmless to leave it.
-  menu.removeClass("toolbar-item-active");
-  //menu.children(".toolbar-submenu").addClass("noshow");
-  menu.addClass("noshow");
+  menu.removeClass("toolbar-menu-active");
+  menu.css({ display: "none" });
+}
 
-  if (noTooltips !== true) {
-    // Delay showing of tooltips to prevent flashing behavior
-    setTimeout(function(){ $(".mdl-tooltip").removeClass("noshow"); }, 200);
+/**
+ * 
+ * @param {*} menu 
+ */
+function openSubmenu(menu) {
+  // Undisplay the tooltip
+  $(".mdl-tooltip", menu.parent()).removeClass("is-active");
+  // Open the submenu
+  menu.addClass("toolbar-menu-active");
+  menu.css({ display: "flex" });
+}
+
+/**
+ * 
+ */
+function closeOpenSubmenus() {
+  var submenus = $(".ted-toolbar-menu.toolbar-menu-active");
+  if (submenus.length > 0 ) {
+    submenus.removeClass("toolbar-menu-active").css({ display: "none" });
   }
 }
 
-/* ----- exports ----- */
+/**
+ * 
+ * @param {*} menu 
+ */
+function submenuIsVisible(menu) {
+  return menu.css("display") == "flex";
+}
 
+/**
+ * 
+ */
 function PageModule() {
   if (!(this instanceof PageModule)) return new PageModule();
 
@@ -339,10 +393,18 @@ function PageModule() {
   // }
 }
 
+
+// Exports
+
+PageModule.prototype.openSubmenu = openSubmenu;
 PageModule.prototype.closeSubmenu = closeSubmenu;
+PageModule.prototype.closeOpenSubmenus = closeOpenSubmenus;
+PageModule.prototype.submenuIsVisible = submenuIsVisible;
+
 PageModule.prototype.fillColorPicker = fillColorPicker;
 PageModule.prototype.outlineColorPicker = outlineColorPicker;
 PageModule.prototype.shadowColorPicker = shadowColorPicker;
 PageModule.prototype.glowColorPicker = glowColorPicker;
+PageModule.prototype.hideTooltips = hideTooltips;
 
 module.exports = PageModule;

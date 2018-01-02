@@ -1,21 +1,20 @@
+// toolbar.js
 "use strict";
 
+// Globals
 var canvas = global.canvas;
 var state = global.state;
 
-/**
- * Third party modules
- */
-require('jquery');
-require('jquery-ui');
-require('jquery-contextmenu');
-require('spectrum-colorpicker');
-require('material-design-lite');
-require('dialog-polyfill');
+// Third party modules
+//require('jquery');
+//require('jquery-ui');
+//require('jquery-ui/dist/jquery-ui.min.js');
+// require('jquery-contextmenu');
+// require('spectrum-colorpicker');
+// require('material-design-lite');
+// require('dialog-polyfill');
 
-/**
- * Application modules
- */
+// Application modules
 var utils = new (require('./fabricUtils.js'))();
 var page = new (require('./page.js'))();
 var drawing = new (require('./drawing.js'))();
@@ -24,9 +23,9 @@ var statusBar = new (require('./statusBar.js'))();
 var svgDoc = new (require('./svg.js'))();
 
 var Metadata = require('./metadata.js');
+var Table = require('./table.js');
 
 var tileMetadata = null;
-
 
 /**
  * Return a string with the frist character or each
@@ -54,374 +53,26 @@ function resetFormElement(e) {
 }
 
 /**
- * Undisplay the currently active contextual tools
- */
-function hideActiveTools() {
-  $("#active-tools").addClass("noshow");
-  //var active = $("#active-tools > .toolbar-item-active");
-  var active = $(".toolbar-item-active");
-  if (active.length > 0) {
-    active.removeClass("toolbar-item-active");
-  }
-
-  //var submenus = $("#active-tools > .toolbar-submenu");
-  var submenus = $(".toolbar-submenu");
-  if (submenus.length > 0) {
-    submenus.addClass("noshow");
-  }
-}
-
-/**
- * Display the appropriate contextual tools for the selected object or group
- */
-function showActiveTools() {
-  // if (isAppLoading === true) {
-  //   return;
-  // }
-
-  var tools = $("#active-tools");
-  var obj = canvas.getActiveObject();
-  var group = canvas.getActiveGroup();
-
-  // Determine which situational (aka active) toolbars should be displayed.
-  //
-  // If a group of objects is selected then undisplay all the
-  // situational toolbars.
-  //
-  // If a single object is selected determine what kind of object
-  // it is and display the appropriate situational toolbars.
-  //
-  // Otherwise, nothing was selected so undisplay all the
-  // situational toolbars
-  if (group !== null && group !== undefined) {
-    $("#active-tools > div").addClass("noshow");
-    tools.removeClass("noshow");
-    $("div.group", tools).removeClass("noshow");
-  } else if (obj !== null && obj !== undefined) {
-    $("#active-tools > div").addClass("noshow");
-    tools.removeClass("noshow");
-
-    // Get the type of the selected Fabric.js object
-    var type = canvas.getActiveObject().type;
-
-    if (type === "i-text") {
-      $("div.text", tools).removeClass("noshow");
-
-      if (text.isBold(obj)) {
-        $("#toolbar-bold-button").addClass("toolbar-item-active");
-      } else {
-        $("#toolbar-bold-button").removeClass("toolbar-item-active");
-      }
-
-      if (text.isItalics(obj)) {
-        $("#toolbar-italics-button").addClass("toolbar-item-active");
-      } else {
-        $("#toolbar-italics-button").removeClass("toolbar-item-active");
-      }
-
-      if (text.isUnderline(obj)) {
-        $("#toolbar-underline-button").addClass("toolbar-item-active");
-      } else {
-        $("#toolbar-underline-button").removeClass("toolbar-item-active");
-      }
-
-      showCurrentFontSize();
-      showCurrentFont();
-    } else if (type === "svg") {
-      $("div.svg", tools).removeClass("noshow");
-    } else {
-      $("div.shape", tools).removeClass("noshow");
-    }
-
-    // Init fill color picker
-    page.fillColorPicker();
-    var color = utils.getFillColor();
-    if (color && color !== "") {
-      $("#toolbar-fill-color-button").spectrum("set", color);
-    }
-
-    // Init outline color picker
-    page.outlineColorPicker();
-    var outlineColor = utils.getOutlineColor();
-    if (outlineColor && outlineColor !== "") {
-      $("#toolbar-outline-color-button").spectrum("set", outlineColor);
-    }
-
-    // Init outline width
-    showCurrentOutlineWidth();
-
-    // Shadow and glow
-    setCurrentShadowValues();
-    page.glowColorPicker();
-    page.shadowColorPicker();
-
-  } else {
-    hideActiveTools();
-  }
-}
-
-/**
- * Display the active font in the toolbar tool
- */
-function showCurrentFont() {
-  var font = toTitleCase(utils.getFont());
-  if (font.length > 9) {
-    font = font.substring(0, 10) + "...";
-  }
-  $("#current-font").text(font);
-}
-
-/**
- * Display the current font size in the toolbar
- */
-function showCurrentFontSize() {
-  var fontSize = utils.getFontSize();
-  $("#current-font-size").text(fontSize.toString());
-}
-
-/**
- * Indicate the active outline (border) width in the tool submenu
- */
-function showCurrentOutlineWidth() {
-  var width = utils.getOutlineWidth();
-
-  var element = $("#toolbar-outline-width-submenu > .submenu-item-selected");
-  if (element.length > 0) {
-    element.removeClass("submenu-item-selected");
-  }
-
-  element = $("#outline-width-" + width.toString());
-  element.addClass("submenu-item-selected");
-}
-
-/**
- * Indicate the active outline (border) style in the tool submenu
- */
-function showCurrentOutlineStyle() {
-  var style = utils.getOutlineStyle();
-
-  var element = $("#toolbar-outline-style-submenu > .submenu-item-selected");
-  if (element.length > 0) {
-    element.removeClass("submenu-item-selected");
-  }
-}
-
-/**
- * Incicate the active text alignment in the tool submenu
- */
-function showCurrentTextAlign() {
-  var mode = utils.getTextAlign();
-  var element = $("#toolbar-text-align-submenu > .submenu-item-selected");
-  if (element.length > 0) {
-    element.removeClass("submenu-item-selected");
-  }
-
-  element = $("#text-align-" + mode);
-  element.addClass("submenu-item-selected");
-}
-
-function showCurrentTextSpacing() {
-  var value = utils.getTextSpacing();
-  var element = $("#toolbar-text-spacing-submenu > .submenu-item-selected");
-  if (element.length > 0) {
-    element.removeClass("submenu-item-selected");
-  }
-
-  element = $("[data-text-spacing='" + value.toString() + "']");
-  element.addClass("submenu-item-selected");
-}
-
-/**
- * Initialize the font family submenu and it's event handler
- */
-function initFontFamily() {
-  var fontClickHandler = function () {
-    var fontName = $(this).text();
-    utils.setFont(fontName);
-    showCurrentFont();
-    text.returnFocus();
-  };
-
-  $(window).on("fontLoadedEvent", function (event, family, fvd) {
-    var displayName;
-
-    // This is need to process TypeKit family names which
-    // have names like liberation-sans. Google fonts have 
-    // names like Actor.
-    if (family === family.toLowerCase()) {
-      displayName = toTitleCase(family.replace("-", " "));
-    } else {
-      displayName = family;
-    }
-
-    var familyId = "font-family-" + family.replace(/\s+/g, '');
-
-    // Build the submenu item string for the font
-    var str = '';
-    str += '<div class="submenu-item"';
-    str += ' id="' + familyId + '"';
-    str += ' data-font-family="' + family + '"';
-    str += ' data-display-name="' + displayName + '">';
-    str += '<span style="font-family: ';
-    str += "'" + family + "'";
-    str += '">' + displayName;
-    str += "</span></div>";
-
-    $("#toolbar-font-family-submenu").append(str);
-
-    var element = $("#" + familyId);
-    element.click(fontClickHandler);
-  });
-
-  $(window).on("allFontsLoadedEvent", function (event) {
-    // Is the menu being used?
-    if ($("#toolbar-font-family-button").hasClass("toolbar-item-active") === true) {
-      return;
-    }
-
-    // Sort the fonts, use the display name as the key
-    var sorted = $("#toolbar-font-family-submenu > .submenu-item").sort(function (a, b) {
-      var contentA = $(a).attr('data-display-name');
-      var contentB = $(b).attr('data-display-name');
-      return (contentA < contentB) ? -1 : (contentA > contentB) ? 1 : 0;
-    });
-
-    //$("#toolbar-font-family .toolbar-submenu").html(sorted);
-    $("#toolbar-font-family-submenu").html(sorted);
-
-    // Set new event listeners for all the submen-items
-    $("#toolbar-font-family-submenu > .submenu-item").click(fontClickHandler);
-  });
-
-  // $("#font-arial").click(function () {
-  //   utils.setFont("Arial");
-  //   showCurrentFont();
-  //   text.returnFocus();
-  // });
-  showCurrentFont();
-  text.returnFocus();
-}
-
-/**
- * Initialize the font size submenu and it's event handler
- */
-function initFontSize() {
-  var fontSizeClickHandler = function () {
-    var fontSize = $(this).text();
-    //var fontSize = utils.getFontSize();
-    utils.setFontSize(parseInt(fontSize));
-    showCurrentFontSize();
-    text.returnFocus();
-  };
-
-  var fontSizes = [6, 7, 8, 9, 10, 11, 12, 14, 18, 24, 30, 36];
-  for (var i = 0; i < fontSizes.length; i++) {
-    var size = fontSizes[i].toString();
-    var str = '<div class="submenu-item" id="font-size-' + size +
-      '" data-font-size="' + size + '">' + size + '</div>';
-    $("#toolbar-font-size-submenu").append(str);
-    var element = $("#font-size-" + size);
-    element.click(fontSizeClickHandler);
-  }
-
-  showCurrentFontSize();
-  text.returnFocus();
-}
-
-/**
- * Initialize the outline (border) width submenu and event handler
- */
-function initOutlineWidth() {
-  var outlineWidthClickHandler = function () {
-    var outlineWidth = $(this).text();
-    utils.setOutlineWidth(parseInt(outlineWidth));
-    showCurrentOutlineWidth();
-  };
-
-  var outlineWidths = [1, 2, 3, 4, 5, 8, 12, 16, 24];
-  for (var i = 0; i < outlineWidths.length; i++) {
-    var width = outlineWidths[i].toString();
-    var str = '<div class="submenu-item" id="outline-width-' + width +
-      '" data-outline-width="' + width + '">' + width + 'px</div>';
-    $("#toolbar-outline-width-submenu").append(str);
-    var element = $("#outline-width-" + width);
-    element.click(outlineWidthClickHandler);
-  }
-}
-
-/**
- * Initialize the outline (border) style submenu and event handler
- */
-function initOutlineStyle() {
-  var outlineStyleClickHandler = function () {
-    var outlineStyle = $(this).text();
-    utils.setOutlineStyle(outlineStyle);
-    showCurrentOutlineStyle();
-  };
-
-  var outlineStyles = ["solid", "dotted", "dashed"];
-  for (var i = 0; i < outlineStyles.length; i++) {
-    var style = outlineStyles[i];
-    var str = '<div class="submenu-item" id="outline-style-' + style +
-      '" data-outline-style="' + style + '">' + style + '</div>';
-    $("#toolbar-outline-style-submenu").append(str);
-    var element = $("#outline-style-" + style);
-    element.click(outlineStyleClickHandler);
-  }
-}
-
-/**
- * Initialize the undo and redo event handlers
- */
-function initUndo() {
-  $("#toolbar-undo-button").click(function () {
-    state.undo();
-  });
-
-  $("#toolbar-redo-button").click(function () {
-    state.redo();
-  });
-}
-
-/**
- * Initialize the text tool event handler
- */
-function initText() {
-  $("#toolbar-text-button").click(function () {
-    $(document).trigger("click.submenu"); // Make sure all submenus are closed
-    if ($("#toolbar-text").hasClass("toolbar-item-active")) {
-      $("#toolbar-text").removeClass("toolbar-item-active");
-      text.cancelInsert();
-    } else {
-      $("#toolbar-text").addClass("toolbar-item-active");
-      text.insertText();
-    }
-  });
-}
-
-/**
  * Initialize the submenu event handlers
  */
 function initSubmenus() {
-  // Main event handler for submenus
-  //
   // Set an event handler for each tool that has a dropdown menu
-  $('.toolbar-dropdown').each(function (i, obj) {
-    $(obj).click(function (event) {
+  $(".ted-toolbar-tool > .ted-toolbar-menu").each(function (i, obj) {
+    $(obj).parent().click(function (event) {
       var button = $(this);
-      var submenu = $(".toolbar-submenu", button);
-      var visible = submenu.is(":visible");
+      var submenu = $(".ted-toolbar-menu", this);
+      var visible = page.submenuIsVisible(submenu);
 
       if (visible) {
         // Close a submenu
         var clickedButton = event.target.id === button.attr('id');
-        var noAutoClose = $(".toolbar-submenu", button).hasClass("no-auto-close");
+        var noAutoClose = $(".ted-toolbar-menu", button).hasClass("no-auto-close");
         if (!clickedButton && noAutoClose) {
           return;
         }
 
-        if (button.hasClass("toolbar-item-active")) {
-          button.removeClass("toolbar-item-active");
+        if (button.hasClass("ted-toolbar-item-active")) {
+          button.removeClass("ted-toolbar-item-active");
         }
 
         // DQD - Changed the HTML heirarchy so the button is no longer
@@ -430,16 +81,20 @@ function initSubmenus() {
         page.closeSubmenu(submenu);
         $(document).unbind("click.submenu");
       } else {
+        // Close any other open submenus
+        page.closeOpenSubmenus();
+
         // Open a submenu
         $(document).trigger("click.submenu", true);
 
-        button.addClass("toolbar-item-active");
-        $(".mdl-tooltip").addClass("noshow");
+        button.addClass("ted-toolbar-item-active");
+        page.hideTooltips();
 
         var x = button.offset().top + 27;
         var y = button.offset().left;
         submenu.css({ top: x, left: y });
-        submenu.removeClass("noshow");
+        //submenu.css({ display: "flex" });
+        page.openSubmenu(submenu);
 
         // DQD - This block was causing the font family submeny to be hidden when 
         // the user clicked some place other than the current font name. Not sure
@@ -469,32 +124,354 @@ function initSubmenus() {
 }
 
 /**
+ * Undisplay the currently active contextual tools
+ */
+function hideActiveTools() {
+  // Undisplay all the active tool groups
+  $(".active-tools-group").css({ display: "none" });
+
+  // Remove any active item indicators
+  var active = $(".toolbar-item-active");
+  if (active.length > 0) {
+    active.removeClass("toolbar-item-active");
+  }
+
+  // Undisplay any sub-menus
+  // var submenus = $(".ted-toolbar-menu");
+  // if (submenus.length > 0) {
+  //   submenus.css({ display: "none" });
+  // }
+  page.closeOpenSubmenus();
+}
+
+/**
+ * Display the appropriate contextual tools for the selected object or group
+ */
+function showActiveTools() {
+  // if (isAppLoading === true) {
+  //   return;
+  // }
+
+  var tools = $("#active-tools");
+  //var obj = canvas.getActiveObject();
+  //var group = canvas.getActiveGroup();
+  var objs = canvas.getActiveObjects();
+  var nObjs = objs.length;
+
+  // Turn off all the active toolbar sections
+  hideActiveTools();
+
+  // Determine which actuve tools should be displayed.
+  //
+  // If a group of objects is selected then only display the
+  // group tools.
+  //
+  // If a single object is selected determine what kind of object
+  // it is and display the appropriate active tools.
+  //
+  //if (group !== null && group !== undefined) {
+  if (nObjs > 1) {
+    $(".active-tools-group.group").css({ display: "flex" });
+  //} else if (obj !== null && obj !== undefined) {
+  } else if (nObjs === 1) {
+    // Get the type of the selected Fabric.js object
+    var type = canvas.getActiveObject().type;
+
+    if (type === "i-text") {
+      $(".active-tools-group.text").css({ display: "flex" });
+      showCurrentFontSize();
+      showCurrentFont();
+    } else if (type === "svg") {
+      $(".active-tools-group.svg").css({ display: "flex" });
+    } else {
+      $(".active-tools-group.shape").css({ display: "flex" });
+    }
+
+    // Init outline width
+    showCurrentOutlineWidth();
+
+    // Shadow and glow
+    setCurrentShadowValues();
+    page.glowColorPicker();
+    page.shadowColorPicker();
+  }
+}
+
+/**
+ * Display the active font in the toolbar tool
+ */
+function showCurrentFont() {
+  var font = toTitleCase(utils.getFont());
+  if (font.length > 9) {
+    font = font.substring(0, 10) + "...";
+  }
+  $("#ted-current-font").text(font);
+}
+
+/**
+ * Display the current font size in the toolbar
+ */
+function showCurrentFontSize() {
+  var fontSize = utils.getFontSize();
+  $("#ted-current-font-size").text(fontSize.toString());
+}
+
+/**
+ * Indicate the active outline (border) width in the tool submenu
+ */
+function showCurrentOutlineWidth() {
+  var width = utils.getOutlineWidth();
+
+  var element = $("#ted-toolbar-menu-border-width > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+
+  element = $("#outline-width-" + width.toString());
+  element.addClass("submenu-item-selected");
+}
+
+/**
+ * Indicate the active outline (border) style in the tool submenu
+ */
+function showCurrentOutlineStyle() {
+  var style = utils.getOutlineStyle();
+
+  var element = $("#ted-toolbar-menu-border-style > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+}
+
+/**
+ * Incicate the active text alignment in the tool submenu
+ */
+function showCurrentTextAlign() {
+  var mode = utils.getTextAlign();
+  var element = $("#toolbar-text-align-submenu > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+
+  element = $("#text-align-" + mode);
+  element.addClass("submenu-item-selected");
+}
+
+/*
+ *
+ */
+function showCurrentTextSpacing() {
+  var value = utils.getTextSpacing();
+  var element = $("#ted-toolbar-menu-line-spacing > .submenu-item-selected");
+  if (element.length > 0) {
+    element.removeClass("submenu-item-selected");
+  }
+
+  element = $("[data-text-spacing='" + value.toString() + "']");
+  element.addClass("submenu-item-selected");
+}
+
+/**
+ * Initialize the font family submenu and it's event handler
+ */
+function initFontFamily() {
+  var fontClickHandler = function () {
+    var fontName = $(this).text();
+    utils.setFont(fontName);
+    showCurrentFont();
+    text.returnFocus();
+  };
+
+  $(window).on("fontLoadedEvent", function (event, family, fvd) {
+    //global.console.log("fontLoadedEvent: " + family);
+    var displayName;
+
+    // This is needed to process TypeKit family names which
+    // have names like liberation-sans. Google fonts have 
+    // names like Actor.
+    if (family === family.toLowerCase()) {
+      displayName = toTitleCase(family.replace("-", " "));
+    } else {
+      displayName = family;
+    }
+
+    var familyId = "font-family-" + family.replace(/\s+/g, '');
+
+    // Build the submenu item string for the font
+    var str = '';
+    str += '<div class="ted-menu-item"';
+    str += ' id="' + familyId + '"';
+    str += ' data-font-family="' + family + '"';
+    str += ' data-display-name="' + displayName + '">';
+    str += '<span style="font-family: ';
+    str += "'" + family + "'";
+    str += '">' + displayName;
+    str += "</span></div>";
+
+    $("#ted-toolbar-menu-font-family").append(str);
+
+    var element = $("#" + familyId);
+    element.click(fontClickHandler);
+  });
+
+  $(window).on("allFontsLoadedEvent", function (event) {
+    //global.console.log("allFontsLoadedEvent");
+    // Is the menu being used?
+    if ($("#ted-toolbar-font-family").hasClass("toolbar-item-active") === true) {
+      return;
+    }
+
+    // Sort the fonts, use the display name as the key
+    var sorted = $("#ted-toolbar-menu-font-family > .ted-menu-item").sort(function (a, b) {
+      var contentA = $(a).attr('data-display-name');
+      var contentB = $(b).attr('data-display-name');
+      return (contentA < contentB) ? -1 : (contentA > contentB) ? 1 : 0;
+    });
+
+    $("#ted-toolbar-menu-font-family").html(sorted);
+
+    // Set new event listeners for all the submen-items
+    $("#ted-toolbar-menu-font-family > .ted-menu-item").click(fontClickHandler);
+  });
+
+  showCurrentFont();
+  text.returnFocus();
+}
+
+/**
+ * Initialize the font size submenu and it's event handler
+ */
+function initFontSize() {
+  var fontSizeClickHandler = function () {
+    var fontSize = $(this).text();
+    utils.setFontSize(parseInt(fontSize));
+    showCurrentFontSize();
+    text.returnFocus();
+  };
+
+  var fontSizes = [6, 7, 8, 9, 10, 11, 12, 14, 18, 24, 30, 36];
+  for (var i = 0; i < fontSizes.length; i++) {
+    var size = fontSizes[i].toString();
+    var str = '<div class="ted-menu-item" id="font-size-' + size +
+      '" data-font-size="' + size + '">' + size + '</div>';
+    $("#ted-toolbar-menu-font-size").append(str);
+    var element = $("#font-size-" + size);
+    element.click(fontSizeClickHandler);
+  }
+
+  showCurrentFontSize();
+  text.returnFocus();
+}
+
+/**
+ * Initialize the outline (border) width submenu and event handler
+ */
+function initOutlineWidth() {
+  var outlineWidthClickHandler = function () {
+    var outlineWidth = $(this).text();
+    utils.setOutlineWidth(parseInt(outlineWidth));
+    showCurrentOutlineWidth();
+  };
+
+  var outlineWidths = [1, 2, 3, 4, 5, 8, 12, 16, 24];
+  for (var i = 0; i < outlineWidths.length; i++) {
+    var width = outlineWidths[i].toString();
+    var str = '<div class="ted-menu-item" id="outline-width-' + width +
+      '" data-outline-width="' + width + '">' + width + 'px</div>';
+    $("#ted-toolbar-menu-border-width").append(str);
+    var element = $("#outline-width-" + width);
+    element.click(outlineWidthClickHandler);
+  }
+}
+
+/**
+ * Initialize the outline (border) style submenu and event handler
+ */
+function initOutlineStyle() {
+  var outlineStyleClickHandler = function () {
+    var outlineStyle = $(this).text();
+    utils.setOutlineStyle(outlineStyle);
+    showCurrentOutlineStyle();
+  };
+
+  var outlineStyles = ["solid", "dotted", "dashed"];
+  for (var i = 0; i < outlineStyles.length; i++) {
+    var style = outlineStyles[i];
+    var str = '<div class="ted-menu-item" id="outline-style-' + style +
+      '" data-outline-style="' + style + '">' + style + '</div>';
+    $("#ted-toolbar-menu-border-style").append(str);
+    var element = $("#outline-style-" + style);
+    element.click(outlineStyleClickHandler);
+  }
+}
+
+/**
+ * Initialize the undo and redo event handlers
+ */
+function initUndo() {
+  $("#ted-toolbar-undo").click(function () {
+      state.undo();
+  });
+
+  $("#ted-toolbar-redo").click(function () {
+      state.redo();
+  });
+}
+
+/**
+ * Initialize the text tool event handler
+ */
+function initText() {
+  $("#ted-toolbar-text").click(function () {
+    $(document).trigger("click.submenu"); // Make sure all submenus are closed
+    if ($("#ted-toolbar-text").hasClass("toolbar-item-active")) {
+      $("#ted-toolbar-text").removeClass("toolbar-item-active");
+      text.cancelInsert();
+    } else {
+      $("#ted-toolbar-text").addClass("toolbar-item-active");
+      text.insertText();
+    }
+  });
+}
+
+/**
+ * Initialize the table tool event handlers
+ */
+function initTable() {
+  $("#ted-toolbar-table").click(function() {
+    Table.newTable(2, 2);
+    canvas.defaultCursor = 'crosshair';
+  });
+}
+
+/**
  * Initialize the shape tool event handlers
  */
 function initShapes() {
-  $("#shapes-line").click(function () {
-    canvas.deactivateAllWithDispatch();
+  $("#ted-shape-line").click(function () {
+    canvas.discardActiveObject();
+    statusBar.updateMode("Line");
     canvas.renderAll();
     drawing.drawObj("line");
     canvas.defaultCursor = 'crosshair';
   });
 
-  $("#shapes-circle").click(function () {
-    canvas.deactivateAllWithDispatch();
+  $("#ted-shape-circle").click(function () {
+    canvas.discardActiveObject();
     canvas.renderAll();
     drawing.drawObj("circle");
     canvas.defaultCursor = 'crosshair';
   });
 
-  $("#shapes-rectangle").click(function () {
-    canvas.deactivateAllWithDispatch();
+  $("#ted-shape-rectangle").click(function () {
+    canvas.discardActiveObject();
     canvas.renderAll();
     drawing.drawObj("square");
     canvas.defaultCursor = 'crosshair';
   });
 
-  $("#shapes-rounded").click(function () {
-    canvas.deactivateAllWithDispatch();
+  $("#ted-shape-rounded-rectangle").click(function () {
+    canvas.discardActiveObject();
     canvas.renderAll();
     drawing.drawObj("rounded-rect");
     canvas.defaultCursor = 'crosshair';
@@ -590,17 +567,17 @@ function initShapes() {
  * Initialize the basic text tool event handlers
  */
 function initTextEmphasis() {
-  $("#toolbar-bold-button").click(function () {
+  $("#ted-toolbar-bold").click(function () {
     text.toggleBold();
     text.returnFocus();
   });
 
-  $("#toolbar-italics-button").click(function () {
+  $("#ted-toolbar-italic").click(function () {
     text.toggleItalics();
     text.returnFocus();
   });
 
-  $("#toolbar-underline-button").click(function () {
+  $("#ted-toolbar-underline").click(function () {
     text.toggleUnderline();
     text.returnFocus();
   });
@@ -616,7 +593,7 @@ function initTextSpacing() {
     showCurrentTextSpacing();
   };
 
-  $("#toolbar-text-spacing-submenu > .submenu-item").click(textSpacingHandler);
+  $("#ted-toolbar-menu-line-spacing > .ted-menu-item").click(textSpacingHandler);
   showCurrentTextSpacing();
 }
 
@@ -630,29 +607,29 @@ function initTextAlign() {
     showCurrentTextAlign();
   };
 
-  $("#text-align-left").click(textAlignHandler);
-  $("#text-align-center").click(textAlignHandler);
-  $("#text-align-right").click(textAlignHandler);
+  $("#ted-align-left").click(textAlignHandler);
+  $("#ted-align-center").click(textAlignHandler);
+  $("#ted-align-right").click(textAlignHandler);
 }
 
 /**
  * Initialize the arrange tool event handlers
  */
 function initArrange() {
-  $("#toolbar-send-back").click(function () {
+  $("#ted-arrange-send-back").click(function () {
     utils.sendToBack();
   });
 
-  $("#toolbar-send-backward").click(function () {
+  $("#ted-arrange-send-backward").click(function () {
     utils.sendBackward();
   });
 
-  $("#toolbar-bring-forward").click(function () {
-    utils.sendForward();
+  $("#ted-arrange-bring-forward").click(function () {
+    utils.bringForward();
   });
 
-  $("#toolbar-bring-front").click(function () {
-    utils.sendToFront();
+  $("#ted-arrange-bring-front").click(function () {
+    utils.bringToFront();
   });
 }
 
@@ -660,11 +637,11 @@ function initArrange() {
  * Initialize the center selection on page event handlers
  */
 function initCentering() {
-  $("#toolbar-h-center-button").click(function () {
+  $("#ted-toolbar-h-center").click(function () {
     utils.hCenterSelection();
   });
 
-  $("#toolbar-v-center-button").click(function () {
+  $("#ted-toolbar-v-center").click(function () {
     utils.vCenterSelection();
   });
 }
@@ -730,12 +707,32 @@ function initEffects() {
  * Initialize the event handler for the select tool
  */
 function initSelect() {
-  $("#toolbar-select-button").click(function () {
+  $("#ted-toolbar-select").click(function () {
     canvas.defaultCursor = 'auto';
-    canvas.deactivateAllWithDispatch();
+    //canvas.deactivateAllWithDispatch();
+    canvas.discardActiveObject();
     canvas.renderAll();
     hideActiveTools();
   });
+}
+
+/**
+ * 
+ */
+function initColor() {
+  // Init fill color picker
+  page.fillColorPicker();
+  var color = utils.getFillColor();
+  if (color && color !== "") {
+    $("#ted-toolbar-fill-color").spectrum("set", color);
+  }
+
+  // Init border color picker
+  page.outlineColorPicker();
+  var outlineColor = utils.getOutlineColor();
+  if (outlineColor && outlineColor !== "") {
+    $("#ted-toolbar-border-color").spectrum("set", outlineColor);
+  }
 }
 
 
@@ -766,11 +763,6 @@ function downloadImage(type) {
     canvas.renderAll();
   }
 
-  // TODO: Testing SVG conversion
-  if (type === 'svg') {
-    svg = svgDoc.xmlFromCanvas(canvas);
-  }
-
   utils.exportFile(type);
   hideActiveTools();
 
@@ -783,6 +775,15 @@ function downloadImage(type) {
   canvas.renderAll();
 }
 
+/**
+ * 
+ */
+function downloadTile() {
+  // TODO: Testing SVG conversion
+  var svg = svgDoc.xmlFromCanvas(canvas);
+  utils.exportFile("svg");
+  hideActiveTools();  
+}
 
 /**
  * Display the import dialog and handle it's events
@@ -791,7 +792,7 @@ function downloadImage(type) {
  * @param {String} title = the title to use for the dialog
  */
 function openImportDialog(type, title) {
-  var dialog = $("#import-file-dialog").get(0);
+  var dialog = $("#ted-dialog-import-file").get(0);
 
   // For browsers that don't have the dialog element
   // if (!dialog.showModal) {
@@ -804,7 +805,7 @@ function openImportDialog(type, title) {
   // Import button click handler. Process the list of files
   // that were dropped and insert the ones that have the 
   // specified mime type.
-  $("#import-file-dialog-ok").click(function () {
+  $("#ted-dialog-import-file-ok").click(function () {
     dialog.close();
     for (var i = 0; i < fileList.length; i++) {
       if (fileList[i].type === mimeType) {
@@ -824,25 +825,25 @@ function openImportDialog(type, title) {
   });
 
   // Cancel button click hander. 
-  $("#import-file-dialog-cancel").click(function () {
+  $("#ted-dialog-import-file-cancel").click(function () {
     dialog.close();
   });
 
   // Drag over event handler. May not need this.
-  $("#import-file-dialog-dropzone").on("dragover", function (ev) {
+  $("#ted-dialog-import-file-dropzone").on("dragover", function (ev) {
     ev.preventDefault();
     ev.stopPropagation();
   });
 
   // Drag enter event handler. May not need this.
-  $("#import-file-dialog-dropzone").on("dragenter", function (ev) {
+  $("#ted-dialog-import-file-dropzone").on("dragenter", function (ev) {
     ev.preventDefault();
     ev.stopPropagation();
   });
 
   // Drop event handler. Store the Web API File objects dropped 
   // on the drop zone for later processing.
-  $("#import-file-dialog-dropzone").on("drop", function (ev) {
+  $("#ted-dialog-import-file-dropzone").on("drop", function (ev) {
     ev.preventDefault();
     ev.stopPropagation();
 
@@ -853,7 +854,7 @@ function openImportDialog(type, title) {
   });
 
   // Set the dialog title
-  $("#import-file-dialog-title").text(title);
+  $("#ted-dialog-import-file-title").text(title);
 
   // Display the Import from file dialog
   dialog.showModal();
@@ -863,38 +864,48 @@ function openImportDialog(type, title) {
  * Initialize the file tool
  */
 function initFile() {
-  // Import template
-  $("#file-import-template").click(function () {
-    // TODO: Inserting a template may need special treatment
-    openImportDialog("svg", "Import Template");
-  });
+  // // Import template
+  // $("#file-import-template").click(function () {
+  //   // TODO: Inserting a template may need special treatment
+  //   openImportDialog("svg", "Import Template");
+  // });
 
-  // Import SVG
-  $("#file-import-svg").click(function () {
-    openImportDialog("svg", "Import SVG");
-  });
+  // // Import SVG
+  // $("#file-import-svg").click(function () {
+  //   openImportDialog("svg", "Import SVG");
+  // });
 
-  // Import image
-  $("#file-import-image").click(function () {
-    openImportDialog("png", "Import Image");
-  });
+  // // Import image
+  // $("#file-import-image").click(function () {
+  //   openImportDialog("png", "Import Image");
+  // });
 
-  // Export SVG
-  $("#file-export-svg").click(function () {
-    downloadImage("svg");
-  });
+  // // Export SVG
+  // $("#file-export-svg").click(function () {
+  //   downloadImage("svg");
+  // });
 
   // Export image
-  $("#file-export-image").click(function () {
+  $("#ted-file-export-image").click(function () {
     downloadImage("png");
   });
+
+  // Export tile
+  $("#ted-file-export-tile").click(function () {
+    downloadTile();
+  });
+
+  // Import template
+ $("ted-file-import-template").click(function() {
+   openImportDialog("svg", "Import tile template");
+ });
 }
 
 /**
  * 
  */
 function openMetadataDialog() {
-  var dialog = $("#edit-metadata-dialog").get(0);
+  var dialog = $("#ted-dialog-edit-metadata").get(0);
 
   // Initialize the dialog using the current metadata values
   $("#metadata-title").val(tileMetadata.title);
@@ -911,7 +922,7 @@ function openMetadataDialog() {
   $("#metadata-keywords").attr("data-index", "0");
 
   // Update the SVG metadata
-  $("#edit-metadata-dialog-ok").click(function () {
+  $("#ted-dialog-edit-metadata-ok").click(function () {
     tileMetadata.title = $("#metadata-title").val();
     tileMetadata.date = $("#metadata-date").val();
     tileMetadata.creator = $("#metadata-creator").val();
@@ -923,7 +934,7 @@ function openMetadataDialog() {
   });
 
   // Cancel button click hander. 
-  $("#edit-metadata-dialog-cancel").click(function () {
+  $("#ted-dialog-edit-metadata-cancel").click(function () {
     dialog.close();
   });
 
@@ -939,7 +950,7 @@ function initMetadata() {
   tileMetadata = new Metadata();
 
   // Set the menubar click handler
-  $("#toolbar-metadata-button").click(function (ev) {
+  $("#ted-toolbar-metadata").click(function (ev) {
     openMetadataDialog();
   });
 }
@@ -948,17 +959,17 @@ function initMetadata() {
  * 
  */
 function initDelete() {
-  $("#toolbar-delete-button").click(function (ev) {
+  $("#ted-toolbar-delete").click(function (ev) {
     utils.deleteSelected();
   });
 }
-
 
 /**
  * TODO: What does this do?
  */
 function setCurrentShadowValues() {
   var shadowColor;
+  
   if (utils.isShadow()) {
     $("#shadow-switch-label")[0].MaterialSwitch.on();
     $("#glow-switch-label")[0].MaterialSwitch.off();
@@ -1016,32 +1027,46 @@ function setShadow() {
  * 
  */
 function initialize() {
-  initOutlineWidth();
-  initOutlineStyle();
+  // Fixed tools
+  initFile();
+  initMetadata();
   initUndo();
-  initShapes();
-  initFontFamily();
-  initFontSize();
+  initDelete();
+
+  initSelect();
   initText();
+  initTable();
+  initShapes();
+
+  // Group 1: text, shape, group, svg
+  initCentering();
+  initArrange();
+
+  // Group 2: text
+  initFontFamily();
   initTextEmphasis();
+  initFontSize();
   initTextAlign();
   initTextSpacing();
-  initArrange();
-  initCentering();
+
+  // Group 3: text, shape, svg
+  initColor();
+  initOutlineWidth();
+  initOutlineStyle();
   initEffects();
-  initSelect();
-  initFile();
+
+  // Initialize dropdown menus last
   initSubmenus();
-  initMetadata();
-  initDelete();
 }
 
-/* ----- Exports ----- */
-
+/**
+ * Toolbar module constructor. Singleton
+ */
 function ToolbarModule() {
   if (!(this instanceof ToolbarModule)) return new ToolbarModule();
 }
 
+// Exports
 ToolbarModule.prototype.initialize = initialize;
 ToolbarModule.prototype.showActiveTools = showActiveTools;
 ToolbarModule.prototype.hideActiveTools = hideActiveTools;
